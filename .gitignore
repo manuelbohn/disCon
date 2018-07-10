@@ -1,0 +1,10 @@
+*.DS_Store
+experiments/_layout/
+experiments/compile/
+experiments/sound/
+experiments/images/
+experiments/dots/
+experiments/watch
+experiments/mmturkey-0.6.js
+experiments/mmturkey.js
+jquery-1.11.2.min.js
