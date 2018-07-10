@@ -165,7 +165,7 @@ nextButton[disabled] {
     width: 150px;
 }
 
-.fruit_r {
+.item_r {
     position: absolute;
     bottom: 225px;  
     left: 747px;
@@ -212,6 +212,14 @@ nextButton[disabled] {
     position: absolute;
     bottom: 80px;
     left: 30px;
+    width: 280px;
+    z-index: 0
+}
+
+.table_m {
+    position: absolute;
+    bottom: 80px;
+    left: 350px;
     width: 280px;
     z-index: 0
 }
