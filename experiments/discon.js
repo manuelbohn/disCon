@@ -58,7 +58,7 @@ var categories = ["vehicles", "hats", "fruits"]
 //var distributions = [[2, 2, 2], [3, 2, 1], [3, 1, 2], [4, 1, 1]]
 var nInputs = 6
 var nTrials = 3
-var slides = [1, 2, 3, 4, "choice"]
+var slides = [1, 2, 3, "choice"]
 
 var vehiclesF = ["car", "truck", "bike", "firetruck", "golfcart", "scooter"]
 var fruitsF = ["pineapple", "apple", "banana", "grapes", "orange", "pear"]
