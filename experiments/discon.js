@@ -58,7 +58,7 @@ var categories = ["vehicles", "hats", "fruits"]
 //var distributions = [[2, 2, 2], [3, 2, 1], [3, 1, 2], [4, 1, 1]]
 var nInputs = 6
 var nTrials = 3
-var slides = [1, 2, 3, "choice"]
+var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var vehiclesF = ["car", "truck", "bike", "firetruck", "golfcart", "scooter"]
 var fruitsF = ["pineapple", "apple", "banana", "grapes", "orange", "pear"]
@@ -74,69 +74,69 @@ var experiment = {
     nInputs: nInputs, 
     nTrials: nTrials,
     slides: slides,
-    
-    
+
+
     vehiclesF: shuffle(vehiclesF),
     fruitsF: shuffle(fruitsF),
     hatsF: shuffle(hatsF),
-    
+
     vehiclesN: shuffle(vehiclesN),
     fruitsN: shuffle(fruitsN),
     hatsN: shuffle(hatsN),
-    
+
     position: [], 
-    
+
     targetCategory: "",
-    
+
     train : function () {
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
         } 
-        
+
         if(experiment.slides[0] == 1) {
             experiment.targetCategory = experiment.categories[0];
             experiment.categories.shift();
         }
-        
+
         experiment.position = shuffle([experiment.vehiclesF[0], experiment.fruitsF[0], experiment.hatsF[0]]);
-        
+
         showSlide("input"); 
-        
+
         sourceRightItem("images/" + experiment.position[0] + ".png");
         showRightItem();
-        
+
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
         showMiddleItem();
-        
+
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
-        
+
         experiment.vehiclesF.shift();
         experiment.fruitsF.shift();
         experiment.hatsF.shift();
-        
+
         experiment.slides.shift();
-        
-        $(".item_l").click(experiment.train); 
+
+        $(".item_l").click(experiment.train);
         $(".item_m").click(experiment.train); 
         $(".item_r").click(experiment.train); 
     },
 
     choice : function () {
         experiment.position = shuffle([experiment.vehiclesN[0], experiment.fruitsN[0], experiment.hatsN[0]]);
-        
+
         showSlide("input"); 
-        
+
         sourceRightItem("images/" + experiment.position[0] + ".png");
         showRightItem();
-        
+
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
         showMiddleItem();
-        
+
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
-        
+
         $(".item_l").click(function() {
             showSlide("finished");
         })
