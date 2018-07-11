@@ -89,6 +89,11 @@ var experiment = {
     targetCategory: "",
 
     train : function () {
+        
+        $(".item_l").unbind("click");
+        $(".item_m").unbind("click"); 
+        $(".item_r").unbind("click"); 
+        
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
