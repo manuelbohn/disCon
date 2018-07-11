@@ -51,6 +51,24 @@ function showLeftItem() {
 function hideLeftItem() {
     document.getElementById('item_l').style.visibility='hidden';
 }
+   
+function shuffleProperties(obj) {
+    var new_obj = {};
+    var keys = getKeys(obj);
+    shuffle(keys);
+    for (var key in keys){
+        if (key == "shuffle") continue; // skip our prototype method
+        new_obj[keys[key]] = obj[keys[key]];
+    }
+    return new_obj;
+}
+
+function getKeys(obj){
+    var arr = new Array();
+    for (var key in obj)
+        arr.push(key);
+    return arr;
+}
 
 showSlide("instructions");
 
@@ -60,13 +78,59 @@ var nInputs = 6
 var nTrials = 3
 var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
-var vehiclesF = ["car", "truck", "bike", "firetruck", "golfcart", "scooter"]
-var fruitsF = ["pineapple", "apple", "banana", "grapes", "orange", "pear"]
-var hatsF = ["fancyhat", "tophat", "cap", "fedora", "strawhat", "witchhat"]
+var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
+var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
+var hatsF = shuffle(["fancyhat", "tophat", "cap", "fedora", "strawhat", "witchhat"])
+var buildingsF = shuffle(["b1", "b2", "b3"])
+var plantsF = shuffle(["p1", "p2", "p3"])
+var clothingF = shuffle(["c1", "c2", "c3"])
 
 var vehiclesN = ["moped"]
 var fruitsN = ["pomegranate"]
 var hatsN = ["gradcap"]
+var buildingsN = ["bN"]
+var plantsN = ["pN"]
+var clothingN = ["cN"]
+
+var allCategories = {
+    vehicles: vehiclesF,
+    fruits: fruitsF,
+    hats: hatsF,
+    buildings: buildingsF,
+    plants: plantsF,
+    clothing: clothingF
+}
+
+var orderedCategories = shuffleProperties(allCategories);
+
+var categoryNames = getKeys(orderedCategories);
+
+var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]])];
+
+var targetNames = [posTarget[0][0], posTarget[1][0]];
+
+var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]]];
+var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]]];
+var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]]];
+
+var trial = [1, 2]
+
+var allTargets = {
+    vehicles: vehiclesN,
+    fruits: fruitsN,
+    hats: hatsN,
+    buildings: buildingsN,
+    plants: plantsN,
+    clothing: clothingN
+}
+
+var orderedTargets = shuffleProperties(allTargets);
+
+var targetObjects = [orderedTargets[categoryNames[0]], orderedTargets[categoryNames[1]], orderedTargets[categoryNames[2]], orderedTargets[categoryNames[3]], orderedTargets[categoryNames[4]], orderedTargets[categoryNames[5]], orderedTargets[categoryNames[6]]];
+
+var slot1N = [targetObjects[0], targetObjects[3]];
+var slot2N = [targetObjects[1], targetObjects[4]];
+var slot3N = [targetObjects[2], targetObjects[5]];
 
 var experiment = {
     categories: shuffle(categories),
@@ -75,36 +139,44 @@ var experiment = {
     nTrials: nTrials,
     slides: slides,
 
+    slot1: slot1,
+    slot2: slot2,
+    slot3: slot3,
 
-    vehiclesF: shuffle(vehiclesF),
-    fruitsF: shuffle(fruitsF),
-    hatsF: shuffle(hatsF),
+    slot1N: slot1N, 
+    slot2N: slot2N,
+    slot3N: slot3N,
 
-    vehiclesN: shuffle(vehiclesN),
-    fruitsN: shuffle(fruitsN),
-    hatsN: shuffle(hatsN),
+    targetNames: targetNames,
+
+    trial: trial,
 
     position: [], 
 
     targetCategory: "",
 
     train : function () {
-        
+
         $(".item_l").unbind("click");
         $(".item_m").unbind("click"); 
         $(".item_r").unbind("click"); 
-        
+
+        if (trial.length == 0) {
+            showSlide("finished");
+            return;
+        }
+
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
         } 
 
-        if(experiment.slides[0] == 1) {
-            experiment.targetCategory = experiment.categories[0];
-            experiment.categories.shift();
-        }
+        //        if(experiment.slides[0] == 1) {
+        //            experiment.targetCategory = experiment.categories[0];
+        //            experiment.categories.shift();
+        //        }
 
-        experiment.position = shuffle([experiment.vehiclesF[0], experiment.fruitsF[0], experiment.hatsF[0]]);
+        experiment.position = shuffle([experiment.slot1[0][0], experiment.slot2[0][0], experiment.slot3[0][0]]);
 
         showSlide("input"); 
 
@@ -117,9 +189,9 @@ var experiment = {
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
-        experiment.vehiclesF.shift();
-        experiment.fruitsF.shift();
-        experiment.hatsF.shift();
+        experiment.slot1[0].shift();
+        experiment.slot2[0].shift();
+        experiment.slot3[0].shift();
 
         experiment.slides.shift();
 
@@ -129,7 +201,7 @@ var experiment = {
     },
 
     choice : function () {
-        experiment.position = shuffle([experiment.vehiclesN[0], experiment.fruitsN[0], experiment.hatsN[0]]);
+        experiment.position = shuffle([experiment.slot1N[0][0], experiment.slot2N[0][0], experiment.slot3N[0][0]]);
 
         showSlide("input"); 
 
@@ -142,14 +214,24 @@ var experiment = {
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
+        experiment.trial.shift();
+
+        experiment.slot1.shift();
+        experiment.slot2.shift();
+        experiment.slot3.shift();
+
+        experiment.slot1N.shift();
+        experiment.slot2N.shift();
+        experiment.slot3N.shift();
+
         $(".item_l").click(function() {
-            showSlide("finished");
+            experiment.train;
         })
         $(".item_m").click(function() {
-            showSlide("finished");
+            experiment.train;
         })
         $(".item_r").click(function() {
-            showSlide("finished");
+            experiment.train;
         })
     },
 
