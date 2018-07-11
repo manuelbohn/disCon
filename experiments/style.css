@@ -182,10 +182,18 @@ nextButton[disabled] {
 }
 
 
-.fruit_l {
+.item_l {
     position: absolute;
     bottom: 225px;
     left: 100px;
+    width: 150px;
+    z-index: 2
+}
+
+.item_m {
+    position: absolute;
+    bottom: 225px;
+    left: 420px;
     width: 150px;
     z-index: 2
 }

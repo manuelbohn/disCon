@@ -1,170 +1,175 @@
 
 <html>
-    
-<head>
-	<title>Learning words from animals</title>
-	<script src="jquery-1.11.2.min.js"></script>
-	<script src="mmturkey.js"></script>
-	<link rel="stylesheet" href="style.css" />
-</head>
-    
-<body>
-<!--<div id="progressbar" style="width: 200px;" align="center"></div>-->
-	<!-- The instructions slide. -->
-	
-    <div class="slide" id="instructions">
-		<div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
-			<img src="images/stanford.png" height="46" width="360" alt="Stanford University">
-		</div>
-        <p id='logo-text'>Stanford Language and Cognition Lab</p>
-        
-           <p class="block-text"><center>Thank you for participating in this study! <br></center></p>
 
-    <p class="block-text"><center>
-      Enter subject ID: <br>
-      <input type="text" id="subjectID" name="subjectID" size="30"> 
-    </center></p>
-        
-    <p class="block-text"><center>
-      Enter subject age: <br>
-      <input type="text" id="subjectAge" name="subjectAge" size="30"> 
-    </center></p>
+    <head>
+        <title>Learning words from animals</title>
+        <script src="jquery-1.11.2.min.js"></script>
+        <script src="mmturkey.js"></script>
+        <link rel="stylesheet" href="style.css" />
+    </head>
 
+    <body>
+        <!--<div id="progressbar" style="width: 200px;" align="center"></div>-->
+        <!-- The instructions slide. -->
 
-        <br><br>
-		<center>
-            <button type="button" onClick="this.blur(); experiment.train()">Start touch training</font></button>
-        <div id="checkMessage"> </div>
+        <div class="slide" id="instructions">
+            
+            <div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
+                <img src="images/stanford.png" height="46" width="360" alt="Stanford University">
+            </div>
+            
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+
+            <p class="block-text"><center>Thank you for participating in this study! <br></center></p>
+
+            <p class="block-text"><center>
+                Enter subject ID: <br>
+                <input type="text" id="subjectID" name="subjectID" size="30"> 
+                </center></p>
+
+            <p class="block-text"><center>
+                Enter subject age: <br>
+                <input type="text" id="subjectAge" name="subjectAge" size="30"> 
+                </center></p>
+            
+            <br><br>
+            <center>
+                <button type="button" onClick="this.blur(); showSlide('intro')">Start game</font></button>
+            <div id="checkMessage"> </div>
+            </center>
+        </div>
+
+    <!-- touch training -->   
+    <div class="slide" id="dotGame">
+        <br><br><br><br><br><br><br>
+        <center>
+            <button type="button" onClick="this.blur(); experiment.trainingDot()">More Dot Games</font></button>
         </center>
-	</div>
-
-<!-- touch training -->   
-<div class="slide" id="dotGame">
-    <br><br><br><br><br><br><br>
     <center>
-      <button type="button" onClick="this.blur(); experiment.trainingDot()">More Dot Games</font></button>
-    </center>
-    <center>
-      <button type="button" onClick="this.blur(); showSlide('training')">Start Game!</font></button>
+        <button type="button" onClick="this.blur(); showSlide('training')">Start Game!</font></button>
     </center>
 </div>
-    
+
 
 <div class="slide" id="trainingDot"></div> 
 
 <!-- The training slide. -->
-	<div class="slide" id="training">
-		<div align="center" width="500px">
-            <p id='logo-text'>Instructions</p>
-			<table style="width:100%">
-				<tbody>
-                       <p class="block-text">
-                          [Will change this later] These little animals like to play with funny toys. They want the toys on the tables, but they can't reach them. You can give them the toys by tapping them. First, they will ask for toys you already know the name for. Later, they will name new kinds of toys and you have to find out which toys they want.
-                        </p>
-                
-					<tr align="center" height="300px">
-						<td>
-                        
-                        </td>
-						<td>
-                            <img src="images/Bear_straight.png" style="position:absolute;TOP: 100px;LEFT: 390px;WIDTH: 200px;">
-                        </td>
-						<td>
-                   
-                        </td>
-					
-					<tr align="center" height="50px">
-						<td>
-                            <img src="images/categories/vehicles/familiar/car.png" style="position:absolute;TOP: 350px;LEFT: 240px;WIDTH: 110px;z-index:1;">
-                            <img src="images/table_l.png" style="position:absolute;TOP: 450px;LEFT: 200px;WIDTH: 180px;">
-                        </td>
-                        
-                        <td> 
-                            <img src="images/categories/hats/familiar/cap.jpg" style="position:absolute;TOP: 350px;LEFT: 440px;WIDTH: 110px;z-index:1;">
-                            <img src="images/table_m.png" style="position:absolute;TOP: 450px;LEFT: 400px;WIDTH: 180px;">
-                        </td>
-						
-						<td>
-                            <img src="images/categories/fruits/familiar/apple.png" style="position:absolute;TOP: 350px;LEFT: 630;WIDTH: 110px;z-index:1;">
-                            <img src="images/table_r.png" style="position:absolute;TOP: 450px;LEFT: 600px;WIDTH: 180px;">
-                            
-                        </td>
-					</tr>
-				</tbody>
-			</table>
-           
-            <startButton type="button" onClick="this.blur(); showSlide('intro')">Let's meet the animals!</startButton>
-                       
-		</div>
-	</div>
-		
-	
- 	<!-- The main slide. -->   
-    <div class="slide" id="input"> 
-        <img class="background" id="background" src=""> 
-        
-		<nextButton class ="button" type="button" id="next" align="center" onclick="getTime1(); experiment.next();"></nextButton>
-                        
-        <audio id="sound" src = ""></audio> 
-                
-        <img id="Bear_straight" class="agent"  src="images/Bear_straight.png">  
-                  
-        <img id="item_l"    class="item_l" src="">
-       
-        <img id="table_l" class="table_l" src="images/table_l.png">
-        
-        <img id="item_m" class="item_m" src="">
-       
-        <img id="table_m" class="table_m" src="images/table_m.png">
-           
-        <img id="item_r" class="item_r" src="">
-       
-        <img id="table_r" class="table_r" src="images/table_r.png">
- 
-	</div>
+<div class="slide" id="intro">
+    <div align="center" width="500px">
+        <p id='logo-text'>Instructions</p>
+        <table style="width:100%">
+            <tbody>
+                <p class="block-text">
+                    [Will change this later] These little animals like to play with funny toys. They want the toys on the tables, but they can't reach them. You can give them the toys by tapping them. First, they will ask for toys you already know the name for. Later, they will name new kinds of toys and you have to find out which toys they want.
+                </p>
+
+                <tr align="center" height="300px">
+                    <td>
+
+                    </td>
+                    <td>
+                        <img src="images/Bear_straight.png" style="position:absolute;TOP: 150px;LEFT: 390px;WIDTH: 200px;">
+                    </td>
+                    <td>
+
+                    </td>
+
+                <tr align="center" height="50px">
+                    <td>
+                        <img src="images/car.png" style="position:absolute;TOP: 380px;LEFT: 240px;WIDTH: 110px;z-index:1;">
+                        <img src="images/table_l.png" style="position:absolute;TOP: 450px;LEFT: 200px;WIDTH: 180px;">
+                    </td>
+
+                    <td> 
+                        <img src="images/cap.png" style="position:absolute;TOP: 360px;LEFT: 440px;WIDTH: 110px;z-index:1;">
+                        <img src="images/table_m.png" style="position:absolute;TOP: 450px;LEFT: 400px;WIDTH: 180px;">
+                    </td>
+
+                    <td>
+                        <img src="images/apple.png" style="position:absolute;TOP: 350px;LEFT: 630;WIDTH: 110px;z-index:1;">
+                        <img src="images/table_r.png" style="position:absolute;TOP: 450px;LEFT: 600px;WIDTH: 180px;">
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <startButton type="button" onClick="this.blur(); experiment.train()">Let's begin!</startButton>
+
+    </div>
+</div>
+
+
+<!-- The main slide. -->   
+<div class="slide" id="input"> 
+    <img class="background" id="background" src=""> 
+
+    <nextButton class ="button" type="button" id="next" align="center" onclick="getTime1(); experiment.next();"></nextButton>
+
+    <audio id="sound" src = ""></audio> 
+
+    <img id="Bear_straight" class="agent"  src="images/Bear_straight.png">  
+
+    <img id="item_l"    class="item_l" src="">
+
+    <img id="table_l" class="table_l" src="images/table_l.png">
+
+    <img id="item_m" class="item_m" src="">
+
+    <img id="table_m" class="table_m" src="images/table_m.png">
+
+    <img id="item_r" class="item_r" src="">
+
+    <img id="table_r" class="table_r" src="images/table_r.png">
+
+</div>
 
 <!--  choice slide-->
-    
-   <div class="slide" id="choice"> 
-       <img class="background" id="background2" src="">
-		
-                            <img id="choiceFruit_l" class="fruit_l" src="">
-                            <img id="table_l" class="table_l" src="images/table_l.png" width="200px">
-                             
-                            <img id="Bear_choice" class="agent"  src="images/Bear_straight.png">  
-              
-                            <img id="choiceFruit_r" class="fruit_r" src="">
-                       
-                            <img id="table_r" class="table_r" src="images/table_r.png" width="200px">
-    
-	</div>
+
+<!--
+<div class="slide" id="choice"> 
+    <img class="background" id="background2" src="">
+
+    <img id="choiceFruit_l" class="fruit_l" src="">
+    <img id="table_l" class="table_l" src="images/table_l.png" width="200px">
+
+    <img id="Bear_choice" class="agent"  src="images/Bear_straight.png">  
+
+    <img id="choiceFruit_r" class="fruit_r" src="">
+
+    <img id="table_r" class="table_r" src="images/table_r.png" width="200px">
+
+</div>
+-->
 
 <!--  eat slide-->
-    
-   <div class="slide" id="eat"> 
-		<div align="center" width="500px">   
-       
-                          <img id="Bear_eat" class="agent_eat"  src="images/Bear_eat.png">  
 
-		</div>
-	</div>
-       
-    
-	<!-- The finish slide. -->
-	<div class="slide" id="finished">
-		<div style="width: 500px; margin: 0 auto; text-align: center; ">	
-		</div>
-        <br><br>
-        <center>
+<!--
+<div class="slide" id="eat"> 
+    <div align="center" width="500px">   
+
+        <img id="Bear_eat" class="agent_eat"  src="images/Bear_eat.png">  
+
+    </div>
+</div>
+-->
+
+
+<!-- The finish slide. -->
+<div class="slide" id="finished">
+    <div style="width: 500px; margin: 0 auto; text-align: center; ">	
+    </div>
+    <br><br>
+    <center>
         <p id='logo-text'>Thank you for participating!</p>
-        </center>
-	</div>
-	<!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. For instance, one of the immediately executed commands is <code>showSlide("instructions")</code>. If we loaded experiment.js, say, in the <code>head</code> section, <code>showSlide("instructions")</code> would fail because the <code>instructions</code> slide doesn't exist yet. It is possible to load the script in <code>head</code> but you have to ensure that any immediately executed commands, if they rely on potentially uninitialized HTML elements, are _delayed_ until the page is ready, using either [window.onload][onload] or jQuery's more robust [$(document).ready()][domReady]  -->
-	<!-- [onload]: https://developer.mozilla.org/en/DOM/window.onload -->
-	<!-- [domReady]: http://api.jquery.com/ready/ -->
-	<script src="discon_new.js"></script>
+    </center>
+</div>
+<!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. For instance, one of the immediately executed commands is <code>showSlide("instructions")</code>. If we loaded experiment.js, say, in the <code>head</code> section, <code>showSlide("instructions")</code> would fail because the <code>instructions</code> slide doesn't exist yet. It is possible to load the script in <code>head</code> but you have to ensure that any immediately executed commands, if they rely on potentially uninitialized HTML elements, are _delayed_ until the page is ready, using either [window.onload][onload] or jQuery's more robust [$(document).ready()][domReady]  -->
+<!-- [onload]: https://developer.mozilla.org/en/DOM/window.onload -->
+<!-- [domReady]: http://api.jquery.com/ready/ -->
+<script src="discon.js"></script>
 
 
 </body>
-    
+
 </html>
