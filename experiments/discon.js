@@ -15,7 +15,6 @@ function shuffle(array) {
     return array;
 }
 
-
 function sourceRightItem(a) {
     document.getElementById("item_r").src=a;
 }
@@ -51,7 +50,18 @@ function showLeftItem() {
 function hideLeftItem() {
     document.getElementById('item_l').style.visibility='hidden';
 }
-   
+
+//sound.find(function (obj){return obj.id == agents[0]+"_hello.mp3"}).play() 
+
+function sourceSound(c) {
+    document.getElementById("sound").src=c;
+}
+
+function playSound() {
+    document.getElementById("sound").play();
+}
+
+
 function shuffleProperties(obj) {
     var new_obj = {};
     var keys = getKeys(obj);
@@ -72,8 +82,6 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var categories = ["vehicles", "hats", "fruits"]
-//var distributions = [[2, 2, 2], [3, 2, 1], [3, 1, 2], [4, 1, 1]]
 var nInputs = 6
 var nTrials = 3
 var slides = [1, 2, 3, 4, 5, 6, "choice"]
@@ -101,19 +109,22 @@ var allCategories = {
     shoes: shoesF
 }
 
+// map of category names to category arrays
 var orderedCategories = shuffleProperties(allCategories);
 
 var categoryNames = getKeys(orderedCategories);
 
+// array of arrays of category names for each trial
 var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]])];
 
+// array of chosen target for each trial 
 var targetNames = [posTarget[0][0], posTarget[1][0]];
 
 var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]]];
 var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]]];
 var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]]];
 
-var trial = [1, 2]
+var trial = [0, 1]
 
 var allTargets = {
     vehicles: vehiclesN,
@@ -132,9 +143,22 @@ var slot1N = [targetObjects[0], targetObjects[3]];
 var slot2N = [targetObjects[1], targetObjects[4]];
 var slot3N = [targetObjects[2], targetObjects[5]];
 
+var posDist = shuffle([[4, 1, 1], [2, 2, 2]]);
+
+//distribution for each trial
+var trainingDist = new Array();
+
+for (var i=0; i < posDist.length; i++) {
+    trainingDist.push([]);
+    for (var j=0; j < posDist[i].length; j++) {
+        for (var k=0; k < posDist[i][j]; k++) {
+            trainingDist[i].push(posTarget[i][j]);
+        }
+    }
+    shuffle(trainingDist[i]);
+}
+
 var experiment = {
-    categories: shuffle(categories),
-    //distributions: shuffle(distribution),
     nInputs: nInputs, 
     nTrials: nTrials,
     slides: slides,
@@ -147,24 +171,26 @@ var experiment = {
     slot2N: slot2N,
     slot3N: slot3N,
 
+    // to record data - I don't think this actually used in the code
     targetNames: targetNames,
+
+    trainingDist: trainingDist,
+
+    orderedTargets: orderedTargets,
 
     trial: trial,
 
     position: [], 
 
-    targetCategory: "",
-
     train : function () {
-
-        $(".item_l").unbind("click");
-        $(".item_m").unbind("click"); 
-        $(".item_r").unbind("click"); 
+        $(".item").unbind("click");
 
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
         } 
+
+        console.log(orderedCategories[trainingDist[trial[0]][0]][0]);
 
         experiment.position = shuffle([experiment.slot1[0][0], experiment.slot2[0][0], experiment.slot3[0][0]]);
 
@@ -183,11 +209,19 @@ var experiment = {
         experiment.slot2[0].shift();
         experiment.slot3[0].shift();
 
+        experiment.trainingDist[trial[0]].shift();
+
         experiment.slides.shift();
 
-        $(".item_l").click(experiment.train);
-        $(".item_m").click(experiment.train); 
-        $(".item_r").click(experiment.train); 
+        $(".item").click(function() {
+            // also used to record what item has been chosen (clickItem.src)
+            var clickedItem = event.target;
+            clickedItem.style.border = '5px solid blue';      
+            setTimeout(function() {
+                clickedItem.style.border = '0px';
+                experiment.train();
+            }, 1500);
+        });
     },
 
     choice : function () {
@@ -204,23 +238,21 @@ var experiment = {
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
-        $(".item_l").click(experiment.transition);
-        $(".item_m").click(experiment.transition); 
-        $(".item_r").click(experiment.transition); 
+        $(".item").click(experiment.transition);
     },
-    
+
     transition: function() {
-        $(".item_l").unbind("click");
-        $(".item_m").unbind("click"); 
-        $(".item_r").unbind("click"); 
-        
+        $(".item").unbind("click");
+//        $(".item_m").unbind("click"); 
+//        $(".item_r").unbind("click"); 
+
         experiment.trial.shift();
 
         if (experiment.trial.length == 0) {
             showSlide("finished");
             return;
         }
-        
+
         experiment.slot1.shift();
         experiment.slot2.shift();
         experiment.slot3.shift();
@@ -228,10 +260,10 @@ var experiment = {
         experiment.slot1N.shift();
         experiment.slot2N.shift();
         experiment.slot3N.shift();
-        
+
         //reset number of slides for each trial
         experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
-        
+
         showSlide("transition");
         $(".agent_transition").click(experiment.train);   
     },

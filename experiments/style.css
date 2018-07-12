@@ -165,7 +165,7 @@ nextButton[disabled] {
     width: 150px;
 }
 
-.item_r {
+#item_r {
     position: absolute;
     bottom: 225px;  
     left: 747px;
@@ -182,7 +182,7 @@ nextButton[disabled] {
 }
 
 
-.item_l {
+#item_l {
     position: absolute;
     bottom: 225px;
     left: 100px;
@@ -190,7 +190,7 @@ nextButton[disabled] {
     z-index: 2
 }
 
-.item_m {
+#item_m {
     position: absolute;
     bottom: 225px;
     left: 420px;
