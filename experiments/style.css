@@ -125,7 +125,7 @@ nextButton[disabled] {
 
 .agent {
     position: absolute;
-    bottom: 245px;
+    bottom: 350px;
     left: 320px;
     width: 350px;
 }
@@ -145,7 +145,7 @@ nextButton[disabled] {
     width: 350px;
 }
 
-.agent_eat {
+.agent_transition {
     margin-left: auto;
     margin-right: auto;
     width: 700px;
@@ -205,8 +205,6 @@ nextButton[disabled] {
     width: 150px;
     z-index: 1
 }
-
-
 
 .table_r {
     position: absolute;

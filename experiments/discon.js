@@ -81,24 +81,24 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
 var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
 var hatsF = shuffle(["fancyhat", "tophat", "cap", "fedora", "strawhat", "witchhat"])
-var buildingsF = shuffle(["b1", "b2", "b3"])
-var plantsF = shuffle(["p1", "p2", "p3"])
-var clothingF = shuffle(["c1", "c2", "c3"])
+var buildingsF = shuffle(["apartment", "bakery", "church", "hospital", "restaurant", "house"])
+var instrumentsF = shuffle(["piano", "guitar", "trumpet", "violin", "drum", "flute"])
+var shoesF = shuffle(["flipflops", "sneakers", "highheels","boots", "sandals", "rollerskates"])
 
 var vehiclesN = ["moped"]
 var fruitsN = ["pomegranate"]
 var hatsN = ["gradcap"]
-var buildingsN = ["bN"]
-var plantsN = ["pN"]
-var clothingN = ["cN"]
+var buildingsN = ["pagoda"]
+var instrumentsN = ["xylophone"]
+var shoesN = ["balletshoes"]
 
 var allCategories = {
     vehicles: vehiclesF,
     fruits: fruitsF,
     hats: hatsF,
     buildings: buildingsF,
-    plants: plantsF,
-    clothing: clothingF
+    instruments: instrumentsF,
+    shoes: shoesF
 }
 
 var orderedCategories = shuffleProperties(allCategories);
@@ -120,8 +120,8 @@ var allTargets = {
     fruits: fruitsN,
     hats: hatsN,
     buildings: buildingsN,
-    plants: plantsN,
-    clothing: clothingN
+    instruments: instrumentsN,
+    shoes: shoesN
 }
 
 var orderedTargets = shuffleProperties(allTargets);
@@ -161,20 +161,10 @@ var experiment = {
         $(".item_m").unbind("click"); 
         $(".item_r").unbind("click"); 
 
-        if (trial.length == 0) {
-            showSlide("finished");
-            return;
-        }
-
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
         } 
-
-        //        if(experiment.slides[0] == 1) {
-        //            experiment.targetCategory = experiment.categories[0];
-        //            experiment.categories.shift();
-        //        }
 
         experiment.position = shuffle([experiment.slot1[0][0], experiment.slot2[0][0], experiment.slot3[0][0]]);
 
@@ -214,8 +204,23 @@ var experiment = {
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
+        $(".item_l").click(experiment.transition);
+        $(".item_m").click(experiment.transition); 
+        $(".item_r").click(experiment.transition); 
+    },
+    
+    transition: function() {
+        $(".item_l").unbind("click");
+        $(".item_m").unbind("click"); 
+        $(".item_r").unbind("click"); 
+        
         experiment.trial.shift();
 
+        if (experiment.trial.length == 0) {
+            showSlide("finished");
+            return;
+        }
+        
         experiment.slot1.shift();
         experiment.slot2.shift();
         experiment.slot3.shift();
@@ -223,16 +228,12 @@ var experiment = {
         experiment.slot1N.shift();
         experiment.slot2N.shift();
         experiment.slot3N.shift();
-
-        $(".item_l").click(function() {
-            experiment.train;
-        })
-        $(".item_m").click(function() {
-            experiment.train;
-        })
-        $(".item_r").click(function() {
-            experiment.train;
-        })
+        
+        //reset number of slides for each trial
+        experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+        
+        showSlide("transition");
+        $(".agent_transition").click(experiment.train);   
     },
 
     trainingDot : function () {
