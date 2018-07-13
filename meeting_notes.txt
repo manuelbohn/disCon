@@ -1,0 +1,5 @@
+
+- recycling categories
+- wording during training and test
+- potential distributions
+- more categories?
