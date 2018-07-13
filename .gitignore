@@ -1,7 +1,7 @@
 *.DS_Store
 experiments/_layout/
 experiments/compile/
-experiments/sounds/
+experiments/sounds_other
 experiments/images_other
 experiments/dots/
 experiments/watch

@@ -17,6 +17,7 @@ function shuffle(array) {
 
 function showAgent(id, orient) {
     $(".agent").hide();
+    $(".agent_transition").hide();
     $("#"+id+"_"+orient).show();
 }
 
@@ -66,7 +67,6 @@ function playSound() {
     document.getElementById("sound").play();
 }
 
-
 function shuffleProperties(obj) {
     var new_obj = {};
     var keys = getKeys(obj);
@@ -87,9 +87,11 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, 3, 4, 5, 6, "choice"]
+//var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
-var trials = [0, 1]
+var slides = [1, 2, "choice"]
+
+var trials = [0, 1, 2]
 
 var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
 var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
@@ -120,14 +122,17 @@ var orderedCategories = shuffleProperties(allCategories);
 var categoryNames = getKeys(orderedCategories);
 
 // array of arrays of category names for each trial
-var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]])];
+// 3rd trial is repeat of 1st trial
+var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]]), shuffle([categoryNames[0], categoryNames[1], categoryNames[2]])];
 
 // array of chosen target for each trial 
-var targetNames = [posTarget[0][0], posTarget[1][0]];
+// 3rd trial is repeat of 1st trial
+var targetNames = [posTarget[0][0], posTarget[1][0], posTarget[0][0]];
 
-var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]]];
-var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]]];
-var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]]];
+// 3rd trial is repeat of 1st trial
+var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]], orderedCategories[categoryNames[0]].slice()];
+var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]], orderedCategories[categoryNames[1]].slice()];
+var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]], orderedCategories[categoryNames[2]].slice()];
 
 var allTargets = {
     vehicles: vehiclesN,
@@ -142,11 +147,13 @@ var orderedTargets = shuffleProperties(allTargets);
 
 var targetObjects = [orderedTargets[categoryNames[0]], orderedTargets[categoryNames[1]], orderedTargets[categoryNames[2]], orderedTargets[categoryNames[3]], orderedTargets[categoryNames[4]], orderedTargets[categoryNames[5]], orderedTargets[categoryNames[6]]];
 
-var slot1N = [targetObjects[0], targetObjects[3]];
-var slot2N = [targetObjects[1], targetObjects[4]];
-var slot3N = [targetObjects[2], targetObjects[5]];
+// 3rd trial is repeat of 1st trial
+var slot1N = [targetObjects[0], targetObjects[3], targetObjects[0]];
+var slot2N = [targetObjects[1], targetObjects[4], targetObjects[1]];
+var slot3N = [targetObjects[2], targetObjects[5], targetObjects[2]];
 
-var posDist = shuffle([[4, 1, 1], [2, 2, 2]]);
+// 3rd trial is repeat of 1st trial
+var posDist = shuffle([[4, 1, 1], [2, 2, 2], [4, 1, 1]]);
 
 //distribution for each trial
 var trainingDist = new Array();
@@ -183,7 +190,7 @@ var experiment = {
     targetNames: targetNames,
 
     trainingDist: trainingDist,
-    
+
     trainingAgents: trainingAgents,
 
     orderedTargets: orderedTargets,
@@ -192,7 +199,11 @@ var experiment = {
 
     position: [], 
 
+    data: [], 
+
     train : function () {
+        $(".agent_transition").unbind("click");
+
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
@@ -201,9 +212,9 @@ var experiment = {
         experiment.position = shuffle([experiment.slot1[0][0], experiment.slot2[0][0], experiment.slot3[0][0]]);
 
         showSlide("input");
-        
+
         showAgent(trainingAgents[trials[0]], "straight");
-        
+
         sourceRightItem("images/" + experiment.position[0] + ".png");
         showRightItem();
 
@@ -213,19 +224,56 @@ var experiment = {
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
+        var correctItem = orderedCategories[trainingDist[trials[0]][0]][0]
+
+        sourceSound("sounds/" + orderedCategories[trainingDist[trials[0]][0]][0] + ".mp3");
+
+        console.log(orderedCategories[trainingDist[trials[0]][0]][0]);
+        playSound();
+
         experiment.slot1[0].shift();
         experiment.slot2[0].shift();
         experiment.slot3[0].shift();
 
-        experiment.trainingDist[trials[0]].shift();
-
-        experiment.slides.shift();
-        
         $(".item").click(function() {
-            // also used to record what item has been chosen (clickItem.src)
             var clickedItem = event.target;
+
+            var pick = event.target.id;
+
+            if(pick == "item_r") {
+                pick = experiment.position[0];
+            } else if(pick == "item_m") {
+                pick = experiment.position[1];
+            } else if (pick == "item_l") {
+                pick = experiment.position[2];
+            }
+            
+//            console.log(pick);
+
+            if (pick == correctItem) {
+                var correct = 1;
+            } else {
+                var correct = 0;
+            }
+
+//            console.log(correct);
+
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
+
+            data = {
+                phase: "training",
+                slide: experiment.slides[0],
+                trial: trials[0] + 1,
+                correctItem: correctItem,
+                correct: correct,
+            }
+            
+            experiment.data.push(data);
+            experiment.trainingDist[trials[0]].shift();
+
+            experiment.slides.shift();
+
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.train();
@@ -247,12 +295,20 @@ var experiment = {
 
         sourceLeftItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
-        
+
         $(".item").click(function() {
-            // also used to record what item has been chosen (clickItem.src)
             var clickedItem = event.target;
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
+
+            data = {
+                phase: "choice",
+                slide: experiment.slides[0],
+                trial: trials[0] + 1,
+                // add more data points (should be similar to train)
+            }
+            experiment.data.push(data);
+
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.transition();
@@ -263,28 +319,28 @@ var experiment = {
     transition: function() {
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
-        
-        setTimeout(function() {
-            experiment.trials.shift();
-            
-            if (experiment.trials.length == 0) {
-                showSlide("finished");
-                return;
-            }
-            
-            experiment.slot1.shift();
-            experiment.slot2.shift();
-            experiment.slot3.shift();
 
-            experiment.slot1N.shift();
-            experiment.slot2N.shift();
-            experiment.slot3N.shift();
+        experiment.trials.shift();
 
-            //reset number of slides for each trial
-            experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+        if (experiment.trials.length == 0) {
+            setTimeout(function() { turk.submit(experiment) }, 0);
+            showSlide("finished");
+            return;
+        }
 
-            $(".agent").click(experiment.train); 
-            }, 1500);
+        experiment.slot1.shift();
+        experiment.slot2.shift();
+        experiment.slot3.shift();
+
+        experiment.slot1N.shift();
+        experiment.slot2N.shift();
+        experiment.slot3N.shift();
+
+        //reset number of slides for each trial
+        //        experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+
+        experiment.slides = [1, 2, "choice"];
+        $(".agent_transition").click(experiment.train); 
     },
 
     trainingDot : function () {
