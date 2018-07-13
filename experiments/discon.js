@@ -100,12 +100,12 @@ var buildingsF = shuffle(["apartment", "bakery", "church", "hospital", "restaura
 var instrumentsF = shuffle(["piano", "guitar", "trumpet", "violin", "drum", "flute"])
 var shoesF = shuffle(["flipflops", "sneakers", "highheels","boots", "sandals", "rollerskates"])
 
-var vehiclesN = ["moped"]
-var fruitsN = ["pomegranate"]
-var hatsN = ["gradcap"]
-var buildingsN = ["pagoda"]
-var instrumentsN = ["xylophone"]
-var shoesN = ["balletshoes"]
+var vehiclesN = ["N_vehicles"]
+var fruitsN = ["N_fruits"]
+var hatsN = ["N_hats"]
+var buildingsN = ["N_buildings"]
+var instrumentsN = ["N_instruments"]
+var shoesN = ["N_shoes"]
 
 var allCategories = {
     vehicles: vehiclesF,
@@ -125,9 +125,13 @@ var categoryNames = getKeys(orderedCategories);
 // 3rd trial is repeat of 1st trial
 var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]]), shuffle([categoryNames[0], categoryNames[1], categoryNames[2]])];
 
-// array of chosen target for each trial 
+
 // 3rd trial is repeat of 1st trial
-var targetNames = [posTarget[0][0], posTarget[1][0], posTarget[0][0]];
+// array of chosen target for each trial 
+var target1Names = [posTarget[0][0], posTarget[1][0], posTarget[0][0]];
+// array of chosen secondary target for each trial 
+var target2Names = [posTarget[0][1], posTarget[1][1], posTarget[0][1]];
+var target3Names = [posTarget[0][2], posTarget[1][2], posTarget[0][2]];
 
 // 3rd trial is repeat of 1st trial
 var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]], orderedCategories[categoryNames[0]].slice()];
@@ -177,6 +181,7 @@ for (var m=0; m < posDist.length; m++) {
 
 var experiment = {
     slides: slides,
+    trials: trials,
 
     slot1: slot1,
     slot2: slot2,
@@ -186,16 +191,14 @@ var experiment = {
     slot2N: slot2N,
     slot3N: slot3N,
 
-    // to record data - I don't think this actually used in the code
-    targetNames: targetNames,
-
+    posDist: posDist,
     trainingDist: trainingDist,
 
     trainingAgents: trainingAgents,
-
-    orderedTargets: orderedTargets,
-
-    trials: trials,
+    
+    target1Names: target1Names,
+    target2Names: target2Names,
+    target3Names: target3Names, 
 
     position: [], 
 
@@ -215,61 +218,86 @@ var experiment = {
 
         showAgent(trainingAgents[trials[0]], "straight");
 
-        sourceRightItem("images/" + experiment.position[0] + ".png");
-        showRightItem();
+        sourceLeftItem("images/" + experiment.position[0] + ".png");
+        showLeftItem();
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
         showMiddleItem();
 
-        sourceLeftItem("images/" + experiment.position[2] + ".png");
+        sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
         var correctItem = orderedCategories[trainingDist[trials[0]][0]][0]
 
-        sourceSound("sounds/" + orderedCategories[trainingDist[trials[0]][0]][0] + ".mp3");
-
-        console.log(orderedCategories[trainingDist[trials[0]][0]][0]);
+        sourceSound("sounds/" + correctItem + ".mp3");
         playSound();
-
-        experiment.slot1[0].shift();
-        experiment.slot2[0].shift();
-        experiment.slot3[0].shift();
 
         $(".item").click(function() {
             var clickedItem = event.target;
 
-            var pick = event.target.id;
+            var pickId = event.target.id;
 
-            if(pick == "item_r") {
-                pick = experiment.position[0];
-            } else if(pick == "item_m") {
-                pick = experiment.position[1];
-            } else if (pick == "item_l") {
-                pick = experiment.position[2];
+            if(pickId == "item_r") {
+                var pick = experiment.position[0];
+            } else if(pickId == "item_m") {
+                var pick = experiment.position[1];
+            } else if (pickId == "item_l") {
+                var pick = experiment.position[2];
             }
             
-//            console.log(pick);
-
+            // compare to correct item of input
             if (pick == correctItem) {
-                var correct = 1;
+                var correct_item = 1;
             } else {
-                var correct = 0;
+                var correct_item = 0;
             }
-
-//            console.log(correct);
+            
+//            // compare to 1st target
+//            if (pick == target1Names[trials[0]]) {
+//                var correct_target1 = 1;
+//            } else {
+//                var correct_target1 = 0;
+//            }
+//            
+//            // compare to 2nd target
+//            if (pick == target2Names[trials[0]]) {
+//                var correct_target2 = 1;
+//            } else {
+//                var correct_target2 = 0;
+//            }
 
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
             data = {
+                experiment: "distribution",
                 phase: "training",
+                agent: trainingAgents[trials[0]],
                 slide: experiment.slides[0],
                 trial: trials[0] + 1,
+
+                distribution: posDist[trials[0]],
+                target1: target1Names[trials[0]],
+                target2: target2Names[trials[0]],
+                
+                item_l: experiment.position[0],
+                item_m: experiment.position[1],
+                item_r: experiment.position[2],
+                
                 correctItem: correctItem,
-                correct: correct,
+                pick: pick,
+                pickPos: pickId,
+                correct_item: correct_item,
+//                correct_target1: correct_target1,
+//                correct_target2: correct_target2,
             }
-            
+
             experiment.data.push(data);
+
+            experiment.slot1[0].shift();
+            experiment.slot2[0].shift();
+            experiment.slot3[0].shift();
+
             experiment.trainingDist[trials[0]].shift();
 
             experiment.slides.shift();
@@ -287,25 +315,67 @@ var experiment = {
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
 
-        sourceRightItem("images/" + experiment.position[0] + ".png");
+        sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
         showMiddleItem();
 
-        sourceLeftItem("images/" + experiment.position[2] + ".png");
+        sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
         $(".item").click(function() {
             var clickedItem = event.target;
+            
+            var pickId = event.target.id;
+
+            if(pickId == "item_r") {
+                var pick = experiment.position[0];
+            } else if(pickId == "item_m") {
+                var pick = experiment.position[1];
+            } else if (pickId == "item_l") {
+                var pick = experiment.position[2];
+            }
+            
+            var pickCat = pick.substring(2);
+            
+            // compare to 1st target
+            if (pickCat == target1Names[trials[0]]) {
+                var correct_target1 = 1;
+            } else {
+                var correct_target1 = 0;
+            }
+
+            // compare to 2nd target
+            if (pickCat == target2Names[trials[0]]) {
+                var correct_target2 = 1;
+            } else {
+                var correct_target2 = 0;
+            }
+            
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
-
+            
             data = {
-                phase: "choice",
+                experiment: "distribution",
+                phase: "novel",
+                agent: trainingAgents[trials[0]],
                 slide: experiment.slides[0],
                 trial: trials[0] + 1,
-                // add more data points (should be similar to train)
+                
+                distribution: posDist[trials[0]],
+                target1: target1Names[trials[0]],
+                target2: target2Names[trials[0]],
+                
+                item_l: experiment.position[0],
+                item_m: experiment.position[1],
+                item_r: experiment.position[2],
+                
+                pick: pick,
+                pickPos: pickId,
+                pickCat: pickCat, 
+                correct_target1: correct_target1,
+                correct_target2: correct_target2,
             }
             experiment.data.push(data);
 
