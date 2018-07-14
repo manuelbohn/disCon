@@ -125,7 +125,6 @@ var categoryNames = getKeys(orderedCategories);
 // 3rd trial is repeat of 1st trial
 var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]]), shuffle([categoryNames[0], categoryNames[1], categoryNames[2]])];
 
-
 // 3rd trial is repeat of 1st trial
 // array of chosen target for each trial 
 var target1Names = [posTarget[0][0], posTarget[1][0], posTarget[0][0]];
@@ -279,6 +278,7 @@ var experiment = {
                 distribution: posDist[trials[0]],
                 target1: target1Names[trials[0]],
                 target2: target2Names[trials[0]],
+                target3: target3Names[trials[0]],
                 
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
@@ -366,6 +366,7 @@ var experiment = {
                 distribution: posDist[trials[0]],
                 target1: target1Names[trials[0]],
                 target2: target2Names[trials[0]],
+                target3: target3Names[trials[0]],
                 
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
@@ -407,7 +408,7 @@ var experiment = {
         experiment.slot3N.shift();
 
         //reset number of slides for each trial
-        //        experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+        //experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
 
         experiment.slides = [1, 2, "choice"];
         $(".agent_transition").click(experiment.train); 
