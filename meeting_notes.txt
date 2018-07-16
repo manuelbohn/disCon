@@ -1,5 +1,6 @@
 
+- how to decide on elements within a category? -> resources for kids comprehension data
+- suggestions for categories and elemtents
 - recycling categories
 - wording during training and test
-- potential distributions
-- more categories?
+- potential distributions (4,1,1), (3,2,1), (2,2,2), (5,1,0)
