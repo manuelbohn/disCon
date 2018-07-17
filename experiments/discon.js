@@ -87,9 +87,9 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-//var slides = [1, 2, 3, 4, 5, 6, "choice"]
+var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
-var slides = [1, 2, "choice"]
+//var slides = [1, 2, "choice"]
 
 var trials = [0, 1, 2]
 
@@ -250,20 +250,6 @@ var experiment = {
             } else {
                 var correct_item = 0;
             }
-            
-//            // compare to 1st target
-//            if (pick == target1Names[trials[0]]) {
-//                var correct_target1 = 1;
-//            } else {
-//                var correct_target1 = 0;
-//            }
-//            
-//            // compare to 2nd target
-//            if (pick == target2Names[trials[0]]) {
-//                var correct_target2 = 1;
-//            } else {
-//                var correct_target2 = 0;
-//            }
 
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
@@ -287,9 +273,7 @@ var experiment = {
                 correctItem: correctItem,
                 pick: pick,
                 pickPos: pickId,
-                correct_item: correct_item,
-//                correct_target1: correct_target1,
-//                correct_target2: correct_target2,
+                correct_item: correct_item
             }
 
             experiment.data.push(data);
@@ -408,9 +392,9 @@ var experiment = {
         experiment.slot3N.shift();
 
         //reset number of slides for each trial
-        //experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+        //when the categories are set, when declaring slides in the experiment, use slides.slice(). Then when resetting: experiment.slides = slides;
 
-        experiment.slides = [1, 2, "choice"];
+        experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
         $(".agent_transition").click(experiment.train); 
     },
 
