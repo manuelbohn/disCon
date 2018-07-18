@@ -91,7 +91,7 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 //var slides = [1, 2, "choice"]
 
-var trials = [0, 1, 2]
+var trials = [0, 1]
 
 var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
 var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
@@ -133,9 +133,9 @@ var target2Names = [posTarget[0][1], posTarget[1][1], posTarget[0][1]];
 var target3Names = [posTarget[0][2], posTarget[1][2], posTarget[0][2]];
 
 // 3rd trial is repeat of 1st trial
-var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]], orderedCategories[categoryNames[0]].slice()];
-var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]], orderedCategories[categoryNames[1]].slice()];
-var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]], orderedCategories[categoryNames[2]].slice()];
+var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]]];
+var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]]];
+var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]]];
 
 var allTargets = {
     vehicles: vehiclesN,
@@ -156,7 +156,8 @@ var slot2N = [targetObjects[1], targetObjects[4], targetObjects[1]];
 var slot3N = [targetObjects[2], targetObjects[5], targetObjects[2]];
 
 // 3rd trial is repeat of 1st trial
-var posDist = shuffle([[4, 1, 1], [2, 2, 2], [4, 1, 1]]);
+//var posDist = shuffle([[4, 1, 1], [2, 2, 2], [4, 1, 1]]);
+var posDist = shuffle([[5, 1, 0], [2, 2, 2]]);
 
 //distribution for each trial
 var trainingDist = new Array();
