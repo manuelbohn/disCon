@@ -230,9 +230,30 @@ nextButton[disabled] {
     z-index: 0
 }
 
+.speech {
+    font-size: 30px;
+    font-family: sans-serif;
+    line-height: 120%;
+}
 
+#text_correctItem {
+    position: absolute;
+    top: 150px;
+    left: 650px;
+    width: 250px;
+}
 
+#text_intro {
+    position: absolute;
+    top: 500px;
+    left: 300px;
+}
 
+#text_transition {
+    position: absolute;
+    top: 500px;
+    left: 300px;
+}
 
 
 /* ## Experiment-specific styles */

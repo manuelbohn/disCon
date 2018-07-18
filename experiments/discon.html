@@ -92,7 +92,7 @@ touch training
                 </tbody>
             </table>
 
-            <startButton type="button" onClick="this.blur(); experiment.train()">Let's begin!</startButton>
+            <startButton type="button" onClick="this.blur(); experiment.intro()">Let's begin!</startButton>
 
         </div>
     </div>
@@ -101,6 +101,9 @@ touch training
     <!-- The main slide (input + choice slide). -->   
     <div class="slide" id="input"> 
         <img class="background" id="background" src=""> 
+        
+        <div class="speech" id="text_correctItem"></div>
+        <div class="speech" id="text_novelItem"></div>
 
         <audio id="sound" src = ""></audio> 
 
@@ -130,6 +133,10 @@ touch training
     <div class="slide" id="transition"> 
         <div align="center" width="500px">
             
+            <div class="speech" id="text_intro"></div>
+            
+            <div class="speech" id="text_transition"></div>
+            
             <img id="Bear_transition" class="agent_transition"  src="images/agents/Bear_transition.png">
             <img id="Beaver_transition" class="agent_transition"  src="images/agents/Beaver_transition.png">
             <img id="Bunny_transition" class="agent_transition"  src="images/agents/Bunny_transition.png">
@@ -142,6 +149,8 @@ touch training
             <img id="Pig_transition" class="agent_transition"  src="images/agents/Pig_transition.png">
             <img id="Sheep_transition" class="agent_transition"  src="images/agents/Sheep_transition.png">
             <img id="Tiger_transition" class="agent_transition"  src="images/agents/Tiger_transition.png">
+            
+            
             
         </div>
     </div>

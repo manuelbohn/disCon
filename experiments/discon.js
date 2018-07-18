@@ -202,6 +202,17 @@ var experiment = {
     position: [], 
 
     data: [], 
+    
+    intro: function () {
+        showSlide("transition");
+        showAgent(trainingAgents[trials[0]], "transition");
+        
+        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". Let's play a game!";
+        
+        document.getElementById("text_transition").innerHTML = "";
+        
+        $(".agent_transition").click(experiment.train);  
+    },
 
     train : function () {
         $(".agent_transition").unbind("click");
@@ -227,9 +238,12 @@ var experiment = {
         showLeftItem();
 
         var correctItem = orderedCategories[trainingDist[trials[0]][0]][0]
+        
+        // correct item appears next to agent
+        document.getElementById("text_correctItem").innerHTML = "Can you show me the " + correctItem + "?";
 
-        sourceSound("sounds/" + correctItem + ".mp3");
-        playSound();
+//        sourceSound("sounds/" + correctItem + ".mp3");
+//        playSound();
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -298,6 +312,8 @@ var experiment = {
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
+        
+        document.getElementById("text_correctItem").innerHTML = "Can you show me the " + "dax" + "?";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
@@ -374,6 +390,10 @@ var experiment = {
     transition: function() {
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
+        
+        document.getElementById("text_intro").innerHTML = "";
+        
+        document.getElementById("text_transition").innerHTML = "Thank you for playing with me!";
 
         experiment.trials.shift();
 
@@ -395,7 +415,7 @@ var experiment = {
         //when the categories are set, when declaring slides in the experiment, use slides.slice(). Then when resetting: experiment.slides = slides;
 
         experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
-        $(".agent_transition").click(experiment.train); 
+        $(".agent_transition").click(experiment.intro); 
     },
 
     trainingDot : function () {
