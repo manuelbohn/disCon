@@ -67,6 +67,14 @@ function playSound() {
     document.getElementById("sound").play();
 }
 
+function background(x) {
+    document.getElementById("background").src=x;
+}
+
+function background2(x) {
+    document.getElementById("background2").src=x;
+}
+
 function shuffleProperties(obj) {
     var new_obj = {};
     var keys = getKeys(obj);
@@ -89,9 +97,9 @@ showSlide("instructions");
 
 var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
-//var slides = [1, 2, "choice"]
-
 var trials = [0, 1]
+
+var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
 var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
@@ -253,13 +261,17 @@ var experiment = {
     trainingDist: trainingDist,
 
     trainingAgents: trainingAgents,
+    backgrounds: backgrounds,
 
     position: [], 
 
     data: [], 
     
     intro: function () {
+        background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
+        
         showSlide("transition");
+
         showAgent(trainingAgents[trials[0]], "transition");
         
         document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". Let's play a game!";
@@ -271,7 +283,7 @@ var experiment = {
 
     train : function () {
         $(".agent_transition").unbind("click");
-
+        
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
@@ -279,8 +291,10 @@ var experiment = {
 
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
+        background("images/backgrounds/back" + backgrounds[0] + ".jpg");
+        
         showSlide("input");
-
+    
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
@@ -364,6 +378,8 @@ var experiment = {
     },
 
     choice : function () {
+        background("images/backgrounds/back" + backgrounds[0] + ".jpg");
+        
         experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
 
         showSlide("input"); 
@@ -444,9 +460,11 @@ var experiment = {
     },
 
     transition: function() {
+        background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
+        
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
-        
+    
         document.getElementById("text_intro").innerHTML = "";
         
         document.getElementById("text_transition").innerHTML = "Thank you for playing with me!";
@@ -464,6 +482,8 @@ var experiment = {
         experiment.targetsF3.shift();
 
         experiment.trialNovelItems.shift();
+        
+        experiment.backgrounds.shift();
 
         experiment.slides = slides;
         
