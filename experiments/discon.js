@@ -107,7 +107,7 @@ var buildingsN = ["N_buildings"]
 var instrumentsN = ["N_instruments"]
 var shoesN = ["N_shoes"]
 
-var allCategories = {
+var allFamiliar = {
     vehicles: vehiclesF,
     fruits: fruitsF,
     hats: hatsF,
@@ -116,28 +116,7 @@ var allCategories = {
     shoes: shoesF
 }
 
-// map of category names to category arrays
-var orderedCategories = shuffleProperties(allCategories);
-
-var categoryNames = getKeys(orderedCategories);
-
-// array of arrays of category names for each trial
-// 3rd trial is repeat of 1st trial
-var posTarget = [shuffle([categoryNames[0], categoryNames[1], categoryNames[2]]), shuffle([categoryNames[3], categoryNames[4], categoryNames[5]]), shuffle([categoryNames[0], categoryNames[1], categoryNames[2]])];
-
-// 3rd trial is repeat of 1st trial
-// array of chosen target for each trial 
-var target1Names = [posTarget[0][0], posTarget[1][0], posTarget[0][0]];
-// array of chosen secondary target for each trial 
-var target2Names = [posTarget[0][1], posTarget[1][1], posTarget[0][1]];
-var target3Names = [posTarget[0][2], posTarget[1][2], posTarget[0][2]];
-
-// 3rd trial is repeat of 1st trial
-var slot1 = [orderedCategories[categoryNames[0]], orderedCategories[categoryNames[3]]];
-var slot2 = [orderedCategories[categoryNames[1]], orderedCategories[categoryNames[4]]];
-var slot3 = [orderedCategories[categoryNames[2]], orderedCategories[categoryNames[5]]];
-
-var allTargets = {
+var allNovel = {
     vehicles: vehiclesN,
     fruits: fruitsN,
     hats: hatsN,
@@ -146,27 +125,106 @@ var allTargets = {
     shoes: shoesN
 }
 
-var orderedTargets = shuffleProperties(allTargets);
+// map of category names to category arrays
+var orderedFamiliar = shuffleProperties(allFamiliar);
 
-var targetObjects = [orderedTargets[categoryNames[0]], orderedTargets[categoryNames[1]], orderedTargets[categoryNames[2]], orderedTargets[categoryNames[3]], orderedTargets[categoryNames[4]], orderedTargets[categoryNames[5]], orderedTargets[categoryNames[6]]];
+var orderedNovel = shuffleProperties(allNovel);
 
-// 3rd trial is repeat of 1st trial
-var slot1N = [targetObjects[0], targetObjects[3], targetObjects[0]];
-var slot2N = [targetObjects[1], targetObjects[4], targetObjects[1]];
-var slot3N = [targetObjects[2], targetObjects[5], targetObjects[2]];
+var categoryNames = getKeys(orderedFamiliar);
 
-// 3rd trial is repeat of 1st trial
+//names of all possible targets, also orderedTargetNames1
+var posTargetNames = shuffle(categoryNames);
+
+//arrays of all possible targets, in order
+var targetsF = new Array();
+
+for (var nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
+    targetsF.push(orderedFamiliar[posTargetNames[nTarget]].slice())
+    shuffle(targetsF[nTarget]);
+}
+
+var targetsF2 = new Array();
+
+var posTargetNames2 = posTargetNames.slice();
+
+var orderedTargetNames2 = new Array();
+
+for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
+    if(posTargetNames2[0] != posTargetNames[nTarget]) {
+        targetsF2.push(orderedFamiliar[posTargetNames2[0]].slice());
+        shuffle(targetsF2[nTarget]);
+        orderedTargetNames2.push(posTargetNames2[0]);
+        //remove first category
+        posTargetNames2.splice(0, 1);
+        posTargetNames2 = shuffle(posTargetNames2);
+    } else {
+        nTarget--;
+        posTargetNames2 = shuffle(posTargetNames2);
+    }
+}
+
+var targetsF3 = new Array();
+
+var posTargetNames3 = posTargetNames.slice();
+
+var orderedTargetNames3 = new Array();
+
+for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
+    if(posTargetNames3[0] != posTargetNames[nTarget] 
+      && posTargetNames3[0] != orderedTargetNames2[nTarget]){
+        targetsF3.push(orderedFamiliar[posTargetNames3[0]].slice());
+        shuffle(targetsF3[nTarget]);
+        orderedTargetNames3.push(posTargetNames3[0]);
+        //remove first category
+        posTargetNames3.splice(0, 1);
+        posTargetNames3 = shuffle(posTargetNames3);
+    } else {
+        nTarget--;
+        posTargetNames3 = shuffle(posTargetNames3);
+    }
+}
+
+// array of category names for each trial, to create trainingDist
+// [[3 cats used in trial 1], [3 cats used in trial 2], ...]
+var trialTargets = new Array();
+
+for (var nTrial = 0; nTrial < trials.length; nTrial++) {
+    trialTargets.push([]);
+    trialTargets[nTrial].push(posTargetNames[nTrial]);
+    trialTargets[nTrial].push(orderedTargetNames2[nTrial]);
+    trialTargets[nTrial].push(orderedTargetNames3[nTrial]);
+}
+
+var trialNovelItems = new Array();
+//assuming 1 novel item for a category
+for (nTrial = 0; nTrial < trials.length; nTrial++) {
+    trialNovelItems.push([]);
+    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][0]][0]);
+    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][1]][0]);
+    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][2]][0]);
+}
+
+var trialFamiliarItems = new Array();
+
+for (nTrial = 0; nTrial < trials.length; nTrial++) {
+    var familiarItemsMap = new Map();
+    familiarItemsMap.set(trialTargets[nTrial][0], targetsF[nTrial]);
+    familiarItemsMap.set(trialTargets[nTrial][1], targetsF2[nTrial]);
+    familiarItemsMap.set(trialTargets[nTrial][2], targetsF3[nTrial]);
+    trialFamiliarItems.push(familiarItemsMap);
+}
+
 //var posDist = shuffle([[4, 1, 1], [2, 2, 2], [4, 1, 1]]);
 var posDist = shuffle([[5, 1, 0], [2, 2, 2]]);
 
 //distribution for each trial
 var trainingDist = new Array();
 
-for (var i=0; i < posDist.length; i++) {
+for (var i=0; i < trials.length; i++) {
     trainingDist.push([]);
     for (var j=0; j < posDist[i].length; j++) {
         for (var k=0; k < posDist[i][j]; k++) {
-            trainingDist[i].push(posTarget[i][j]);
+            trainingDist[i].push(trialTargets[i][j]);
         }
     }
     shuffle(trainingDist[i]);
@@ -175,30 +233,26 @@ for (var i=0; i < posDist.length; i++) {
 var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
 var trainingAgents = new Array();
-for (var m=0; m < posDist.length; m++) {
+for (var m=0; m < trials.length; m++) {
     trainingAgents.push(posAgents[m]);
 }
 
 var experiment = {
-    slides: slides,
+    slides: slides.slice(),
     trials: trials,
+    
+    targetsF: targetsF, 
+    targetsF2: targetsF2,
+    targetsF3: targetsF3,
 
-    slot1: slot1,
-    slot2: slot2,
-    slot3: slot3,
-
-    slot1N: slot1N, 
-    slot2N: slot2N,
-    slot3N: slot3N,
+    trialTargets: trialTargets,
+    trialNovelItems: trialNovelItems,
+    trialFamiliarItems: trialFamiliarItems,
 
     posDist: posDist,
     trainingDist: trainingDist,
 
     trainingAgents: trainingAgents,
-    
-    target1Names: target1Names,
-    target2Names: target2Names,
-    target3Names: target3Names, 
 
     position: [], 
 
@@ -223,7 +277,7 @@ var experiment = {
             return;
         }
 
-        experiment.position = shuffle([experiment.slot1[0][0], experiment.slot2[0][0], experiment.slot3[0][0]]);
+        experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         showSlide("input");
 
@@ -237,8 +291,9 @@ var experiment = {
 
         sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
-
-        var correctItem = orderedCategories[trainingDist[trials[0]][0]][0]
+        
+        var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
+        var correctItem = correctCategory[0];
         
         // correct item appears next to agent
         document.getElementById("text_correctItem").innerHTML = "Can you show me the " + correctItem + "?";
@@ -277,9 +332,9 @@ var experiment = {
                 trial: trials[0] + 1,
 
                 distribution: posDist[trials[0]],
-                target1: target1Names[trials[0]],
-                target2: target2Names[trials[0]],
-                target3: target3Names[trials[0]],
+                target1: trialTargets[trials[0]][0],
+                target2: trialTargets[trials[0]][1],
+                target3: trialTargets[trials[0]][2],
                 
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
@@ -293,9 +348,9 @@ var experiment = {
 
             experiment.data.push(data);
 
-            experiment.slot1[0].shift();
-            experiment.slot2[0].shift();
-            experiment.slot3[0].shift();
+            experiment.targetsF[0].shift();
+            experiment.targetsF2[0].shift();
+            experiment.targetsF3[0].shift();
 
             experiment.trainingDist[trials[0]].shift();
 
@@ -309,7 +364,7 @@ var experiment = {
     },
 
     choice : function () {
-        experiment.position = shuffle([experiment.slot1N[0][0], experiment.slot2N[0][0], experiment.slot3N[0][0]]);
+        experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
@@ -341,14 +396,14 @@ var experiment = {
             var pickCat = pick.substring(2);
             
             // compare to 1st target
-            if (pickCat == target1Names[trials[0]]) {
+            if (pickCat == trialTargets[trials[0]][0]) {
                 var correct_target1 = 1;
             } else {
                 var correct_target1 = 0;
             }
 
             // compare to 2nd target
-            if (pickCat == target2Names[trials[0]]) {
+            if (pickCat == trialTargets[trials[0]][1]) {
                 var correct_target2 = 1;
             } else {
                 var correct_target2 = 0;
@@ -365,9 +420,9 @@ var experiment = {
                 trial: trials[0] + 1,
                 
                 distribution: posDist[trials[0]],
-                target1: target1Names[trials[0]],
-                target2: target2Names[trials[0]],
-                target3: target3Names[trials[0]],
+                target1: trialTargets[trials[0]][0],
+                target2: trialTargets[trials[0]][1],
+                target3: trialTargets[trials[0]][2],
                 
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
@@ -403,19 +458,15 @@ var experiment = {
             showSlide("finished");
             return;
         }
+        
+        experiment.targetsF.shift();
+        experiment.targetsF2.shift();
+        experiment.targetsF3.shift();
 
-        experiment.slot1.shift();
-        experiment.slot2.shift();
-        experiment.slot3.shift();
+        experiment.trialNovelItems.shift();
 
-        experiment.slot1N.shift();
-        experiment.slot2N.shift();
-        experiment.slot3N.shift();
-
-        //reset number of slides for each trial
-        //when the categories are set, when declaring slides in the experiment, use slides.slice(). Then when resetting: experiment.slides = slides;
-
-        experiment.slides = [1, 2, 3, 4, 5, 6, "choice"];
+        experiment.slides = slides;
+        
         $(".agent_transition").click(experiment.intro); 
     },
 
