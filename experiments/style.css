@@ -126,7 +126,7 @@ nextButton[disabled] {
 
 .agent {
     position: absolute;
-    bottom: 350px;
+    bottom: 275px;
     left: 300px;
     width: 350px;
     z-index: 2;
@@ -171,15 +171,15 @@ nextButton[disabled] {
 
 #item_r {
     position: absolute;
-    bottom: 150px;  
-    left: 747px;
+    bottom: 100px;  
+    left: 700px;
     width: 150px;
     z-index: 2
 }
 
 #item_l {
     position: absolute;
-    bottom: 150px;
+    bottom: 100px;
     left: 100px;
     width: 150px;
     z-index: 2
@@ -187,8 +187,8 @@ nextButton[disabled] {
 
 #item_m {
     position: absolute;
-    bottom: 150px;
-    left: 420px;
+    bottom: 100px;
+    left: 400px;
     width: 150px;
     z-index: 2
 }
@@ -225,21 +225,24 @@ nextButton[disabled] {
 
 #text_correctItem {
     position: absolute;
-    top: 150px;
-    left: 650px;
-    width: 250px;
+    top: 25px;
+    left: 300px;
+    width: 700px;
+    z-index: 2;
 }
 
 #text_intro {
     position: absolute;
     top: 500px;
     left: 300px;
+    z-index: 2;
 }
 
 #text_transition {
     position: absolute;
     top: 500px;
     left: 300px;
+    z-index: 2;
 }
 
 

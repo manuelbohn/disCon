@@ -310,7 +310,7 @@ var experiment = {
         var correctItem = correctCategory[0];
         
         // correct item appears next to agent
-        document.getElementById("text_correctItem").innerHTML = "Can you show me the " + correctItem + "?";
+        document.getElementById("text_correctItem").innerHTML = "Can you give me the " + correctItem + "?";
 
 //        sourceSound("sounds/" + correctItem + ".mp3");
 //        playSound();
@@ -385,8 +385,8 @@ var experiment = {
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
         
-        document.getElementById("text_correctItem").innerHTML = "Can you show me the " + "dax" + "?";
-
+        document.getElementById("text_correctItem").innerHTML = "Here are some new ones. Can you give me the dax?";
+        
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
 
