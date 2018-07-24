@@ -99,38 +99,40 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1]
 
+//var trialType = shuffle([])
+
 var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
-var vehiclesF = shuffle(["car", "truck", "bike", "firetruck", "golfcart", "scooter"])
-var fruitsF = shuffle(["pineapple", "apple", "banana", "grapes", "orange", "pear"])
-var hatsF = shuffle(["fancyhat", "tophat", "cap", "fedora", "strawhat", "witchhat"])
-var buildingsF = shuffle(["apartment", "bakery", "church", "hospital", "restaurant", "house"])
-var instrumentsF = shuffle(["piano", "guitar", "trumpet", "violin", "drum", "flute"])
-var shoesF = shuffle(["flipflops", "sneakers", "highheels","boots", "sandals", "rollerskates"])
+var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat"])
+var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon"])
+var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey"])
+var containersF = shuffle(["bottle", "cup", "bowl", "box", "plate", "glass"])
+var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
+var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
 
 var vehiclesN = ["N_vehicles"]
 var fruitsN = ["N_fruits"]
-var hatsN = ["N_hats"]
-var buildingsN = ["N_buildings"]
-var instrumentsN = ["N_instruments"]
-var shoesN = ["N_shoes"]
+var mammalsN = ["N_mammals"]
+var containersN = ["N_containers"]
+var furnitureN = ["N_furniture"]
+var clothesN = ["N_clothes"]
 
 var allFamiliar = {
     vehicles: vehiclesF,
     fruits: fruitsF,
-    hats: hatsF,
-    buildings: buildingsF,
-    instruments: instrumentsF,
-    shoes: shoesF
+    mammals: mammalsF,
+    containers: containersF,
+    funiture: furnitureF,
+    clothes: clothesF
 }
 
 var allNovel = {
     vehicles: vehiclesN,
     fruits: fruitsN,
-    hats: hatsN,
-    buildings: buildingsN,
-    instruments: instrumentsN,
-    shoes: shoesN
+    mammals: mammalsN,
+    containers: containersN,
+    funiture: furnitureN,
+    clothes: clothesN
 }
 
 // map of category names to category arrays
