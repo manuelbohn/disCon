@@ -99,7 +99,9 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1]
 
-//var trialType = shuffle([])
+var trialType = shuffle([0, 1])
+
+var currTrialType = trialType[0];
 
 var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
@@ -181,7 +183,7 @@ var orderedTargetNames3 = new Array();
 
 for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
     if(posTargetNames3[0] != posTargetNames[nTarget] 
-      && posTargetNames3[0] != orderedTargetNames2[nTarget]){
+       && posTargetNames3[0] != orderedTargetNames2[nTarget]){
         targetsF3.push(orderedFamiliar[posTargetNames3[0]].slice());
         shuffle(targetsF3[nTarget]);
         orderedTargetNames3.push(posTargetNames3[0]);
@@ -250,7 +252,8 @@ for (var m=0; m < trials.length; m++) {
 var experiment = {
     slides: slides.slice(),
     trials: trials,
-    
+    currTrialType: currTrialType,
+
     targetsF: targetsF, 
     targetsF2: targetsF2,
     targetsF3: targetsF3,
@@ -268,24 +271,36 @@ var experiment = {
     position: [], 
 
     data: [], 
-    
+
+    introAgents: function() {
+        showSlide("introAgents");
+        // arbitrary
+        if (experiment.currTrialType == 0) { 
+            document.getElementById("text_introAgents").innerHTML = "These are the animals that you will see in this game. They will talk about some things. Take a look at each of them and try to remember them. To move forward within the experiment, press the 'Next' button. Press below to start the training.";
+            // preference
+        } else {
+            document.getElementById("text_introAgents").innerHTML = "These are the animals that you will see in this game. They will talk about some things they like. Take a look at each of them and try to remember them. To move forward within the experiment, press the 'Next' button. Press below to start the training.";
+        }
+    },
     intro: function () {
         background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
-        
+
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-        
+
         document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". Let's play a game!";
-        
+
         document.getElementById("text_transition").innerHTML = "";
-        
+
         $(".agent_transition").click(experiment.train);  
     },
 
+
+
     train : function () {
         $(".agent_transition").unbind("click");
-        
+
         if (experiment.slides[0] == "choice") {
             experiment.choice();
             return;
@@ -294,9 +309,9 @@ var experiment = {
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
-        
+
         showSlide("input");
-    
+
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
@@ -307,15 +322,21 @@ var experiment = {
 
         sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
-        
+
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-        
-        // correct item appears next to agent
-        document.getElementById("text_correctItem").innerHTML = "Can you give me the " + correctItem + "?";
 
-//        sourceSound("sounds/" + correctItem + ".mp3");
-//        playSound();
+        // correct item appears next to agent
+        // arbitrary
+        if (experiment.currTrialType == 0) { 
+            document.getElementById("text_correctItem").innerHTML = correctItem;
+            // preference
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Can you give me the " + correctItem + "?";
+        }
+
+        //        sourceSound("sounds/" + correctItem + ".mp3");
+        //        playSound();
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -329,7 +350,7 @@ var experiment = {
             } else if (pickId == "item_l") {
                 var pick = experiment.position[2];
             }
-            
+
             // compare to correct item of input
             if (pick == correctItem) {
                 var correct_item = 1;
@@ -346,16 +367,17 @@ var experiment = {
                 agent: trainingAgents[trials[0]],
                 slide: experiment.slides[0],
                 trial: trials[0] + 1,
+                trialType: currTrialType,
 
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
                 target2: trialTargets[trials[0]][1],
                 target3: trialTargets[trials[0]][2],
-                
+
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
                 item_r: experiment.position[2],
-                
+
                 correctItem: correctItem,
                 pick: pick,
                 pickPos: pickId,
@@ -381,14 +403,14 @@ var experiment = {
 
     choice : function () {
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
-        
+
         experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
-        
+
         document.getElementById("text_correctItem").innerHTML = "Here are some new ones. Can you give me the dax?";
-        
+
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
 
@@ -400,7 +422,7 @@ var experiment = {
 
         $(".item").click(function() {
             var clickedItem = event.target;
-            
+
             var pickId = event.target.id;
 
             if(pickId == "item_r") {
@@ -410,9 +432,9 @@ var experiment = {
             } else if (pickId == "item_l") {
                 var pick = experiment.position[2];
             }
-            
+
             var pickCat = pick.substring(2);
-            
+
             // compare to 1st target
             if (pickCat == trialTargets[trials[0]][0]) {
                 var correct_target1 = 1;
@@ -426,26 +448,27 @@ var experiment = {
             } else {
                 var correct_target2 = 0;
             }
-            
+
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
-            
+
             data = {
                 experiment: "distribution",
                 phase: "novel",
                 agent: trainingAgents[trials[0]],
                 slide: experiment.slides[0],
                 trial: trials[0] + 1,
-                
+                trialType: currTrialType,
+
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
                 target2: trialTargets[trials[0]][1],
                 target3: trialTargets[trials[0]][2],
-                
+
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
                 item_r: experiment.position[2],
-                
+
                 pick: pick,
                 pickPos: pickId,
                 pickCat: pickCat, 
@@ -463,12 +486,12 @@ var experiment = {
 
     transition: function() {
         background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
-        
+
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
-    
+
         document.getElementById("text_intro").innerHTML = "";
-        
+
         document.getElementById("text_transition").innerHTML = "Thank you for playing with me!";
 
         experiment.trials.shift();
@@ -478,17 +501,17 @@ var experiment = {
             showSlide("finished");
             return;
         }
-        
+
         experiment.targetsF.shift();
         experiment.targetsF2.shift();
         experiment.targetsF3.shift();
 
         experiment.trialNovelItems.shift();
-        
+
         experiment.backgrounds.shift();
 
         experiment.slides = slides;
-        
+
         $(".agent_transition").click(experiment.intro); 
     },
 

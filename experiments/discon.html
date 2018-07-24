@@ -92,8 +92,105 @@ touch training
                 </tbody>
             </table>
 
-            <startButton type="button" onClick="this.blur(); experiment.intro()">Let's begin!</startButton>
+            <startButton type="button" onClick="this.blur(); experiment.introAgents()">Let's begin!</startButton>
 
+        </div>
+    </div>
+
+    <div class="slide" id="introAgents">
+        <div align="center" width="500px">
+            <p id='logo-text'>Meet the animals!</p>
+            
+            <div class="block-text" id="text_introAgents"></div>
+            <table style="width:100%">
+                <tbody>
+
+                    <tr align="center" height="200px">
+                        <td>
+                            <img class="animal_intro" src="images/agents/Monkey_straight.png"> 
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Bunny_straight.png">  
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Dog_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Elephant_straight.png">   
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Pig_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Bear_straight.png">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td>
+                            <p>Monkey</p> 
+                        </td>
+                        <td>
+                            <p>Bunny</p>
+                        </td>
+                        <td>
+                            <p>Dog</p>
+                        </td>
+                        <td>
+                            <p>Elephant</p>
+                        </td>
+                        <td>
+                            <p>Pig</p>
+                        </td>
+                        <td>
+                            <p>Bear</p>
+                        </td>
+                    </tr>
+
+                    <tr align="center" height="200px">
+                        <td>
+                            <img class="animal_intro" src="images/agents/Mouse_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Beaver_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Cat_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Sheep_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Tiger_straight.png">
+                        </td>
+                        <td>
+                            <img class="animal_intro" src="images/agents/Frog_straight.png">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td>
+                            <p>Mouse</p> 
+                        </td>
+                        <td>
+                            <p>Beaver</p>
+                        </td>
+                        <td>
+                            <p>Cat</p>
+                        </td>
+                        <td>
+                            <p>Sheep</p>
+                        </td>
+                        <td>
+                            <p>Tiger</p>
+                        </td>
+                        <td>
+                            <p>Frog</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div align="center" width="500px">
+            <button type="button" onClick="this.blur(); experiment.train()">Next</button>
         </div>
     </div>
 
@@ -149,7 +246,7 @@ touch training
         <img id="Pig_transition" class="agent_transition"  src="images/agents/Pig_transition.png">
         <img id="Sheep_transition" class="agent_transition"  src="images/agents/Sheep_transition.png">
         <img id="Tiger_transition" class="agent_transition"  src="images/agents/Tiger_transition.png">
-        
+
         <img class="background" id="background2" src=""> 
 
     </div>
