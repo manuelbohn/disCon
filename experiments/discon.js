@@ -102,7 +102,7 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, "choice"]
+var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1]
 
@@ -304,11 +304,10 @@ var experiment = {
         $(".agent_transition").click(experiment.train);  
     },
 
-
-
     train : function () {
         
-        document.getElementById("next").style.visibility = 'hidden';
+        document.getElementById("next-input").style.visibility = 'hidden';        
+        document.getElementById("next-novel").style.visibility = 'hidden';
         
         $(".agent_transition").unbind("click");
 
@@ -339,11 +338,11 @@ var experiment = {
 
         // pause for 2s before "next" button appears.
         setTimeout(function() {
-            document.getElementById("next").style.visibility = 'visible';
+            document.getElementById("next-input").style.visibility = 'visible';
         }, 2000);
     },
 
-    next : function() {
+    train2 : function() {
         // correct item appears next to agent
         // arbitrary
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
@@ -351,6 +350,7 @@ var experiment = {
 
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = correctItem;
+            
             // preference
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh wow, there's the " + correctItem + "!";
@@ -424,7 +424,8 @@ var experiment = {
     },
 
     choice : function () {
-        document.getElementById("next").style.visibility = 'hidden';
+        document.getElementById("next-input").style.visibility = 'hidden';
+        document.getElementById("next-novel").style.visibility = 'hidden';
         
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
@@ -433,7 +434,8 @@ var experiment = {
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
 
-        document.getElementById("text_correctItem").innerHTML = "Here are some new ones. Can you give me the dax?";
+        document.getElementById("text_correctItem").innerHTML = "Let's see...";
+        document.getElementById("text_correctItem_2").innerHTML = "";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
@@ -443,7 +445,16 @@ var experiment = {
 
         sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
+        
+        // pause for 2s before "next" button appears.
+        setTimeout(function() {
+            document.getElementById("next-novel").style.visibility = 'visible';
+        }, 2000);
+    },
 
+    choice2 : function() {
+        document.getElementById("text_correctItem").innerHTML = "Here are some new ones. Can you give me the dax?";
+        
         $(".item").click(function() {
             var clickedItem = event.target;
 
