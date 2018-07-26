@@ -94,7 +94,7 @@ startButton[disabled] {
 }
 
 nextButton {
-	background: lightgrey;
+	background: url(images/button-gradient.png);
 	margin: 10px;
 	padding-left: 5px;
 	padding-right: 5px;
@@ -220,28 +220,29 @@ nextButton[disabled] {
 .speech {
     font-size: 30px;
     font-family: sans-serif;
+    position: absolute;
+    text-align: center;
+    width: 100%;
     line-height: 120%;
 }
 
 #text_correctItem {
-    position: absolute;
     top: 25px;
-    left: 300px;
-    width: 700px;
+    z-index: 2;
+}
+
+#text_correctItem_2 {
+    top: 60px;
     z-index: 2;
 }
 
 #text_intro {
-    position: absolute;
     top: 500px;
-    left: 300px;
     z-index: 2;
 }
 
 #text_transition {
-    position: absolute;
     top: 500px;
-    left: 300px;
     z-index: 2;
 }
 

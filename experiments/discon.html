@@ -34,8 +34,9 @@
 
             <br><br>
             <center>
-                <button type="button" onClick="this.blur(); showSlide('intro')">Start game</font></button>
+                <button type="button" onClick="this.blur(); experiment.introAll()">Start game</font></button>
             <div id="checkMessage"> </div>
+            </center>
             </center>
         </div>
 
@@ -56,13 +57,12 @@ touch training
     <!--<div class="slide" id="trainingDot"></div> -->
 
     <!-- The training slide. -->
-    <div class="slide" id="intro">
+    <div class="slide" id="introAll">
         <div align="center" width="500px">
             <p id='logo-text'>Instructions</p>
             <table style="width:100%">
                 <tbody>
-                    <p class="block-text">
-                        [Will change this later] These little animals like to play with funny toys. They want the toys on the tables, but they can't reach them. You can give them the toys by tapping them. First, they will ask for toys you already know the name for. Later, they will name new kinds of toys and you have to find out which toys they want.
+                    <p class="block-text" id="text_introAll">
                     </p>
 
                     <tr align="center" height="300px">
@@ -78,127 +78,30 @@ touch training
 
                     <tr align="center" height="50px">
                         <td>
-                            <img src="images/car.png" style="position:absolute; BOTTOM: 240px;LEFT: 240px;WIDTH: 110px;z-index:1;">
+                            <img src="images/items_intro/bakery.png" style="position:absolute; BOTTOM: 240px;LEFT: 240px;WIDTH: 110px;z-index:1;">
                         </td>
 
                         <td> 
-                            <img src="images/shoes.png" style="position:absolute;BOTTOM: 240px;LEFT: 440px;WIDTH: 110px;z-index:1;">
+                            <img src="images/items_intro/pencil.png" style="position:absolute;BOTTOM: 240px;LEFT: 440px;WIDTH: 110px;z-index:1;">
                         </td>
 
                         <td>
-                            <img src="images/apple.png" style=" position:absolute;BOTTOM: 240px;LEFT: 630;WIDTH: 110px;z-index:1;">
+                            <img src="images/items_intro/tv.png" style=" position:absolute;BOTTOM: 240px;LEFT: 630;WIDTH: 110px;z-index:1;">
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <startButton type="button" onClick="this.blur(); experiment.introAgents()">Let's begin!</startButton>
+            <startButton type="button" onClick="this.blur(); experiment.intro()">Let's begin!</startButton>
 
-        </div>
-    </div>
-
-    <div class="slide" id="introAgents">
-        <div align="center" width="500px">
-            <p id='logo-text'>Meet the animals!</p>
-            
-            <div class="block-text" id="text_introAgents"></div>
-            <table style="width:100%">
-                <tbody>
-
-                    <tr align="center" height="200px">
-                        <td>
-                            <img class="animal_intro" src="images/agents/Monkey_straight.png"> 
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Bunny_straight.png">  
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Dog_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Elephant_straight.png">   
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Pig_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Bear_straight.png">
-                        </td>
-                    </tr>
-                    <tr align="center">
-                        <td>
-                            <p>Monkey</p> 
-                        </td>
-                        <td>
-                            <p>Bunny</p>
-                        </td>
-                        <td>
-                            <p>Dog</p>
-                        </td>
-                        <td>
-                            <p>Elephant</p>
-                        </td>
-                        <td>
-                            <p>Pig</p>
-                        </td>
-                        <td>
-                            <p>Bear</p>
-                        </td>
-                    </tr>
-
-                    <tr align="center" height="200px">
-                        <td>
-                            <img class="animal_intro" src="images/agents/Mouse_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Beaver_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Cat_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Sheep_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Tiger_straight.png">
-                        </td>
-                        <td>
-                            <img class="animal_intro" src="images/agents/Frog_straight.png">
-                        </td>
-                    </tr>
-                    <tr align="center">
-                        <td>
-                            <p>Mouse</p> 
-                        </td>
-                        <td>
-                            <p>Beaver</p>
-                        </td>
-                        <td>
-                            <p>Cat</p>
-                        </td>
-                        <td>
-                            <p>Sheep</p>
-                        </td>
-                        <td>
-                            <p>Tiger</p>
-                        </td>
-                        <td>
-                            <p>Frog</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div align="center" width="500px">
-            <button type="button" onClick="this.blur(); experiment.train()">Next</button>
         </div>
     </div>
 
 
     <!-- The main slide (input + choice slide). -->   
     <div class="slide" id="input"> 
-
         <div class="speech" id="text_correctItem"></div>
+        <div class="speech" id="text_correctItem_2"></div>
 
         <audio id="sound" src = ""></audio> 
 
@@ -222,6 +125,8 @@ touch training
 
         <img id="item_r" class="item" src="">
 
+        <nextButton class ="button" type="button" id="next" style= "visibility:hidden" onclick= "this.blur(); experiment.next()"></nextButton>
+        
         <img class="background" id="background" src=""> 
 
     </div>

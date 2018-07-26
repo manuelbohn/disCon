@@ -75,6 +75,13 @@ function background2(x) {
     document.getElementById("background2").src=x;
 }
 
+function pause(id,time){
+    $("#"+id).hide();
+    setTimeout(function() {
+        $("#"+id).show();    
+    }, time); 
+}
+
 function shuffleProperties(obj) {
     var new_obj = {};
     var keys = getKeys(obj);
@@ -95,7 +102,7 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, 3, 4, 5, 6, "choice"]
+var slides = [1, 2, "choice"]
 
 var trials = [0, 1]
 
@@ -272,16 +279,17 @@ var experiment = {
 
     data: [], 
 
-    introAgents: function() {
-        showSlide("introAgents");
+    introAll: function() {
+        showSlide("introAll");
         // arbitrary
         if (experiment.currTrialType == 0) { 
-            document.getElementById("text_introAgents").innerHTML = "These are the animals that you will see in this game. They will talk about some things. Take a look at each of them and try to remember them. To move forward within the experiment, press the 'Next' button. Press below to start the training.";
+            document.getElementById("text_introAll").innerHTML = "These little animals will ask you for some things. You can give them the things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
             // preference
         } else {
-            document.getElementById("text_introAgents").innerHTML = "These are the animals that you will see in this game. They will talk about some things they like. Take a look at each of them and try to remember them. To move forward within the experiment, press the 'Next' button. Press below to start the training.";
+            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animal will tell you which one is their favorite. You can give them their favorite things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
         }
     },
+
     intro: function () {
         background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
@@ -299,6 +307,9 @@ var experiment = {
 
 
     train : function () {
+        
+        document.getElementById("next").style.visibility = 'hidden';
+        
         $(".agent_transition").unbind("click");
 
         if (experiment.slides[0] == "choice") {
@@ -312,6 +323,9 @@ var experiment = {
 
         showSlide("input");
 
+        document.getElementById("text_correctItem").innerHTML = "Let's see...";
+        document.getElementById("text_correctItem_2").innerHTML = "";
+
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
@@ -323,16 +337,24 @@ var experiment = {
         sourceRightItem("images/" + experiment.position[2] + ".png");
         showLeftItem();
 
+        // pause for 2s before "next" button appears.
+        setTimeout(function() {
+            document.getElementById("next").style.visibility = 'visible';
+        }, 2000);
+    },
+
+    next : function() {
+        // correct item appears next to agent
+        // arbitrary
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
 
-        // correct item appears next to agent
-        // arbitrary
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = correctItem;
             // preference
         } else {
-            document.getElementById("text_correctItem").innerHTML = "Can you give me the " + correctItem + "?";
+            document.getElementById("text_correctItem").innerHTML = "Oh wow, there's the " + correctItem + "!";
+            document.getElementById("text_correctItem_2").innerHTML = "Can you give me the " + correctItem + "?";
         }
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
@@ -402,6 +424,8 @@ var experiment = {
     },
 
     choice : function () {
+        document.getElementById("next").style.visibility = 'hidden';
+        
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
