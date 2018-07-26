@@ -450,7 +450,14 @@ var experiment = {
     },
 
     choice2 : function() {
-        document.getElementById("text_correctItem").innerHTML = "Here are some new ones. Can you give me the dax?";
+        
+        // arbitrary
+        if (experiment.currTrialType == 0) { 
+            document.getElementById("text_correctItem").innerHTML = "dax";  
+        // preference
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the dax?";
+        }
         
         $(".item").click(function() {
             var clickedItem = event.target;
