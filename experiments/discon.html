@@ -11,34 +11,17 @@
     <body>
         <!--<div id="progressbar" style="width: 200px;" align="center"></div>-->
         <!-- The instructions slide. -->
-
         <div class="slide" id="instructions">
-
-            <div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
-                <img src="images/stanford.png" height="46" width="360" alt="Stanford University">
-            </div>
-
-            <p id='logo-text'>Stanford Language and Cognition Lab</p>
-
-            <p class="block-text"><center>Thank you for participating in this study! <br></center></p>
-
-            <p class="block-text"><center>
-                Enter subject ID: <br>
-                <input type="text" id="subjectID" name="subjectID" size="30"> 
-                </center></p>
-
-            <p class="block-text"><center>
-                Enter subject age: <br>
-                <input type="text" id="subjectAge" name="subjectAge" size="30"> 
-                </center></p>
-
-            <br><br>
-            <center>
-                <button type="button" onClick="this.blur(); experiment.introAll()">Start game</font></button>
-            <div id="checkMessage"> </div>
-            </center>
-            </center>
+        <div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
+            <img src="images/stanford.png" height="46" width="360" alt="Stanford University">
         </div>
+        <p id='logo-text'>Stanford Language and Cognition Lab</p>
+        <p class="block-text">In this experiment, your task is to find out which thing the animal wants. The materials were designed for children. Even if they seem strange at times, we ask you to try to be as accurate as possible. You will hear sound, so please make sure your volume is turned on. The experiment takes about 4 - 6 minutes.</p>
+        <button id="button" type="button" onClick="this.blur(); experiment.introAll();">Press to begin</button>
+            
+        <!-- Legal blurb that we're required to show. -->
+        <p class="block-text" id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Manuel Bohn at <a href="mailto://bohn@stanford.edu">bohn@stanford.edu</a>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+    </div>
 
     <!--
 touch training    
@@ -52,8 +35,6 @@ touch training
 </center>
 </div>
 -->
-
-
     <!--<div class="slide" id="trainingDot"></div> -->
 
     <!-- The training slide. -->
@@ -70,7 +51,7 @@ touch training
 
                         </td>
                         <td>
-                            <img src="images/agents/Bear_straight.png" style="position:absolute;TOP: 150px;LEFT: 390px;WIDTH: 200px;">
+                            <img src="images/agents/Bear_straight.png" style="position:absolute;TOP: 180px;LEFT: 390px;WIDTH: 200px;">
                         </td>
                         <td>
 
@@ -102,10 +83,11 @@ touch training
     <div class="slide" id="input"> 
         <div class="speech" id="text_correctItem"></div>
         <div class="speech" id="text_correctItem_2"></div>
-
+        <img class="background" id="background" src=""> 
         <audio id="sound" src = ""></audio> 
 
         <!--all agents-->
+        <p style="text-align:center;">
         <img id="Bear_straight" class="agent"  src="images/agents/Bear_straight.png">  
         <img id="Beaver_straight" class="agent"  src="images/agents/Beaver_straight.png"> 
         <img id="Bunny_straight" class="agent"  src="images/agents/Bunny_straight.png"> 
@@ -118,6 +100,7 @@ touch training
         <img id="Pig_straight" class="agent"  src="images/agents/Pig_straight.png"> 
         <img id="Sheep_straight" class="agent"  src="images/agents/Sheep_straight.png"> 
         <img id="Tiger_straight" class="agent"  src="images/agents/Tiger_straight.png"> 
+        </p>
 
         <img id="item_l" class="item" src="">
 
@@ -129,7 +112,7 @@ touch training
         
         <nextButton class ="button" type="button" id="next-novel" style= "visibility:hidden" onclick= "this.blur(); experiment.choice2()"></nextButton>
         
-        <img class="background" id="background" src=""> 
+
 
     </div>
 
