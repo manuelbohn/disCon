@@ -323,7 +323,6 @@ var experiment = {
         showSlide("input");
 
         document.getElementById("text_correctItem").innerHTML = "Let's see...";
-        document.getElementById("text_correctItem_2").innerHTML = "";
 
         showAgent(trainingAgents[trials[0]], "straight");
 
@@ -347,14 +346,13 @@ var experiment = {
         // arbitrary
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-
+        
+        // arbitrary
         if (experiment.currTrialType == 0) { 
-            document.getElementById("text_correctItem").innerHTML = correctItem;
-            
-            // preference
+            document.getElementById("text_correctItem").innerHTML = correctItem;  
+        // preference
         } else {
-            document.getElementById("text_correctItem").innerHTML = "Oh wow, there's the " + correctItem + "!";
-            document.getElementById("text_correctItem_2").innerHTML = "Can you give me the " + correctItem + "?";
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + correctItem + "?";
         }
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
@@ -434,8 +432,7 @@ var experiment = {
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
 
-        document.getElementById("text_correctItem").innerHTML = "Let's see...";
-        document.getElementById("text_correctItem_2").innerHTML = "";
+        document.getElementById("text_correctItem").innerHTML = "Oh... Here are some new ones.";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();

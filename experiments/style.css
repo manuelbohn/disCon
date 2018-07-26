@@ -126,7 +126,7 @@ nextButton[disabled] {
 
 .agent {
     position: absolute;
-    bottom: 275px;
+    bottom: 300px;
     left: 300px;
     width: 350px;
     z-index: 2;
@@ -219,7 +219,6 @@ nextButton[disabled] {
 
 .speech {
     font-size: 30px;
-    font-family: sans-serif;
     position: absolute;
     text-align: center;
     width: 100%;
@@ -228,11 +227,6 @@ nextButton[disabled] {
 
 #text_correctItem {
     top: 25px;
-    z-index: 2;
-}
-
-#text_correctItem_2 {
-    top: 60px;
     z-index: 2;
 }
 
