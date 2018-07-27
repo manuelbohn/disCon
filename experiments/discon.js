@@ -104,7 +104,8 @@ showSlide("instructions");
 
 var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
-var trials = [0, 1]
+var trials = [0, 1, 2, 3, 4, 5]
+//var trials = [0, 1, 2]
 
 var trialType = shuffle([0, 1])
 
@@ -233,8 +234,7 @@ for (nTrial = 0; nTrial < trials.length; nTrial++) {
     trialFamiliarItems.push(familiarItemsMap);
 }
 
-//var posDist = shuffle([[4, 1, 1], [2, 2, 2], [4, 1, 1]]);
-var posDist = shuffle([[5, 1, 0], [2, 2, 2]]);
+var posDist = shuffle([[4, 2, 0], [6, 0, 0], [2, 2, 2], [4, 2, 0], [6, 0, 0], [2, 2, 2]]);
 
 //distribution for each trial
 var trainingDist = new Array();
@@ -248,6 +248,9 @@ for (var i=0; i < trials.length; i++) {
     }
     shuffle(trainingDist[i]);
 }
+
+var novelWords = shuffle(["Oskot", "Kepel", "Tuta", "Wiso", "Urbe", "Modi", "Gazzer"
+, "Glipsa", "Ticon", "Toma", "Zoyar", "Subi"])
 
 var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
@@ -268,6 +271,8 @@ var experiment = {
     trialTargets: trialTargets,
     trialNovelItems: trialNovelItems,
     trialFamiliarItems: trialFamiliarItems,
+    
+    novelWords: novelWords, 
 
     posDist: posDist,
     trainingDist: trainingDist,
@@ -283,10 +288,12 @@ var experiment = {
         showSlide("introAll");
         // statistical
         if (experiment.currTrialType == 0) { 
-            document.getElementById("text_introAll").innerHTML = "These little animals will ask you for some things. You can give them the things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
+            document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it."
+            document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will name things you don't know the names for. Try your best to find the correct one.";
         // preference
         } else {
-            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animal will tell you which one is their favorite. You can give them their favorite things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
+            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animals will tell you which one is their favorite. You can give them their favorite by clicking on it. Make sure you give them the right one, because they only want to play with their favorite."
+            document.getElementById("text_introAll_2").innerHTML = "First, they will ask for things you already know the names for. Later, they will name things you don't know the names for. Try your best to find out what the animals want.";
         }
     },
 
@@ -296,8 +303,14 @@ var experiment = {
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-
-        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". Let's play a game!";
+        
+        // statistical
+        if (experiment.currTrialType == 0) { 
+            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
+        // preference
+        } else {
+            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". I'm looking for my favorite things.";
+        }
 
         document.getElementById("text_transition").innerHTML = "";
 
@@ -338,7 +351,7 @@ var experiment = {
         // pause for 2s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-input").style.visibility = 'visible';
-        }, 2000);
+        }, 0);
     },
 
     train2 : function() {
@@ -430,8 +443,15 @@ var experiment = {
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
-
-        document.getElementById("text_correctItem").innerHTML = "Oh... Here are some new ones.";
+        // statistical
+        if (experiment.currTrialType == 0) { 
+            document.getElementById("text_correctItem"novelWords[trials[0]];  
+        // preference
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
+        }
+        
+        document.getElementById("text_correctItem").innerHTML = "Here are some new ones.";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         showRightItem();
@@ -445,17 +465,17 @@ var experiment = {
         // pause for 2s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 2000);
+        }, 0);
     },
 
     choice2 : function() {
         
         // statistical
         if (experiment.currTrialType == 0) { 
-            document.getElementById("text_correctItem").innerHTML = "dax";  
+            document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
         // preference
         } else {
-            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the dax?";
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + novelWords[trials[0]] + "?";
         }
         
         $(".item").click(function() {
@@ -506,6 +526,8 @@ var experiment = {
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
                 item_r: experiment.position[2],
+                
+                novelWord: novelWords[trials[0]],
 
                 pick: pick,
                 pickPos: pickId,
@@ -548,7 +570,7 @@ var experiment = {
 
         experiment.backgrounds.shift();
 
-        experiment.slides = slides;
+        experiment.slides = slides.slice();
 
         $(".agent_transition").click(experiment.intro); 
     },
