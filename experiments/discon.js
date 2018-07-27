@@ -281,10 +281,10 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        // arbitrary
+        // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_introAll").innerHTML = "These little animals will ask you for some things. You can give them the things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
-            // preference
+        // preference
         } else {
             document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animal will tell you which one is their favorite. You can give them their favorite things by clicking on them. First, they will ask for things you already know the names for. Later, there will be new things for which you don't know the names. Try your best to find out what the animals want.";
         }
@@ -343,11 +343,10 @@ var experiment = {
 
     train2 : function() {
         // correct item appears next to agent
-        // arbitrary
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
         
-        // arbitrary
+        // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = correctItem;  
         // preference
@@ -451,7 +450,7 @@ var experiment = {
 
     choice2 : function() {
         
-        // arbitrary
+        // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = "dax";  
         // preference
