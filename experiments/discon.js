@@ -445,7 +445,7 @@ var experiment = {
         showAgent(trainingAgents[trials[0]], "straight");
         // statistical
         if (experiment.currTrialType == 0) { 
-            document.getElementById("text_correctItem"novelWords[trials[0]];  
+            document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
         // preference
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
