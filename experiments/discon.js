@@ -1,3 +1,11 @@
+var preFruits = ["car.png", "truck.png", "train.png", "bus.png", "airplane.png", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
+
+var images = new Array();
+for (i = 0; i < preFruits.length; i++) {
+	images[i] = new Image();
+	images[i].src = "images/" + preFruits[i] + ".png";
+}
+
 function showSlide(id) {
     // Hide all slides
     $(".slide").hide();
@@ -75,13 +83,6 @@ function background2(x) {
     document.getElementById("background2").src=x;
 }
 
-function pause(id,time){
-    $("#"+id).hide();
-    setTimeout(function() {
-        $("#"+id).show();    
-    }, time); 
-}
-
 function shuffleProperties(obj) {
     var new_obj = {};
     var keys = getKeys(obj);
@@ -105,7 +106,6 @@ showSlide("instructions");
 var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1, 2, 3, 4, 5]
-//var trials = [0, 1, 2]
 
 var trialType = shuffle([0, 1])
 
@@ -249,8 +249,7 @@ for (var i=0; i < trials.length; i++) {
     shuffle(trainingDist[i]);
 }
 
-var novelWords = shuffle(["Oskot", "Kepel", "Tuta", "Wiso", "Urbe", "Modi", "Gazzer"
-, "Glipsa", "Ticon", "Toma", "Zoyar", "Subi"])
+var novelWords = shuffle(["oskot", "kepel", "tuta", "wiso", "urbe", "modi", "gazzer", "glipsa", "ticon", "toma", "zoyar", "subi"])
 
 var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
@@ -351,7 +350,7 @@ var experiment = {
         // pause for 2s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-input").style.visibility = 'visible';
-        }, 0);
+        }, 2000);
     },
 
     train2 : function() {
@@ -465,7 +464,7 @@ var experiment = {
         // pause for 2s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 0);
+        }, 2000);
     },
 
     choice2 : function() {
