@@ -317,6 +317,7 @@ var experiment = {
     },
 
     train : function () {
+        document.getElementById("text_correctItem").style.visibility = "hidden";
 
         document.getElementById("next-input").style.visibility = "hidden";        
         document.getElementById("next-novel").style.visibility = "hidden";
@@ -334,8 +335,6 @@ var experiment = {
 
         showSlide("input");
 
-        document.getElementById("text_correctItem").innerHTML = "Let's see...";
-
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
@@ -349,21 +348,23 @@ var experiment = {
 
         // pause for 1s before images appear
         setTimeout(function() {
+            document.getElementById("text_correctItem").style.visibility = "visible";
+            document.getElementById("text_correctItem").innerHTML = "Let's see...";
             showLeftItem();
             showMiddleItem();
             showRightItem();
         }, 1000);
-        
-        // pause for 2.5s before "next" button appears.
+
+        // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-input").style.visibility = "visible";
         }, 2500);
     },
 
     train2 : function() {
-        
+
         document.getElementById("next-input").style.visibility = "hidden";        
-        
+
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
 
@@ -442,6 +443,8 @@ var experiment = {
     },
 
     choice : function () {
+        document.getElementById("text_correctItem").style.visibility = "hidden";
+        
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
 
@@ -451,15 +454,6 @@ var experiment = {
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
-        // statistical
-        if (experiment.currTrialType == 0) { 
-            document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
-            // preference
-        } else {
-            document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
-        }
-
-        document.getElementById("text_correctItem").innerHTML = "Here are some new ones.";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
         hideLeftItem();
@@ -472,12 +466,20 @@ var experiment = {
 
         // pause for 1s before items appear.
         setTimeout(function() {
+            document.getElementById("text_correctItem").style.visibility = "visible";
+            // statistical
+            if (experiment.currTrialType == 0) { 
+                document.getElementById("text_correctItem").innerHTML = "Here are some new ones." 
+            // preference
+            } else {
+                document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
+            }
             showLeftItem();
             showMiddleItem();
             showRightItem();
         }, 1000);
-        
-        // pause for 2.5s before "next" button appears.
+
+        // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
         }, 2500);
@@ -489,7 +491,7 @@ var experiment = {
         // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
-        // preference
+            // preference
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + novelWords[trials[0]] + "?";
         }
