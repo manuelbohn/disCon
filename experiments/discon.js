@@ -1,9 +1,9 @@
-var preFruits = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
 
 var images = new Array();
-for (i = 0; i < preFruits.length; i++) {
-	images[i] = new Image();
-	images[i].src = "images/" + preFruits[i] + ".png";
+for (i = 0; i < preloadItems.length; i++) {
+    images[i] = new Image();
+    images[i].src = "images/" + preloadItems[i] + ".png";
 }
 
 function showSlide(id) {
@@ -270,7 +270,7 @@ var experiment = {
     trialTargets: trialTargets,
     trialNovelItems: trialNovelItems,
     trialFamiliarItems: trialFamiliarItems,
-    
+
     novelWords: novelWords, 
 
     posDist: posDist,
@@ -289,7 +289,7 @@ var experiment = {
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it."
             document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will name things you don't know the names for. Try your best to find the correct one.";
-        // preference
+            // preference
         } else {
             document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animals will tell you which one is their favorite. You can give them their favorite by clicking on it. Make sure you give them the right one, because they only want to play with their favorite."
             document.getElementById("text_introAll_2").innerHTML = "First, they will ask for things you already know the names for. Later, they will name things you don't know the names for. Try your best to find out what the animals want.";
@@ -302,11 +302,11 @@ var experiment = {
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-        
+
         // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
-        // preference
+            // preference
         } else {
             document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". I'm looking for my favorite things.";
         }
@@ -317,10 +317,10 @@ var experiment = {
     },
 
     train : function () {
-        
-        document.getElementById("next-input").style.visibility = 'hidden';        
-        document.getElementById("next-novel").style.visibility = 'hidden';
-        
+
+        document.getElementById("next-input").style.visibility = "hidden";        
+        document.getElementById("next-novel").style.visibility = "hidden";
+
         $(".agent_transition").unbind("click");
 
         if (experiment.slides[0] == "choice") {
@@ -339,29 +339,38 @@ var experiment = {
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
-        showLeftItem();
+        hideLeftItem();
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
-        showMiddleItem();
+        hideMiddleItem();
 
         sourceRightItem("images/" + experiment.position[2] + ".png");
-        showLeftItem();
+        hideRightItem();
 
-        // pause for 2s before "next" button appears.
+        // pause for 1s before images appear
         setTimeout(function() {
-            document.getElementById("next-input").style.visibility = 'visible';
-        }, 2000);
+            showLeftItem();
+            showMiddleItem();
+            showRightItem();
+        }, 1000);
+        
+        // pause for 2.5s before "next" button appears.
+        setTimeout(function() {
+            document.getElementById("next-input").style.visibility = "visible";
+        }, 2500);
     },
 
     train2 : function() {
-        // correct item appears next to agent
+        
+        document.getElementById("next-input").style.visibility = "hidden";        
+        
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-        
+
         // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = correctItem;  
-        // preference
+            // preference
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + correctItem + "?";
         }
@@ -435,7 +444,7 @@ var experiment = {
     choice : function () {
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
-        
+
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
@@ -445,30 +454,38 @@ var experiment = {
         // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
-        // preference
+            // preference
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
         }
-        
+
         document.getElementById("text_correctItem").innerHTML = "Here are some new ones.";
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
-        showRightItem();
+        hideLeftItem();
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
-        showMiddleItem();
+        hideMiddleItem();
 
         sourceRightItem("images/" + experiment.position[2] + ".png");
-        showLeftItem();
+        hideRightItem();
+
+        // pause for 1s before items appear.
+        setTimeout(function() {
+            showLeftItem();
+            showMiddleItem();
+            showRightItem();
+        }, 1000);
         
-        // pause for 2s before "next" button appears.
+        // pause for 2.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 2000);
+        }, 2500);
     },
 
     choice2 : function() {
-        
+        document.getElementById("next-novel").style.visibility = "hidden";    
+
         // statistical
         if (experiment.currTrialType == 0) { 
             document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
@@ -476,7 +493,7 @@ var experiment = {
         } else {
             document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + novelWords[trials[0]] + "?";
         }
-        
+
         $(".item").click(function() {
             var clickedItem = event.target;
 
@@ -525,7 +542,7 @@ var experiment = {
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
                 item_r: experiment.position[2],
-                
+
                 novelWord: novelWords[trials[0]],
 
                 pick: pick,

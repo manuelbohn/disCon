@@ -35,13 +35,13 @@ button {
 	border: 1px solid #999;
 	border-top: 1px solid #e0e0e0;
 	border-left: 1px solid #e0e0e0;
-	margin: 10px;
+	margin: 20px;
 	padding-left: 5px;
 	padding-right: 5px;
 	height: 29px;
 	min-width: 70px;
-  
 }
+
 button:active {
 	border-left: 1px solid #c9c9c9;
 	border-top: 1px solid #c9c9c9;
@@ -72,7 +72,6 @@ startButton {
     position: absolute;
     bottom: 80px;
     left: 410px;
-   
 }
 
 startButton:active {
@@ -94,30 +93,31 @@ startButton[disabled] {
 }
 
 nextButton {
-	background: lightgrey;
+    background: url(images/button-gradient.png);
 	margin: 10px;
 	padding-left: 5px;
 	padding-right: 5px;
-	height: 50px;
-	min-width: 100px;
+	height: 20px;
+	min-width: 60px;
+    text-align: center;
+    padding: 5px;
     position: absolute;
-    bottom: 0px;
+    bottom: 15px;
     left: 430px;
     z-index: 2
 }
 
 nextButton:active {
-	background: none;
+    background: none;
 	background-color: #c9c9c9;
-    bottom: 10px;
     position: absolute;
-    bottom: 0px;
+    bottom: 15px;
     left: 430px;
     z-index: 2
 }
 
 nextButton[disabled] {
-	background: url(zen-button.png);
+    background: url(zen-button.png);
 	border: 1px solid #999;
 	border-top: 1px solid #e0e0e0;
 	border-left: 1px solid #e0e0e0;

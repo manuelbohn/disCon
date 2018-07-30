@@ -47,7 +47,7 @@ touch training
                         </p>
                         <p class="block-text" id="text_introAll_2">
                         </p>
-                        
+
 
                         <tr align="center" height="300px">
                             <td>
@@ -76,7 +76,7 @@ touch training
                     </tbody>
                 </table>
 
-                <startButton type="button" onClick="this.blur(); experiment.intro()">Let's begin!</startButton>
+                <button id="button" type="button" onClick="this.blur(); experiment.intro();">Let's begin</button>
 
             </div>
         </div>
@@ -110,12 +110,9 @@ touch training
 
             <img id="item_r" class="item" src="">
 
-            <nextButton class ="button" type="button" id="next-input" style= "visibility:hidden" onclick= "this.blur(); experiment.train2()">Next</nextButton>
-
-            <nextButton class ="button" type="button" id="next-novel" style= "visibility:hidden" onclick= "this.blur(); experiment.choice2()">Next</nextButton>
-
-
-
+            <nextButton class ="button" type="button" id="next-input" align="center" onclick="this.blur(); experiment.train2();">Next</nextButton>
+            
+            <nextButton class ="button" type="button" id="next-novel" align="center" onclick="this.blur(); experiment.choice2();">Next</nextButton>
         </div>
 
         <!--  transition slide-->
