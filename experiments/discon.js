@@ -1,4 +1,4 @@
-var preFruits = ["car.png", "truck.png", "train.png", "bus.png", "airplane.png", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
+var preFruits = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
 
 var images = new Array();
 for (i = 0; i < preFruits.length; i++) {
