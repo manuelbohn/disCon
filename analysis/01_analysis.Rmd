@@ -1,0 +1,25 @@
+---
+title: "Discon analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r data preprocessing}
+# Data pre-processing
+```
+
+# Do proportion of choices match the frequency in the distribution
+
+```{r plot1}
+
+```
+
+# Does the framing influence the match between choice and distribution 
+
+```{r plot 2}
+
+```
+
