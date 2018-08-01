@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N_vehicles", "N_fruits", "N_mammals", "N_containers", "N_furniture", "N_clothes"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -65,8 +65,6 @@ function hideLeftItem() {
     document.getElementById('item_l').style.visibility='hidden';
 }
 
-//sound.find(function (obj){return obj.id == agents[0]+"_hello.mp3"}).play() 
-
 function sourceSound(c) {
     document.getElementById("sound").src=c;
 }
@@ -103,7 +101,7 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, 3, 4, 5, 6, "choice"]
+var slides = [1, 2, "choice"]
 
 var trials = [0, 1, 2, 3, 4, 5]
 
@@ -120,19 +118,19 @@ var containersF = shuffle(["bottle", "cup", "bowl", "box", "plate", "glass"])
 var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
 var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
 
-var vehiclesN = ["N_vehicles"]
-var fruitsN = ["N_fruits"]
-var mammalsN = ["N_mammals"]
-var containersN = ["N_containers"]
-var furnitureN = ["N_furniture"]
-var clothesN = ["N_clothes"]
+var vehiclesN = shuffle(["N1_vehicles", "N2_vehicles", "N3_vehicles"])
+var fruitsN = shuffle(["N1_fruits", "N2_fruits", "N3_fruits"])
+var mammalsN = shuffle(["N1_mammals", "N2_mammals", "N3_mammals"])
+var containersN = shuffle(["N1_containers", "N2_containers", "N3_containers"])
+var furnitureN = shuffle(["N1_furniture", "N2_furniture", "N3_furniture"])
+var clothesN = shuffle(["N1_clothes", "N2_clothes", "N3_clothes"])
 
 var allFamiliar = {
     vehicles: vehiclesF,
     fruits: fruitsF,
     mammals: mammalsF,
     containers: containersF,
-    funiture: furnitureF,
+    furniture: furnitureF,
     clothes: clothesF
 }
 
@@ -141,16 +139,17 @@ var allNovel = {
     fruits: fruitsN,
     mammals: mammalsN,
     containers: containersN,
-    funiture: furnitureN,
+    furniture: furnitureN,
     clothes: clothesN
 }
 
-// map of category names to category arrays
-var orderedFamiliar = shuffleProperties(allFamiliar);
+// map of category names to category arrays for familiar items
+var familiarItems = shuffleProperties(allFamiliar);
 
-var orderedNovel = shuffleProperties(allNovel);
+// map of category names to category arrays for novel items
+var novelItems = shuffleProperties(allNovel);
 
-var categoryNames = getKeys(orderedFamiliar);
+var categoryNames = getKeys(familiarItems);
 
 //names of all possible targets, also orderedTargetNames1
 var posTargetNames = shuffle(categoryNames);
@@ -159,7 +158,7 @@ var posTargetNames = shuffle(categoryNames);
 var targetsF = new Array();
 
 for (var nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
-    targetsF.push(orderedFamiliar[posTargetNames[nTarget]].slice())
+    targetsF.push(familiarItems[posTargetNames[nTarget]].slice())
     shuffle(targetsF[nTarget]);
 }
 
@@ -171,7 +170,7 @@ var orderedTargetNames2 = new Array();
 
 for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
     if(posTargetNames2[0] != posTargetNames[nTarget]) {
-        targetsF2.push(orderedFamiliar[posTargetNames2[0]].slice());
+        targetsF2.push(familiarItems[posTargetNames2[0]].slice());
         shuffle(targetsF2[nTarget]);
         orderedTargetNames2.push(posTargetNames2[0]);
         //remove first category
@@ -192,7 +191,7 @@ var orderedTargetNames3 = new Array();
 for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
     if(posTargetNames3[0] != posTargetNames[nTarget] 
        && posTargetNames3[0] != orderedTargetNames2[nTarget]){
-        targetsF3.push(orderedFamiliar[posTargetNames3[0]].slice());
+        targetsF3.push(familiarItems[posTargetNames3[0]].slice());
         shuffle(targetsF3[nTarget]);
         orderedTargetNames3.push(posTargetNames3[0]);
         //remove first category
@@ -215,14 +214,24 @@ for (var nTrial = 0; nTrial < trials.length; nTrial++) {
     trialTargets[nTrial].push(orderedTargetNames3[nTrial]);
 }
 
-var trialNovelItems = new Array();
-//assuming 1 novel item for a category
-for (nTrial = 0; nTrial < trials.length; nTrial++) {
-    trialNovelItems.push([]);
-    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][0]][0]);
-    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][1]][0]);
-    trialNovelItems[nTrial].push(orderedNovel[trialTargets[nTrial][2]][0]);
-}
+//var trialNovelItems = new Array();
+////assuming 1 novel item for a category
+//for (nTrial = 0; nTrial < trials.length; nTrial++) {
+//    trialNovelItems.push([]);
+//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][0]][0]);
+//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][1]][0]);
+//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][2]][0]);
+//}
+
+//var trialNovelItems = new Array();
+////assuming 1 novel item for a category
+//for (nTrial = 0; nTrial < trials.length; nTrial++) {
+//    var novelItemsMap = new Map();
+//    novelItemsMap.set(trialTargets[nTrial][0], novelItems.get(trialTargets[nTrial][0]));
+//    novelItemsMap.set(trialTargets[nTrial][1], novelItems.get(trialTargets[nTrial][1]));
+//    novelItemsMap.set(trialTargets[nTrial][2], novelItems.get(trialTargets[nTrial][2]));
+//    trialNovelItems.push(familiarItemsMap);
+//}
 
 var trialFamiliarItems = new Array();
 
@@ -268,9 +277,10 @@ var experiment = {
     targetsF3: targetsF3,
 
     trialTargets: trialTargets,
-    trialNovelItems: trialNovelItems,
+//    trialNovelItems: trialNovelItems,
     trialFamiliarItems: trialFamiliarItems,
-
+    novelItems: novelItems,
+    
     novelWords: novelWords, 
 
     posDist: posDist,
@@ -449,8 +459,16 @@ var experiment = {
         document.getElementById("next-novel").style.visibility = 'hidden';
 
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
+        
+        var targets = trialTargets[trials[0]];
+        experiment.position = [];
+        for (var i = 0; i < targets.length; i++) {
+            experiment.position.push(experiment.novelItems[targets[i]].shift());
+        }
+        
+        experiment.position = shuffle(experiment.position)
 
-        experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
+//        experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
@@ -509,7 +527,7 @@ var experiment = {
                 var pick = experiment.position[2];
             }
 
-            var pickCat = pick.substring(2);
+            var pickCat = pick.substring(3);
 
             // compare to 1st target
             if (pickCat == trialTargets[trials[0]][0]) {
@@ -530,7 +548,7 @@ var experiment = {
 
             data = {
                 experiment: "distribution",
-                phase: "novel",
+                phase: "test",
                 agent: trainingAgents[trials[0]],
                 slide: experiment.slides[0],
                 trial: trials[0] + 1,
@@ -584,7 +602,7 @@ var experiment = {
         experiment.targetsF2.shift();
         experiment.targetsF3.shift();
 
-        experiment.trialNovelItems.shift();
+//        experiment.trialNovelItems.shift();
 
         experiment.backgrounds.shift();
 
