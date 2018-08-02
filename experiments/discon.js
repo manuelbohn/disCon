@@ -6,6 +6,22 @@ for (i = 0; i < preloadItems.length; i++) {
     images[i].src = "images/" + preloadItems[i] + ".png";
 }
 
+var backgroundImages = new Array();
+for (i = 1; i <= 10; i++) {
+    backgroundImages[i] = new Image();
+    backgroundImages[i].src = "images/backgrounds/back" + i + ".jpg";
+}
+
+$("#button").click(function() {
+    //disable accept button if in turk preview mode
+    if (turk.previewMode) {
+      showSlide("instructions");
+      alert("Please accept HIT to view");
+    } else {
+      showSlide('introAll')
+    }
+});
+
 function showSlide(id) {
     // Hide all slides
     $(".slide").hide();
@@ -412,11 +428,11 @@ var experiment = {
 
             data = {
                 experiment: "distribution",
-                phase: "training",
-                agent: trainingAgents[trials[0]],
-                slide: experiment.slides[0],
                 trial: trials[0] + 1,
                 trialType: currTrialType,
+                agent: trainingAgents[trials[0]],
+                phase: "training",
+                slide: experiment.slides[0],
 
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
@@ -543,12 +559,12 @@ var experiment = {
 
             data = {
                 experiment: "distribution",
-                phase: "test",
-                agent: trainingAgents[trials[0]],
-                slide: experiment.slides[0],
                 trial: trials[0] + 1,
                 trialType: currTrialType,
-
+                agent: trainingAgents[trials[0]],
+                phase: "test",
+                slide: experiment.slides[0],
+                
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
                 target2: trialTargets[trials[0]][1],
@@ -605,82 +621,4 @@ var experiment = {
 
         $(".agent_transition").click(experiment.intro); 
     },
-
-    trainingDot : function () {
-        function createDot(dotx, doty, i) {
-            var dots = [1, 2, 3, 4, 5];
-
-            var dot = document.createElement("img");
-            dot.setAttribute("class", "dot");
-            dot.id = "dot_" + dots[i];
-            dot.src = "dots/dot_" + dots[i] + ".jpg";
-
-            var x = Math.floor(Math.random() * 850);
-            var y = Math.floor(Math.random() * 550);
-
-            var invalid = "true";
-            //make sure dots do not overlap
-            while (true) {  
-                invalid = "true";
-                for (var j = 0; j < dotx.length; j++) {
-                    if (Math.abs(dotx[j] - x) + Math.abs(doty[j] - y) < 200) {
-                        invalid = "false";
-                        break;
-                    }
-                }
-                if (invalid === "true") {
-                    dotx.push(x);
-                    doty.push(y);
-                    break;
-                }
-                x = Math.floor(Math.random() * 400);
-                y = Math.floor(Math.random() * 400);
-            }
-
-            dot.setAttribute("style", "position:absolute;left:" + x + "px;top:" + y + "px;");
-
-            trainingDot.appendChild(dot);
-        }
-
-        var allDots = ["dot_1", "dot_2", "dot_3", "dot_4", "dot_5"];
-
-        var xcounter = 0;
-        var dotCount = 5;
-
-        var dotx = [];
-        var doty = [];
-
-        for (i = 0; i < dotCount; i++) {
-            createDot(dotx, doty, i, "");
-        }
-
-        showSlide("trainingDot");
-        $('.dot').bind('click touchstart', function(event) {
-
-            var dotID = $(event.currentTarget).attr('id');
-
-            //only count towards completion clicks on dots that have not yet been clicked
-            if (allDots.indexOf(dotID) === -1) {
-                return;
-            }
-
-            allDots.splice(allDots.indexOf(dotID), 1);
-            document.getElementById(dotID).src = "dots/x.jpg";
-            xcounter++
-            if (xcounter === dotCount) {
-                trainingDot.removeChild(dot_1);
-                trainingDot.removeChild(dot_2);
-                trainingDot.removeChild(dot_3);
-                trainingDot.removeChild(dot_4);
-                trainingDot.removeChild(dot_5);
-
-                setTimeout(function() {
-                    $("#trainingDot").hide();
-                    setTimeout(function() {
-                        showSlide("dotGame");
-                    }, 500);
-                }, 500);
-            }
-        });
-    },  
 }
