@@ -654,7 +654,7 @@ var experiment = {
         experiment.trials.shift();
 
         if (experiment.trials.length == 0) {
-            setTimeout(function() { turk.submit(experiment) }, 0);
+            setTimeout(function() { turk.submit(experiment) }, 5000);
             showSlide("finished");
             return;
         }
