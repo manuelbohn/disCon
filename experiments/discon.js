@@ -101,11 +101,11 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, "choice"]
+var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1, 2, 3, 4, 5]
 
-var trialType = shuffle([0, 1])
+var trialType = shuffle(["preference", "statistical"])
 
 var currTrialType = trialType[0];
 
@@ -151,6 +151,20 @@ var novelItems = shuffleProperties(allNovel);
 
 var categoryNames = getKeys(familiarItems);
 
+var trackRepeats = new Map();
+
+for (i=0; i < categoryNames.length; i++) {
+    trackRepeats.set(categoryNames[i], 3); 
+}
+
+function checkCategory (category) {
+    if (trackRepeats.get(category) > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 //names of all possible targets, also orderedTargetNames1
 var posTargetNames = shuffle(categoryNames);
 
@@ -169,13 +183,15 @@ var posTargetNames2 = posTargetNames.slice();
 var orderedTargetNames2 = new Array();
 
 for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
-    if(posTargetNames2[0] != posTargetNames[nTarget]) {
+    if(posTargetNames2[0] != posTargetNames[nTarget] 
+       && checkCategory(posTargetNames2[0])) {
         targetsF2.push(familiarItems[posTargetNames2[0]].slice());
         shuffle(targetsF2[nTarget]);
         orderedTargetNames2.push(posTargetNames2[0]);
         //remove first category
         posTargetNames2.splice(0, 1);
         posTargetNames2 = shuffle(posTargetNames2);
+        trackRepeats[posTargetNames2[0]]--;
     } else {
         nTarget--;
         posTargetNames2 = shuffle(posTargetNames2);
@@ -190,13 +206,15 @@ var orderedTargetNames3 = new Array();
 
 for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
     if(posTargetNames3[0] != posTargetNames[nTarget] 
-       && posTargetNames3[0] != orderedTargetNames2[nTarget]){
+       && posTargetNames3[0] != orderedTargetNames2[nTarget]
+       && checkCategory(posTargetNames3[0])){
         targetsF3.push(familiarItems[posTargetNames3[0]].slice());
         shuffle(targetsF3[nTarget]);
         orderedTargetNames3.push(posTargetNames3[0]);
         //remove first category
         posTargetNames3.splice(0, 1);
         posTargetNames3 = shuffle(posTargetNames3);
+        trackRepeats[posTargetNames3[0]]--;
     } else {
         nTarget--;
         posTargetNames3 = shuffle(posTargetNames3);
@@ -213,25 +231,6 @@ for (var nTrial = 0; nTrial < trials.length; nTrial++) {
     trialTargets[nTrial].push(orderedTargetNames2[nTrial]);
     trialTargets[nTrial].push(orderedTargetNames3[nTrial]);
 }
-
-//var trialNovelItems = new Array();
-////assuming 1 novel item for a category
-//for (nTrial = 0; nTrial < trials.length; nTrial++) {
-//    trialNovelItems.push([]);
-//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][0]][0]);
-//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][1]][0]);
-//    trialNovelItems[nTrial].push(novelItems[trialTargets[nTrial][2]][0]);
-//}
-
-//var trialNovelItems = new Array();
-////assuming 1 novel item for a category
-//for (nTrial = 0; nTrial < trials.length; nTrial++) {
-//    var novelItemsMap = new Map();
-//    novelItemsMap.set(trialTargets[nTrial][0], novelItems.get(trialTargets[nTrial][0]));
-//    novelItemsMap.set(trialTargets[nTrial][1], novelItems.get(trialTargets[nTrial][1]));
-//    novelItemsMap.set(trialTargets[nTrial][2], novelItems.get(trialTargets[nTrial][2]));
-//    trialNovelItems.push(familiarItemsMap);
-//}
 
 var trialFamiliarItems = new Array();
 
@@ -277,7 +276,6 @@ var experiment = {
     targetsF3: targetsF3,
 
     trialTargets: trialTargets,
-//    trialNovelItems: trialNovelItems,
     trialFamiliarItems: trialFamiliarItems,
     novelItems: novelItems,
     
@@ -296,7 +294,7 @@ var experiment = {
     introAll: function() {
         showSlide("introAll");
         // statistical
-        if (experiment.currTrialType == 0) { 
+        if (experiment.currTrialType == "statistical") { 
             document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it."
             document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will name things you don't know the names for. Try your best to find the correct one.";
             // preference
@@ -314,7 +312,7 @@ var experiment = {
         showAgent(trainingAgents[trials[0]], "transition");
 
         // statistical
-        if (experiment.currTrialType == 0) { 
+        if (experiment.currTrialType == "statistical") { 
             document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
             // preference
         } else {
@@ -379,7 +377,7 @@ var experiment = {
         var correctItem = correctCategory[0];
 
         // statistical
-        if (experiment.currTrialType == 0) { 
+        if (experiment.currTrialType == "statistical") { 
             document.getElementById("text_correctItem").innerHTML = correctItem;  
             // preference
         } else {
@@ -465,10 +463,7 @@ var experiment = {
         for (var i = 0; i < targets.length; i++) {
             experiment.position.push(experiment.novelItems[targets[i]].shift());
         }
-        
         experiment.position = shuffle(experiment.position)
-
-//        experiment.position = shuffle([experiment.trialNovelItems[0][0], experiment.trialNovelItems[0][1], experiment.trialNovelItems[0][2]]);
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
@@ -486,7 +481,7 @@ var experiment = {
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
             // statistical
-            if (experiment.currTrialType == 0) { 
+            if (experiment.currTrialType == "statistical") { 
                 document.getElementById("text_correctItem").innerHTML = "Here are some new ones." 
             // preference
             } else {
@@ -507,7 +502,7 @@ var experiment = {
         document.getElementById("next-novel").style.visibility = "hidden";    
 
         // statistical
-        if (experiment.currTrialType == 0) { 
+        if (experiment.currTrialType == "statistical") { 
             document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
             // preference
         } else {
