@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -198,20 +198,43 @@ var posTargetNames2 = posTargetNames.slice();
 
 var orderedTargetNames2 = new Array();
 
-for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
-    if(posTargetNames2[0] != posTargetNames[nTarget] 
-       && checkCategory(posTargetNames2[0])) {
-        targetsF2.push(familiarItems[posTargetNames2[0]].slice());
-        shuffle(targetsF2[nTarget]);
-        orderedTargetNames2.push(posTargetNames2[0]);
-        //remove first category
-        posTargetNames2.splice(0, 1);
-        posTargetNames2 = shuffle(posTargetNames2);
-        trackRepeats[posTargetNames2[0]]--;
+function orderTargetsF2 (posTargetNames2, posTargetNames) {
+    var tempPosTargetNames2 = posTargetNames2.slice();
+    var tempPosTargetNames = posTargetNames.slice();
+    orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
+}
+
+function orderTargetsF2Helper (tempPosTargetNames2, tempPosTargetNames, posTargetNames2,                               posTargetNames) {
+    if(tempPosTargetNames2.length == 1) {
+        if (tempPosTargetNames2[0] != tempPosTargetNames[0]
+            && checkCategory(tempPosTargetNames2[0])) {
+            targetsF2.push(shuffle(familiarItems[tempPosTargetNames2[0]].slice()));
+            orderedTargetNames2.push(tempPosTargetNames2[0]);
+            trackRepeats[tempPosTargetNames2[0]]--;
+        } else {
+            targetsF2 = [];
+            tempPosTargetNames2 = posTargetNames2.slice();
+            tempPosTargetNames = posTargetNames.slice();
+        }
+        return;
     } else {
-        nTarget--;
-        posTargetNames2 = shuffle(posTargetNames2);
+        if (tempPosTargetNames2[0] != tempPosTargetNames[0] 
+            && checkCategory(tempPosTargetNames2[0])) {
+            targetsF2.push(shuffle(familiarItems[tempPosTargetNames2[0]].slice()));
+            orderedTargetNames2.push(tempPosTargetNames2[0]);
+            tempPosTargetNames2.shift();
+            tempPosTargetNames.shift();
+            trackRepeats[posTargetNames2[0]]--;
+        } else {
+            var temp = tempPosTargetNames2.shift();
+            tempPosTargetNames2.push(temp);
+        }
+        orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2,                       posTargetNames);
     }
+}
+
+while (targetsF2.length < 6) {
+    orderTargetsF2(posTargetNames2, posTargetNames);
 }
 
 var targetsF3 = new Array();
@@ -220,21 +243,48 @@ var posTargetNames3 = posTargetNames.slice();
 
 var orderedTargetNames3 = new Array();
 
-for (nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
-    if(posTargetNames3[0] != posTargetNames[nTarget] 
-       && posTargetNames3[0] != orderedTargetNames2[nTarget]
-       && checkCategory(posTargetNames3[0])){
-        targetsF3.push(familiarItems[posTargetNames3[0]].slice());
-        shuffle(targetsF3[nTarget]);
-        orderedTargetNames3.push(posTargetNames3[0]);
-        //remove first category
-        posTargetNames3.splice(0, 1);
-        posTargetNames3 = shuffle(posTargetNames3);
-        trackRepeats[posTargetNames3[0]]--;
+function orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames) {
+    var tempPosTargetNames3 = posTargetNames3.slice();
+    var tempPosTargetNames2 = orderedTargetNames2.slice();
+    var tempPosTargetNames = posTargetNames.slice();
+    orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames,                       posTargetNames3, orderedTargetNames2, posTargetNames);
+}
+
+function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2,                                                tempPosTargetNames, posTargetNames3, orderedTargetNames2,                                posTargetNames) {
+    if(tempPosTargetNames3.length == 1) {
+        if (tempPosTargetNames2[0] != tempPosTargetNames[0]
+            && tempPosTargetNames3[0] != tempPosTargetNames2[0]
+            && checkCategory(tempPosTargetNames3[0])) {
+            targetsF2.push(shuffle(familiarItems[tempPosTargetNames3[0]].slice()));
+            orderedTargetNames3.push(tempPosTargetNames3[0]);
+            trackRepeats[tempPosTargetNames3[0]]--;
+        } else {
+            targetsF3 = [];
+            tempPosTargetNames3 = posTargetNames3.slice();
+            tempPosTargetNames2 = orderedTargetNames2.slice();
+            tempPosTargetNames = posTargetNames.slice();
+        }
+        return;
     } else {
-        nTarget--;
-        posTargetNames3 = shuffle(posTargetNames3);
+        if (tempPosTargetNames3[0] != tempPosTargetNames[0] 
+            && tempPosTargetNames3[0] != tempPosTargetNames2[0]
+            && checkCategory(tempPosTargetNames3[0])) {
+            targetsF3.push(shuffle(familiarItems[tempPosTargetNames3[0]].slice()));
+            orderedTargetNames3.push(tempPosTargetNames3[0]);
+            tempPosTargetNames3.shift();
+            tempPosTargetNames2.shift();
+            tempPosTargetNames.shift();
+            trackRepeats[posTargetNames3[0]]--;
+        } else {
+            var temp = tempPosTargetNames3.shift();
+            tempPosTargetNames3.push(temp);
+        }
+        orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2,                                       tempPosTargetNames, posTargetNames3, orderedTargetNames2,                       posTargetNames);
     }
+}
+
+while (targetsF3.length < 6) {
+    orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames);
 }
 
 // array of category names for each trial, to create trainingDist
