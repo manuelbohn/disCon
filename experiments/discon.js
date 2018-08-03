@@ -15,10 +15,10 @@ for (i = 1; i <= 10; i++) {
 $("#button").click(function() {
     //disable accept button if in turk preview mode
     if (turk.previewMode) {
-      showSlide("instructions");
-      alert("Please accept HIT to view");
+        showSlide("instructions");
+        alert("Please accept HIT to view");
     } else {
-      showSlide('introAll')
+        showSlide('introAll')
     }
 });
 
@@ -332,6 +332,15 @@ for (var m=0; m < trials.length; m++) {
     trainingAgents.push(posAgents[m]);
 }
 
+function findCategory (pick) {
+    for (var i = 0; i < categoryNames.length; i++) {
+        var categoryArray = categoryNames[i]+"F";
+        if (eval(categoryArray).includes(pick))  {
+            return categoryNames[i];
+        }
+    }
+}
+
 var experiment = {
     slides: slides.slice(),
     trials: trials,
@@ -344,7 +353,7 @@ var experiment = {
     trialTargets: trialTargets,
     trialFamiliarItems: trialFamiliarItems,
     novelItems: novelItems,
-    
+
     novelWords: novelWords, 
 
     posDist: posDist,
@@ -354,6 +363,8 @@ var experiment = {
     backgrounds: backgrounds,
 
     position: [], 
+
+    lastInputCat: "",
 
     data: [], 
 
@@ -453,16 +464,17 @@ var experiment = {
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
 
+
         $(".item").click(function() {
             var clickedItem = event.target;
 
             var pickId = event.target.id;
 
-            if(pickId == "item_r") {
+            if(pickId == "item_l") {
                 var pick = experiment.position[0];
             } else if(pickId == "item_m") {
                 var pick = experiment.position[1];
-            } else if (pickId == "item_l") {
+            } else if (pickId == "item_r") {
                 var pick = experiment.position[2];
             }
 
@@ -471,6 +483,11 @@ var experiment = {
                 var correct_item = 1;
             } else {
                 var correct_item = 0;
+            }
+            
+            // stores category of the final input slide
+            if (experiment.slides[0] == 6) {
+                experiment.lastInputCat = findCategory(pick);
             }
 
             $(".item").unbind("click");
@@ -496,6 +513,7 @@ var experiment = {
                 correctItem: correctItem,
                 pick: pick,
                 pickPos: pickId,
+                pickCat: findCategory(pick),
                 correct_item: correct_item
             }
 
@@ -518,12 +536,12 @@ var experiment = {
 
     choice : function () {
         document.getElementById("text_correctItem").style.visibility = "hidden";
-        
+
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
 
         background("images/backgrounds/back" + backgrounds[0] + ".jpg");
-        
+
         var targets = trialTargets[trials[0]];
         experiment.position = [];
         for (var i = 0; i < targets.length; i++) {
@@ -549,7 +567,7 @@ var experiment = {
             // statistical
             if (experiment.currTrialType == "statistical") { 
                 document.getElementById("text_correctItem").innerHTML = "Here are some new ones." 
-            // preference
+                // preference
             } else {
                 document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
             }
@@ -580,11 +598,11 @@ var experiment = {
 
             var pickId = event.target.id;
 
-            if(pickId == "item_r") {
+            if(pickId == "item_l") {
                 var pick = experiment.position[0];
             } else if(pickId == "item_m") {
                 var pick = experiment.position[1];
-            } else if (pickId == "item_l") {
+            } else if (pickId == "item_r") {
                 var pick = experiment.position[2];
             }
 
@@ -603,6 +621,18 @@ var experiment = {
             } else {
                 var correct_target2 = 0;
             }
+            
+            if (pickCat == trialTargets[trials[0]][2]) {
+                var correct_target3 = 1;
+            } else {
+                var correct_target3 = 0;
+            }
+            
+            if (pickCat == experiment.lastInputCat) {
+                var same_lastInput = 1;
+            } else {
+                var same_lastInput = 0;
+            }
 
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
@@ -614,7 +644,7 @@ var experiment = {
                 agent: trainingAgents[trials[0]],
                 phase: "test",
                 slide: experiment.slides[0],
-                
+
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
                 target2: trialTargets[trials[0]][1],
@@ -629,10 +659,17 @@ var experiment = {
                 pick: pick,
                 pickPos: pickId,
                 pickCat: pickCat, 
+
                 correct_target1: correct_target1,
                 correct_target2: correct_target2,
+                correct_target3: correct_target3,
+                
+                lastInputCat: experiment.lastInputCat,
+                same_lastInput: same_lastInput
             }
             experiment.data.push(data);
+            
+            experiment.lastInputCat = "";
 
             setTimeout(function() {
                 clickedItem.style.border = '0px';
@@ -663,7 +700,7 @@ var experiment = {
         experiment.targetsF2.shift();
         experiment.targetsF3.shift();
 
-//        experiment.trialNovelItems.shift();
+        //        experiment.trialNovelItems.shift();
 
         experiment.backgrounds.shift();
 
