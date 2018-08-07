@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -130,33 +130,37 @@ var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat"])
 var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon"])
 var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey"])
-var containersF = shuffle(["bottle", "cup", "bowl", "box", "plate", "glass"])
 var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
 var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
+var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin"])
+var buildingsF = shuffle(["castle", "church", "factory", "house", "igloo", "tent"])
 
 var vehiclesN = shuffle(["N1_vehicles", "N2_vehicles", "N3_vehicles"])
 var fruitsN = shuffle(["N1_fruits", "N2_fruits", "N3_fruits"])
 var mammalsN = shuffle(["N1_mammals", "N2_mammals", "N3_mammals"])
-var containersN = shuffle(["N1_containers", "N2_containers", "N3_containers"])
 var furnitureN = shuffle(["N1_furniture", "N2_furniture", "N3_furniture"])
 var clothesN = shuffle(["N1_clothes", "N2_clothes", "N3_clothes"])
+var instrumentsN = shuffle(["N1_instruments", "N2_instruments", "N3_instruments"])
+var buildingsN = shuffle(["N1_buildings", "N2_buildings", "N3_buildings"])
 
 var allFamiliar = {
     vehicles: vehiclesF,
     fruits: fruitsF,
     mammals: mammalsF,
-    containers: containersF,
     furniture: furnitureF,
-    clothes: clothesF
+    clothes: clothesF,
+    instruments: instrumentsF,
+    buildings: buildingsF
 }
 
 var allNovel = {
     vehicles: vehiclesN,
     fruits: fruitsN,
     mammals: mammalsN,
-    containers: containersN,
     furniture: furnitureN,
-    clothes: clothesN
+    clothes: clothesN,
+    instruments: instrumentsN,
+    buildings: buildingsN
 }
 
 // map of category names to category arrays for familiar items
@@ -187,14 +191,14 @@ var posTargetNames = shuffle(categoryNames);
 //arrays of all possible targets, in order
 var targetsF = new Array();
 
-for (var nTarget = 0; nTarget < posTargetNames.length; nTarget++) {
+for (var nTarget = 0; nTarget < trials.length; nTarget++) {
     targetsF.push(familiarItems[posTargetNames[nTarget]].slice())
     shuffle(targetsF[nTarget]);
 }
 
 var targetsF2 = new Array();
 
-var posTargetNames2 = posTargetNames.slice();
+var posTargetNames2 = shuffle(posTargetNames.slice());
 
 var orderedTargetNames2 = new Array();
 
@@ -204,7 +208,7 @@ function orderTargetsF2 (posTargetNames2, posTargetNames) {
     orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
 }
 
-function orderTargetsF2Helper (tempPosTargetNames2, tempPosTargetNames, posTargetNames2,                               posTargetNames) {
+function orderTargetsF2Helper (tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames) {
     if(tempPosTargetNames2.length == 1) {
         if (tempPosTargetNames2[0] != tempPosTargetNames[0]
             && checkCategory(tempPosTargetNames2[0])) {
@@ -229,17 +233,17 @@ function orderTargetsF2Helper (tempPosTargetNames2, tempPosTargetNames, posTarge
             var temp = tempPosTargetNames2.shift();
             tempPosTargetNames2.push(temp);
         }
-        orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2,                       posTargetNames);
+        orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
     }
 }
 
-while (targetsF2.length < 6) {
+while (targetsF2.length < trials.length) {
     orderTargetsF2(posTargetNames2, posTargetNames);
 }
 
 var targetsF3 = new Array();
 
-var posTargetNames3 = posTargetNames.slice();
+var posTargetNames3 = shuffle(posTargetNames.slice());
 
 var orderedTargetNames3 = new Array();
 
@@ -247,10 +251,10 @@ function orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames) {
     var tempPosTargetNames3 = posTargetNames3.slice();
     var tempPosTargetNames2 = orderedTargetNames2.slice();
     var tempPosTargetNames = posTargetNames.slice();
-    orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames,                       posTargetNames3, orderedTargetNames2, posTargetNames);
+    orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames);
 }
 
-function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2,                                                tempPosTargetNames, posTargetNames3, orderedTargetNames2,                                posTargetNames) {
+function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames) {
     if(tempPosTargetNames3.length == 1) {
         if (tempPosTargetNames2[0] != tempPosTargetNames[0]
             && tempPosTargetNames3[0] != tempPosTargetNames2[0]
@@ -279,11 +283,11 @@ function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2,        
             var temp = tempPosTargetNames3.shift();
             tempPosTargetNames3.push(temp);
         }
-        orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2,                                       tempPosTargetNames, posTargetNames3, orderedTargetNames2,                       posTargetNames);
+        orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames);
     }
 }
 
-while (targetsF3.length < 6) {
+while (targetsF3.length < trials.length) {
     orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames);
 }
 

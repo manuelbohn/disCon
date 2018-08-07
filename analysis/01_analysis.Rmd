@@ -96,6 +96,8 @@ ggplot(plot1,
 
 ```
 
+
+
 # Does the framing influence the match between choice and distribution 
 
 ```{r plot 2}
@@ -143,4 +145,13 @@ b <- b %>%
 # 24/33 for 4, 2, 0
 # 7/26 for 2, 2, 2
 
+```
+
+```{r}
+data %>%
+  filter(phase == "test", distribution == "c(6, 0, 0)") %>%
+  group_by(pick) %>%
+  summarise(n = length(correct_target1),
+            mean = mean(correct_target1)) %>%
+  arrange(mean)
 ```
