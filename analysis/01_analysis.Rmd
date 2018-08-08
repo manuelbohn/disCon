@@ -76,19 +76,19 @@ data %>%
 ```{r plot1}
 plot1 <- data %>%
   filter(phase == 'test') %>%
-  group_by(distribution, workerid) %>%
+  group_by(distribution, target1, workerid) %>%
   summarise(correct = mean(correct_target1),
             correct2 = mean(correct_target2),
             correct3 = mean(correct_target3)) %>%
-  gather(item, prop_correct, -distribution, -workerid) %>%
-  group_by(distribution, item) %>%
+  gather(item, prop_correct, -distribution, -workerid, -target1) %>%
+  group_by(distribution, target1, item) %>%
   multi_boot_standard(col = "prop_correct")
     
 ggplot(plot1,
        aes(x = item, y=mean, fill=item)) +
   geom_bar(stat='identity') +
-  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  facet_grid(~distribution) +
+#  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  facet_grid(target1~distribution) +
   geom_hline(yintercept = 1/3, lty=2) +
   ylim(0, 1) +
   theme_few() 
@@ -108,9 +108,29 @@ plot2 <- data %>%
             correct2 = mean(correct_target2),
             correct3 = mean(correct_target3)) %>%
   gather(item, prop_correct, -distribution, -workerid, -trialType) %>%
-  group_by(distribution, trialType, item) %>%
-  multi_boot_standard(col = "prop_correct")
+  arrange(workerid)
+
+ # group_by(distribution, trialType, item) %>%
+ # multi_boot_standard(col = "prop_correct")
     
+ggplot() + 
+  geom_jitter(data = plot2, 
+              aes(x = item, y=prop_correct, fill=item, col=trialType),
+              height = 0.1,
+              width = 0.1) +
+  facet_grid(trialType~distribution) +
+  theme(legend.position="none")
+
+plot2 <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, trialType) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -trialType) %>%
+  group_by(distribution, trialType, item) %>% 
+  multi_boot_standard(col = "prop_correct")
+
 ggplot(plot2,
        aes(x = item, y=mean, fill=item)) +
   geom_bar(stat='identity') +

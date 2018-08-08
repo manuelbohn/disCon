@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bottle", "cup", "bowl", "box", "plate", "glass", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -198,12 +198,13 @@ for (var nTarget = 0; nTarget < trials.length; nTarget++) {
 
 var targetsF2 = new Array();
 
-var posTargetNames2 = shuffle(posTargetNames.slice());
+var posTargetNames2 = posTargetNames.slice();
 
 var orderedTargetNames2 = new Array();
 
 function orderTargetsF2 (posTargetNames2, posTargetNames) {
     var tempPosTargetNames2 = posTargetNames2.slice();
+//    tempPosTargetNames2 = shuffle(tempPosTargetNames2);
     var tempPosTargetNames = posTargetNames.slice();
     orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
 }
@@ -230,8 +231,7 @@ function orderTargetsF2Helper (tempPosTargetNames2, tempPosTargetNames, posTarge
             tempPosTargetNames.shift();
             trackRepeats[posTargetNames2[0]]--;
         } else {
-            var temp = tempPosTargetNames2.shift();
-            tempPosTargetNames2.push(temp);
+            tempPosTargetNames2.push(tempPosTargetNames2.shift());
         }
         orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
     }
@@ -243,12 +243,13 @@ while (targetsF2.length < trials.length) {
 
 var targetsF3 = new Array();
 
-var posTargetNames3 = shuffle(posTargetNames.slice());
+var posTargetNames3 = posTargetNames.slice();
 
 var orderedTargetNames3 = new Array();
 
 function orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames) {
     var tempPosTargetNames3 = posTargetNames3.slice();
+//    tempPosTargetNames3 = shuffle(tempPosTargetNames3);
     var tempPosTargetNames2 = orderedTargetNames2.slice();
     var tempPosTargetNames = posTargetNames.slice();
     orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames);
@@ -280,8 +281,7 @@ function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPos
             tempPosTargetNames.shift();
             trackRepeats[posTargetNames3[0]]--;
         } else {
-            var temp = tempPosTargetNames3.shift();
-            tempPosTargetNames3.push(temp);
+            tempPosTargetNames3.push(tempPosTargetNames3.shift());
         }
         orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames);
     }
@@ -301,6 +301,8 @@ for (var nTrial = 0; nTrial < trials.length; nTrial++) {
     trialTargets[nTrial].push(orderedTargetNames2[nTrial]);
     trialTargets[nTrial].push(orderedTargetNames3[nTrial]);
 }
+
+shuffle(trialTargets);
 
 var trialFamiliarItems = new Array();
 
@@ -376,12 +378,12 @@ var experiment = {
         showSlide("introAll");
         // statistical
         if (experiment.currTrialType == "statistical") { 
-            document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it."
-            document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will name things you don't know the names for. Try your best to find the correct one.";
+            document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it.";
+            document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will use new names for things. Try your best to find the correct one. To move forward within the experiment, press the \"Next\" button. Press below to start.";
             // preference
         } else {
-            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animals will tell you which one is their favorite. You can give them their favorite by clicking on it. Make sure you give them the right one, because they only want to play with their favorite."
-            document.getElementById("text_introAll_2").innerHTML = "First, they will ask for things you already know the names for. Later, they will name things you don't know the names for. Try your best to find out what the animals want.";
+            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animals will tell you which one is their favorite. You can give them their favorite by clicking on it. Make sure you give them the right one, because they only want to play with their favorite.";
+            document.getElementById("text_introAll_2").innerHTML = "First, they will ask for things you already know the names for. Later, they will use new names for things. Try your best to find out what the animals want. To move forward within the experiment, press the \"Next\" button. Press below to start.";
         }
     },
 
@@ -395,14 +397,22 @@ var experiment = {
         // statistical
         if (experiment.currTrialType == "statistical") { 
             document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
+            setTimeout(function() {
+                document.getElementById("text_intro").innerHTML = "Let's look at some things.";
+            }, 1500);
+
             // preference
         } else {
-            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". I'm looking for my favorite things.";
+            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
+            setTimeout(function() {
+                document.getElementById("text_intro").innerHTML = "Can you help me get my favorite things?";
+            }, 1500);
         }
 
         document.getElementById("text_transition").innerHTML = "";
-
-        $(".agent_transition").click(experiment.train);  
+        setTimeout(function() {
+            $(".agent_transition").click(experiment.train);  
+        }, 3000);     
     },
 
     train : function () {
@@ -462,80 +472,84 @@ var experiment = {
             document.getElementById("text_correctItem").innerHTML = correctItem;  
             // preference
         } else {
-            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + correctItem + "?";
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you see the " + correctItem + "? I really like them.";
+            setTimeout(function() {
+                document.getElementById("text_correctItem").innerHTML = "Can you click on the " + correctItem + "?";
+            }, 2000);
         }
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
 
+        setTimeout(function() {
+            $(".item").click(function() {
+                var clickedItem = event.target;
 
-        $(".item").click(function() {
-            var clickedItem = event.target;
+                var pickId = event.target.id;
 
-            var pickId = event.target.id;
+                if(pickId == "item_l") {
+                    var pick = experiment.position[0];
+                } else if(pickId == "item_m") {
+                    var pick = experiment.position[1];
+                } else if (pickId == "item_r") {
+                    var pick = experiment.position[2];
+                }
 
-            if(pickId == "item_l") {
-                var pick = experiment.position[0];
-            } else if(pickId == "item_m") {
-                var pick = experiment.position[1];
-            } else if (pickId == "item_r") {
-                var pick = experiment.position[2];
-            }
+                // compare to correct item of input
+                if (pick == correctItem) {
+                    var correct_item = 1;
+                } else {
+                    var correct_item = 0;
+                }
 
-            // compare to correct item of input
-            if (pick == correctItem) {
-                var correct_item = 1;
-            } else {
-                var correct_item = 0;
-            }
-            
-            // stores category of the final input slide
-            if (experiment.slides[0] == 6) {
-                experiment.lastInputCat = findCategory(pick);
-            }
+                // stores category of the final input slide
+                if (experiment.slides[0] == 6) {
+                    experiment.lastInputCat = findCategory(pick);
+                }
 
-            $(".item").unbind("click");
-            clickedItem.style.border = '5px solid blue';
+                $(".item").unbind("click");
+                clickedItem.style.border = '5px solid blue';
 
-            data = {
-                experiment: "distribution",
-                trial: trials[0] + 1,
-                trialType: currTrialType,
-                agent: trainingAgents[trials[0]],
-                phase: "training",
-                slide: experiment.slides[0],
+                data = {
+                    experiment: "distribution",
+                    trial: trials[0] + 1,
+                    trialType: currTrialType,
+                    agent: trainingAgents[trials[0]],
+                    phase: "training",
+                    slide: experiment.slides[0],
 
-                distribution: posDist[trials[0]],
-                target1: trialTargets[trials[0]][0],
-                target2: trialTargets[trials[0]][1],
-                target3: trialTargets[trials[0]][2],
+                    distribution: posDist[trials[0]],
+                    target1: trialTargets[trials[0]][0],
+                    target2: trialTargets[trials[0]][1],
+                    target3: trialTargets[trials[0]][2],
 
-                item_l: experiment.position[0],
-                item_m: experiment.position[1],
-                item_r: experiment.position[2],
+                    item_l: experiment.position[0],
+                    item_m: experiment.position[1],
+                    item_r: experiment.position[2],
 
-                correctItem: correctItem,
-                pick: pick,
-                pickPos: pickId,
-                pickCat: findCategory(pick),
-                correct_item: correct_item
-            }
+                    correctItem: correctItem,
+                    pick: pick,
+                    pickPos: pickId,
+                    pickCat: findCategory(pick),
+                    correct_item: correct_item
+                }
 
-            experiment.data.push(data);
+                experiment.data.push(data);
 
-            experiment.targetsF[0].shift();
-            experiment.targetsF2[0].shift();
-            experiment.targetsF3[0].shift();
+                experiment.targetsF[0].shift();
+                experiment.targetsF2[0].shift();
+                experiment.targetsF3[0].shift();
 
-            experiment.trainingDist[trials[0]].shift();
+                experiment.trainingDist[trials[0]].shift();
 
-            experiment.slides.shift();
+                experiment.slides.shift();
 
-            setTimeout(function() {
-                clickedItem.style.border = '0px';
-                experiment.train();
-            }, 1500);
-        });
+                setTimeout(function() {
+                    clickedItem.style.border = '0px';
+                    experiment.train();
+                }, 1500);
+            });
+        }, 2000);
     },
 
     choice : function () {
@@ -594,7 +608,10 @@ var experiment = {
             document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
             // preference
         } else {
-            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you give me the " + novelWords[trials[0]] + "?";
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you see the " + novelWords[trials[0]] + "? I really like them.";
+            setTimeout(function() {
+                document.getElementById("text_correctItem").innerHTML = "Can you click on the " + novelWords[trials[0]] + "?";
+            }, 3000);
         }
 
         $(".item").click(function() {
@@ -625,13 +642,13 @@ var experiment = {
             } else {
                 var correct_target2 = 0;
             }
-            
+
             if (pickCat == trialTargets[trials[0]][2]) {
                 var correct_target3 = 1;
             } else {
                 var correct_target3 = 0;
             }
-            
+
             if (pickCat == experiment.lastInputCat) {
                 var same_lastInput = 1;
             } else {
@@ -667,12 +684,12 @@ var experiment = {
                 correct_target1: correct_target1,
                 correct_target2: correct_target2,
                 correct_target3: correct_target3,
-                
+
                 lastInputCat: experiment.lastInputCat,
                 same_lastInput: same_lastInput
             }
             experiment.data.push(data);
-            
+
             experiment.lastInputCat = "";
 
             setTimeout(function() {
