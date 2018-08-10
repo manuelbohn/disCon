@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "F1_vehicles", "F1_fruits", "F1_mammals", "F1_instruments", "F1_furniture", "F1_clothes", "F2_vehicles", "F2_fruits", "F2_mammals", "F2_instruments", "F2_furniture", "F2_clothes", "F3_vehicles", "F3_fruits", "F3_mammals", "F3_instruments", "F3_furniture", "F3_clothes", "bread", "tv", "pencil"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "motorbike", "strawberry", "apple", "banana", "grapes", "orange", "melon", "pineapple", "dog", "cat", "horse", "bear", "cow", "monkey", "elephant", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "stool", "shoes", "socks", "pants", "shirt", "jacket", "dress", "skirt", "drum", "flute", "guitar", "piano", "trumpet", "violin", "xylophone", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -123,21 +123,12 @@ var trials = [0, 1, 2, 3, 4, 5]
 
 var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
-//familiar arrays
-var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat"])
-var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon"])
-var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey"])
-var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
-var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
-var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin"])
-
-//training arrays
-var vehiclesT = shuffle(["F1_vehicles", "F2_vehicles", "F3_vehicles"])
-var fruitsT = shuffle(["F1_fruits", "F2_fruits", "F3_fruits"])
-var mammalsT = shuffle(["F1_mammals", "F2_mammals", "F3_mammals"])
-var furnitureT = shuffle(["F1_furniture", "F2_furniture", "F3_furniture"])
-var clothesT = shuffle(["F1_clothes", "F2_clothes", "F3_clothes"])
-var instrumentsT = shuffle(["F1_instruments", "F2_instruments", "F3_instruments"])
+var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat", "motorbike"])
+var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon", "pineapple"])
+var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey", "elephant"])
+var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "stool"])
+var clothesF = shuffle(["shoes", "socks", "pants", "shirt", "jacket", "dress", "skirt"])
+var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin", "xylophone"])
 
 var allFamiliar = {
     vehicles: vehiclesF,
@@ -148,20 +139,8 @@ var allFamiliar = {
     instruments: instrumentsF,
 }
 
-var allNovel = {
-    vehicles: vehiclesT,
-    fruits: fruitsT,
-    mammals: mammalsT,
-    furniture: furnitureT,
-    clothes: clothesT,
-    instruments: instrumentsT,
-}
-
 // map of category names to category arrays for familiar items
 var familiarItems = shuffleProperties(allFamiliar);
-
-// map of category names to category arrays for novel items
-var novelItems = shuffleProperties(allNovel);
 
 var categoryNames = getKeys(familiarItems);
 
@@ -357,7 +336,6 @@ var experiment = {
 
     trialTargets: trialTargets,
     trialFamiliarItems: trialFamiliarItems,
-    novelItems: novelItems,
 
     posDist: posDist,
     trainingDist: trainingDist,
@@ -427,12 +405,12 @@ var experiment = {
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 1000);
+        }, 500);
 
         // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-input").style.visibility = "visible";
-        }, 2500);
+        }, 1000);
     },
 
     train2 : function() {
@@ -441,8 +419,14 @@ var experiment = {
 
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-
-        document.getElementById("text_correctItem").innerHTML = "Here's a " +           correctItem + ". Can you click on the " + correctItem + "?";
+        
+        if(correctItem == "apple" || correctItem == "airplane" || correctItem == "elephant" || correctItem == "orange") {
+            document.getElementById("text_correctItem").innerHTML = "Here's an " + correctItem + ". Can you click on the " + correctItem + "?";
+        } else if(correctItem == "grapes" || correctItem == "shoes" || correctItem == "socks" || correctItem == "pants") {
+            document.getElementById("text_correctItem").innerHTML = "Here are " + correctItem + ". Can you click on the " + correctItem + "?";
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Here's a " + correctItem + ". Can you click on the " + correctItem + "?";
+        }
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
@@ -512,7 +496,7 @@ var experiment = {
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.train();
-            }, 1500);
+            }, 1000);
         });
     },
 
@@ -523,13 +507,8 @@ var experiment = {
         document.getElementById("next-novel").style.visibility = 'hidden';
 
         background("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
-
-        var targets = trialTargets[trials[0]];
-        experiment.position = [];
-        for (var i = 0; i < targets.length; i++) {
-            experiment.position.push(experiment.novelItems[targets[i]].shift());
-        }
-        experiment.position = shuffle(experiment.position)
+        
+        experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
@@ -550,12 +529,12 @@ var experiment = {
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 1000);
+        }, 500);
 
         // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 2500);
+        }, 1000);
     },
 
     choice2 : function() {
@@ -642,7 +621,7 @@ var experiment = {
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.transition();
-            }, 1500);
+            }, 1000);
         });
     },
 
@@ -667,8 +646,6 @@ var experiment = {
         experiment.targetsF.shift();
         experiment.targetsF2.shift();
         experiment.targetsF3.shift();
-
-        //        experiment.trialNovelItems.shift();
 
         experiment.backgrounds.shift();
 
