@@ -341,7 +341,7 @@ var experiment = {
     trainingDist: trainingDist,
 
     trainingAgents: trainingAgents,
-    backgrounds: backgrounds,
+    backgrounds: backgrounds.slice(),
 
     position: [], 
 
@@ -351,12 +351,12 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the things they have at home. Your task is to click on the things they have at home.";
+        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to click on the things they talk about.";
         document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
     },
 
     intro: function () {
-        background2("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
         showSlide("transition");
 
@@ -383,7 +383,7 @@ var experiment = {
 
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
-        background("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
         showSlide("input");
 
@@ -405,12 +405,12 @@ var experiment = {
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 500);
+        }, 1000);
 
         // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-input").style.visibility = "visible";
-        }, 1000);
+        }, 1500);
     },
 
     train2 : function() {
@@ -492,11 +492,12 @@ var experiment = {
             experiment.trainingDist[trials[0]].shift();
 
             experiment.slides.shift();
+            experiment.backgrounds.shift();
 
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.train();
-            }, 1000);
+            }, 1500);
         });
     },
 
@@ -506,7 +507,7 @@ var experiment = {
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
 
-        background("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
         
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
@@ -529,12 +530,12 @@ var experiment = {
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 500);
+        }, 1000);
 
         // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 1000);
+        }, 1500);
     },
 
     choice2 : function() {
@@ -555,7 +556,7 @@ var experiment = {
                 var pick = experiment.position[2];
             }
 
-            var pickCat = pick.substring(3);
+            var pickCat = findCategory(pick);
 
             // compare to 1st target
             if (pickCat == trialTargets[trials[0]][0]) {
@@ -605,7 +606,7 @@ var experiment = {
 
                 pick: pick,
                 pickPos: pickId,
-                pickCat: pickCat, 
+                pickCat: pickCat,
 
                 correct_target1: correct_target1,
                 correct_target2: correct_target2,
@@ -621,12 +622,12 @@ var experiment = {
             setTimeout(function() {
                 clickedItem.style.border = '0px';
                 experiment.transition();
-            }, 1000);
+            }, 1500);
         });
     },
 
     transition: function() {
-        background2("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
@@ -647,7 +648,7 @@ var experiment = {
         experiment.targetsF2.shift();
         experiment.targetsF3.shift();
 
-        experiment.backgrounds.shift();
+        experiment.backgrounds = shuffle(backgrounds.slice());
 
         experiment.slides = slides.slice();
 
