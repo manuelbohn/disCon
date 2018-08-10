@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "F1_vehicles", "F1_fruits", "F1_mammals", "F1_instruments", "F1_furniture", "F1_clothes", "F2_vehicles", "F2_fruits", "F2_mammals", "F2_instruments", "F2_furniture", "F2_clothes", "F3_vehicles", "F3_fruits", "F3_mammals", "F3_instruments", "F3_furniture", "F3_clothes", "bread", "tv", "pencil"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -7,9 +7,9 @@ for (i = 0; i < preloadItems.length; i++) {
 }
 
 var backgroundImages = new Array();
-for (i = 1; i <= 12; i++) {
+for (i = 1; i <= 10; i++) {
     backgroundImages[i] = new Image();
-    backgroundImages[i].src = "images/backgrounds/back_int" + i + ".jpg";
+    backgroundImages[i].src = "images/backgrounds/back" + i + ".jpg";
 }
 
 $("#button").click(function() {
@@ -121,23 +121,27 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1, 2, 3, 4, 5]
 
-var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+var trialType = shuffle(["preference", "statistical"])
 
-//familiar arrays
+var currTrialType = trialType[0];
+
+var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
 var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat"])
 var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon"])
 var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey"])
 var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
 var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
 var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin"])
+var buildingsF = shuffle(["castle", "church", "factory", "house", "igloo", "tent"])
 
-//training arrays
-var vehiclesT = shuffle(["F1_vehicles", "F2_vehicles", "F3_vehicles"])
-var fruitsT = shuffle(["F1_fruits", "F2_fruits", "F3_fruits"])
-var mammalsT = shuffle(["F1_mammals", "F2_mammals", "F3_mammals"])
-var furnitureT = shuffle(["F1_furniture", "F2_furniture", "F3_furniture"])
-var clothesT = shuffle(["F1_clothes", "F2_clothes", "F3_clothes"])
-var instrumentsT = shuffle(["F1_instruments", "F2_instruments", "F3_instruments"])
+var vehiclesN = shuffle(["N1_vehicles", "N2_vehicles", "N3_vehicles"])
+var fruitsN = shuffle(["N1_fruits", "N2_fruits", "N3_fruits"])
+var mammalsN = shuffle(["N1_mammals", "N2_mammals", "N3_mammals"])
+var furnitureN = shuffle(["N1_furniture", "N2_furniture", "N3_furniture"])
+var clothesN = shuffle(["N1_clothes", "N2_clothes", "N3_clothes"])
+var instrumentsN = shuffle(["N1_instruments", "N2_instruments", "N3_instruments"])
+var buildingsN = shuffle(["N1_buildings", "N2_buildings", "N3_buildings"])
 
 var allFamiliar = {
     vehicles: vehiclesF,
@@ -146,15 +150,17 @@ var allFamiliar = {
     furniture: furnitureF,
     clothes: clothesF,
     instruments: instrumentsF,
+    buildings: buildingsF
 }
 
 var allNovel = {
-    vehicles: vehiclesT,
-    fruits: fruitsT,
-    mammals: mammalsT,
-    furniture: furnitureT,
-    clothes: clothesT,
-    instruments: instrumentsT,
+    vehicles: vehiclesN,
+    fruits: fruitsN,
+    mammals: mammalsN,
+    furniture: furnitureN,
+    clothes: clothesN,
+    instruments: instrumentsN,
+    buildings: buildingsN
 }
 
 // map of category names to category arrays for familiar items
@@ -198,6 +204,7 @@ var orderedTargetNames2 = new Array();
 
 function orderTargetsF2 (posTargetNames2, posTargetNames) {
     var tempPosTargetNames2 = posTargetNames2.slice();
+//    tempPosTargetNames2 = shuffle(tempPosTargetNames2);
     var tempPosTargetNames = posTargetNames.slice();
     orderTargetsF2Helper(tempPosTargetNames2, tempPosTargetNames, posTargetNames2, posTargetNames);
 }
@@ -242,6 +249,7 @@ var orderedTargetNames3 = new Array();
 
 function orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames) {
     var tempPosTargetNames3 = posTargetNames3.slice();
+//    tempPosTargetNames3 = shuffle(tempPosTargetNames3);
     var tempPosTargetNames2 = orderedTargetNames2.slice();
     var tempPosTargetNames = posTargetNames.slice();
     orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames);
@@ -294,6 +302,8 @@ for (var nTrial = 0; nTrial < trials.length; nTrial++) {
     trialTargets[nTrial].push(orderedTargetNames3[nTrial]);
 }
 
+shuffle(trialTargets);
+
 var trialFamiliarItems = new Array();
 
 for (nTrial = 0; nTrial < trials.length; nTrial++) {
@@ -319,6 +329,8 @@ for (var i=0; i < trials.length; i++) {
     shuffle(trainingDist[i]);
 }
 
+var novelWords = shuffle(["oskot", "kepel", "tuta", "wiso", "urbe", "modi", "gazzer", "glipsa", "ticon", "toma", "zoyar", "subi"])
+
 var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
 var trainingAgents = new Array();
@@ -338,6 +350,7 @@ function findCategory (pick) {
 var experiment = {
     slides: slides.slice(),
     trials: trials,
+    currTrialType: currTrialType,
 
     targetsF: targetsF, 
     targetsF2: targetsF2,
@@ -346,6 +359,8 @@ var experiment = {
     trialTargets: trialTargets,
     trialFamiliarItems: trialFamiliarItems,
     novelItems: novelItems,
+
+    novelWords: novelWords, 
 
     posDist: posDist,
     trainingDist: trainingDist,
@@ -361,21 +376,43 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the things they have at home. Your task is to click on the things they have at home.";
-        document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
+        // statistical
+        if (experiment.currTrialType == "statistical") { 
+            document.getElementById("text_introAll").innerHTML = "These little animals will request things from you. You can give them something by clicking on it.";
+            document.getElementById("text_introAll_2").innerHTML = "First, they will name things you already know the names for. Later, they will use new names for things. Try your best to find the correct one. To move forward within the experiment, press the \"Next\" button. Press below to start.";
+            // preference
+        } else {
+            document.getElementById("text_introAll").innerHTML = "These little animals like to play with their favorite things. There are always 3 things, and the animals will tell you which one is their favorite. You can give them their favorite by clicking on it. Make sure you give them the right one, because they only want to play with their favorite.";
+            document.getElementById("text_introAll_2").innerHTML = "First, they will ask for things you already know the names for. Later, they will use new names for things. Try your best to find out what the animals want. To move forward within the experiment, press the \"Next\" button. Press below to start.";
+        }
     },
 
     intro: function () {
-        background2("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". These are the things I have at home.";
+
+        // statistical
+        if (experiment.currTrialType == "statistical") { 
+            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
+            setTimeout(function() {
+                document.getElementById("text_intro").innerHTML = "Let's look at some things.";
+            }, 1500);
+
+            // preference
+        } else {
+            document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ".";
+            setTimeout(function() {
+                document.getElementById("text_intro").innerHTML = "Can you help me get my favorite things?";
+            }, 1500);
+        }
 
         document.getElementById("text_transition").innerHTML = "";
-
-        $(".agent_transition").click(experiment.train);      
+        setTimeout(function() {
+            $(".agent_transition").click(experiment.train);  
+        }, 3000);     
     },
 
     train : function () {
@@ -393,7 +430,7 @@ var experiment = {
 
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
-        background("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         showSlide("input");
 
@@ -430,78 +467,89 @@ var experiment = {
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
 
-        document.getElementById("text_correctItem").innerHTML = "Here's a " +           correctItem + ". Can you click on the " + correctItem + "?";
+        // statistical
+        if (experiment.currTrialType == "statistical") { 
+            document.getElementById("text_correctItem").innerHTML = correctItem;  
+            // preference
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you see the " + correctItem + "? I really like them.";
+            setTimeout(function() {
+                document.getElementById("text_correctItem").innerHTML = "Can you click on the " + correctItem + "?";
+            }, 2000);
+        }
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
 
-        $(".item").click(function() {
-            var clickedItem = event.target;
+        setTimeout(function() {
+            $(".item").click(function() {
+                var clickedItem = event.target;
 
-            var pickId = event.target.id;
+                var pickId = event.target.id;
 
-            if(pickId == "item_l") {
-                var pick = experiment.position[0];
-            } else if(pickId == "item_m") {
-                var pick = experiment.position[1];
-            } else if (pickId == "item_r") {
-                var pick = experiment.position[2];
-            }
+                if(pickId == "item_l") {
+                    var pick = experiment.position[0];
+                } else if(pickId == "item_m") {
+                    var pick = experiment.position[1];
+                } else if (pickId == "item_r") {
+                    var pick = experiment.position[2];
+                }
 
-            // compare to correct item of input
-            if (pick == correctItem) {
-                var correct_item = 1;
-            } else {
-                var correct_item = 0;
-            }
+                // compare to correct item of input
+                if (pick == correctItem) {
+                    var correct_item = 1;
+                } else {
+                    var correct_item = 0;
+                }
 
-            // stores category of the final input slide
-            if (experiment.slides[0] == 6) {
-                experiment.lastInputCat = findCategory(pick);
-            }
+                // stores category of the final input slide
+                if (experiment.slides[0] == 6) {
+                    experiment.lastInputCat = findCategory(pick);
+                }
 
-            $(".item").unbind("click");
-            clickedItem.style.border = '5px solid blue';
+                $(".item").unbind("click");
+                clickedItem.style.border = '5px solid blue';
 
-            data = {
-                experiment: "distribution",
-                trial: trials[0] + 1,
+                data = {
+                    experiment: "distribution",
+                    trial: trials[0] + 1,
+                    trialType: currTrialType,
+                    agent: trainingAgents[trials[0]],
+                    phase: "training",
+                    slide: experiment.slides[0],
 
-                agent: trainingAgents[trials[0]],
-                phase: "training",
-                slide: experiment.slides[0],
+                    distribution: posDist[trials[0]],
+                    target1: trialTargets[trials[0]][0],
+                    target2: trialTargets[trials[0]][1],
+                    target3: trialTargets[trials[0]][2],
 
-                distribution: posDist[trials[0]],
-                target1: trialTargets[trials[0]][0],
-                target2: trialTargets[trials[0]][1],
-                target3: trialTargets[trials[0]][2],
+                    item_l: experiment.position[0],
+                    item_m: experiment.position[1],
+                    item_r: experiment.position[2],
 
-                item_l: experiment.position[0],
-                item_m: experiment.position[1],
-                item_r: experiment.position[2],
+                    correctItem: correctItem,
+                    pick: pick,
+                    pickPos: pickId,
+                    pickCat: findCategory(pick),
+                    correct_item: correct_item
+                }
 
-                correctItem: correctItem,
-                pick: pick,
-                pickPos: pickId,
-                pickCat: findCategory(pick),
-                correct_item: correct_item
-            }
+                experiment.data.push(data);
 
-            experiment.data.push(data);
+                experiment.targetsF[0].shift();
+                experiment.targetsF2[0].shift();
+                experiment.targetsF3[0].shift();
 
-            experiment.targetsF[0].shift();
-            experiment.targetsF2[0].shift();
-            experiment.targetsF3[0].shift();
+                experiment.trainingDist[trials[0]].shift();
 
-            experiment.trainingDist[trials[0]].shift();
+                experiment.slides.shift();
 
-            experiment.slides.shift();
-
-            setTimeout(function() {
-                clickedItem.style.border = '0px';
-                experiment.train();
-            }, 1500);
-        });
+                setTimeout(function() {
+                    clickedItem.style.border = '0px';
+                    experiment.train();
+                }, 1500);
+            });
+        }, 2000);
     },
 
     choice : function () {
@@ -510,7 +558,7 @@ var experiment = {
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
 
-        background("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         var targets = trialTargets[trials[0]];
         experiment.position = [];
@@ -534,7 +582,13 @@ var experiment = {
         // pause for 1s before items appear.
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
-            document.getElementById("text_correctItem").innerHTML = "Let's see...";
+            // statistical
+            if (experiment.currTrialType == "statistical") { 
+                document.getElementById("text_correctItem").innerHTML = "Here are some new ones." 
+                // preference
+            } else {
+                document.getElementById("text_correctItem").innerHTML = "Oh nice! Here are some new ones!";
+            }
             showLeftItem();
             showMiddleItem();
             showRightItem();
@@ -549,7 +603,16 @@ var experiment = {
     choice2 : function() {
         document.getElementById("next-novel").style.visibility = "hidden";    
 
-        document.getElementById("text_correctItem").innerHTML = "Here's another one. Can you click on it?"
+        // statistical
+        if (experiment.currTrialType == "statistical") { 
+            document.getElementById("text_correctItem").innerHTML = novelWords[trials[0]];  
+            // preference
+        } else {
+            document.getElementById("text_correctItem").innerHTML = "Oh cool, can you see the " + novelWords[trials[0]] + "? I really like them.";
+            setTimeout(function() {
+                document.getElementById("text_correctItem").innerHTML = "Can you click on the " + novelWords[trials[0]] + "?";
+            }, 3000);
+        }
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -598,7 +661,7 @@ var experiment = {
             data = {
                 experiment: "distribution",
                 trial: trials[0] + 1,
-
+                trialType: currTrialType,
                 agent: trainingAgents[trials[0]],
                 phase: "test",
                 slide: experiment.slides[0],
@@ -611,6 +674,8 @@ var experiment = {
                 item_l: experiment.position[0],
                 item_m: experiment.position[1],
                 item_r: experiment.position[2],
+
+                novelWord: novelWords[trials[0]],
 
                 pick: pick,
                 pickPos: pickId,
@@ -635,14 +700,14 @@ var experiment = {
     },
 
     transition: function() {
-        background2("images/backgrounds/back_int" + backgrounds[0] + ".jpg");
+        background2("images/backgrounds/back" + backgrounds[0] + ".jpg");
 
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
 
         document.getElementById("text_intro").innerHTML = "";
 
-        document.getElementById("text_transition").innerHTML = "Thank you for coming! Goodbye!";
+        document.getElementById("text_transition").innerHTML = "Thank you for playing with me!";
 
         experiment.trials.shift();
 
