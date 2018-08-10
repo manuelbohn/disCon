@@ -249,10 +249,10 @@ function orderTargetsF3 (posTargetNames3, orderedTargetNames2, posTargetNames) {
 
 function orderTargetsF3Helper (tempPosTargetNames3, tempPosTargetNames2, tempPosTargetNames, posTargetNames3, orderedTargetNames2, posTargetNames) {
     if(tempPosTargetNames3.length == 1) {
-        if (tempPosTargetNames2[0] != tempPosTargetNames[0]
+        if (tempPosTargetNames3[0] != tempPosTargetNames[0]
             && tempPosTargetNames3[0] != tempPosTargetNames2[0]
             && checkCategory(tempPosTargetNames3[0])) {
-            targetsF2.push(shuffle(familiarItems[tempPosTargetNames3[0]].slice()));
+            targetsF3.push(shuffle(familiarItems[tempPosTargetNames3[0]].slice()));
             orderedTargetNames3.push(tempPosTargetNames3[0]);
             trackRepeats[tempPosTargetNames3[0]]--;
         } else {
@@ -303,6 +303,18 @@ for (nTrial = 0; nTrial < trials.length; nTrial++) {
     familiarItemsMap.set(trialTargets[nTrial][2], targetsF3[nTrial]);
     trialFamiliarItems.push(familiarItemsMap);
 }
+
+// array contains 6 items
+function shuffleByIndex(array) {
+    for (var i = 0; i < shuffle(trials.slice()); i++) {
+        var temp = array[i];
+        array[i] = array[shuffleIndex[i]];
+        array[shuffleIndex[i]] = temp;
+    }
+}
+
+shuffleByIndex(trialTargets);
+shuffleByIndex(trialFamiliarItems);
 
 var posDist = shuffle([[4, 2, 0], [6, 0, 0], [2, 2, 2], [4, 2, 0], [6, 0, 0], [2, 2, 2]]);
 
