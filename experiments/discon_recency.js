@@ -472,6 +472,8 @@ var experiment = {
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
+            workerIp = JSON.parse(ip);
+            
             data = {
                 experiment: "recency",
                 trial: trials[0] + 1,
@@ -495,7 +497,7 @@ var experiment = {
                 pickCat: findCategory(pick),
                 correct_item: correct_item,
                 
-                workerIp: ip
+                workerIp: workerIp.ip
             }
 
             experiment.data.push(data);
@@ -602,6 +604,8 @@ var experiment = {
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
+            workerIp = JSON.parse(ip);
+            
             data = {
                 experiment: "recency",
                 trial: trials[0] + 1,
@@ -630,7 +634,7 @@ var experiment = {
                 lastInputCat: experiment.lastInputCat,
                 same_lastInput: same_lastInput,
                 
-                workerIp: ip
+                workerIp: workerIp.ip
             }
             experiment.data.push(data);
 
