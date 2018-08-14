@@ -31,19 +31,22 @@ for (f in files) {
 }
 
 data <- raw_data %>%
-  mutate(correct_target3 = ifelse(correct_target1 == 0 & correct_target2 == 0, 1, 0)) %>%
   mutate(distribution = as.character(distribution),
-         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")),
-         pick = ifelse(pickPos == "item_l", item_l, ifelse(pickPos == "item_r", item_r, ifelse(pickPos=="item_m", item_m, NA))),
-         correct_item = ifelse(pick == correctItem, 1, 0),
-         pickTest = substr(pick, 4, length(pick)),
-         correct_target1 = ifelse(pickTest == target1, 1, 0),
-         correct_target2 = ifelse(pickTest == target2, 1, 0),
-         correct_target3 = ifelse(pickTest == target3, 1, 0))
-        
+         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")))
 
+ # data <- raw_data %>%
+ #  mutate(correct_target3 = ifelse(correct_target1 == 0 & correct_target2 == 0, 1, 0)) %>%
+ #  mutate(distribution = as.character(distribution),
+ #         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")),
+ #         pick = ifelse(pickPos == "item_l", item_l, ifelse(pickPos == "item_r", item_r, ifelse(pickPos=="item_m", item_m, NA))),
+ #         correct_item = ifelse(pick == correctItem, 1, 0),
+ #         pickTest = substr(pick, 4, length(pick)),
+ #         correct_target1 = ifelse(pickTest == target1, 1, 0),
+ #         correct_target2 = ifelse(pickTest == target2, 1, 0),
+ #         correct_target3 = ifelse(pickTest == target3, 1, 0))
+      
 
-write.csv(data, file="../data/pilot.data.csv")
+# write.csv(data, file="../data/pilot.data.csv")
 
 # data <- read_csv(file="../data/pilot.data.csv")
 ```
@@ -63,13 +66,71 @@ drop <- data %>%
 
 data <- data %>%
   filter(!workerid %in% drop)
+
 ```
 
+# Some preliminary tests
 ```{r}
-data %>%
-  filter(phase == "test", distribution == "c(4, 2, 0)") %>%
-  group_by(pickTest) %>%
-  summarise(mean = mean(correct_target1))
+data_test <- data %>% 
+  filter (phase == "test", distribution == "c(4, 2, 0)") %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = length(distribution))
+#23/38 trials
+
+data_test <- data %>%
+  filter(phase == "test", distribution == "c(6, 0, 0)") %>%
+  summarise (correct1 = mean(correct_target1))
+
+data_test <- data %>%
+  filter(phase == "test", distribution == "c(2, 2, 2)") %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = length(distribution))
+# 23/38
+  
+```
+
+# Salience of each category
+```{r}
+plot1 <- data %>%
+  filter(phase == "test", distribution == "c(6, 0, 0)") %>%
+  group_by(distribution, target1) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3))
+
+plot1 <- data %>%
+  filter(phase == "test", distribution == "c(6, 0, 0)", target1 == "vehicles")
+  
+# clothes: 2
+# fruits: 5
+# furniture: 10
+# instruments: 4
+# mammals: 8
+# vehicles: 9
+  
+plot1 <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, target1) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -target1) %>%
+  group_by(distribution, item, target1) %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot(plot1,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(target1~distribution) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
 ```
 # Do proportion of choices match the frequency in the distribution
 
@@ -102,8 +163,60 @@ ggplot(plot1,
 
 
 ```
+# How does the last item seen affect the object chosen in the anaphora case? 
+```{r}
+plot2 <- data %>%
+  filter(phase == "test", distribution != "c(6, 0, 0)") %>%
+  mutate(trackLast = ifelse(lastInputCat == target1, "yes", "no")) %>%
+  group_by (distribution, workerid) %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = n()) %>% 
+  multi_boot_standard(col = "lastInput")
+
+plot2 <- data %>%
+  filter(phase == "test", distribution != "c(6, 0, 0)") %>%
+  mutate(trackLast = ifelse(lastInputCat == target1, "yes", "no")) %>%
+  group_by (distribution, workerid) %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = n()) %>% 
+  multi_boot_standard(col = "lastInput")
+  
+ggplot(plot2,
+       aes(x = distribution, y = mean, fill = distribution)) +
+  geom_bar(stat='identity', width = 0.3) +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few()
+```
+# Does the graded distribution come through in cases where the last input does not affect the object choice?
+```{r}
+plot3 <- data %>%
+  filter(phase == "test", distribution == "c(4, 2, 0)", same_lastInput == 0) %>%
+  group_by(distribution, workerid) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid) %>%
+  group_by(distribution, item) %>%
+  multi_boot_standard(col = "prop_correct")
 
 
+ggplot(plot3,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(~distribution, 
+             labeller = as_labeller(c(`c(6, 0, 0)` = "Distribution\n(6-0-0)", `c(4, 2, 0)` = "Distribution\n(4-2-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)", preference = "preference", statistical = "statistical"))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```
 
 # Does the framing influence the match between choice and distribution 
 
@@ -157,14 +270,14 @@ ggplot(plot2,
 
 # Comparing the last input with the picked object by distribution
 
-```{r plot 2}
+```{r}
 a <- data %>%
   filter(slide == 6) %>%
   select(workerid, pick) 
 
 b <- data %>%
   filter(slide == "choice") %>%
-  select(workerid, distribution, pickTest, correct_target1)
+  select(workerid, distribution, pickCat, correct_target1)
 
 b$pickSlide6 = a$pick
 
@@ -178,13 +291,7 @@ b <- b %>%
 # 24/33 for 4, 2, 0
 # 7/26 for 2, 2, 2
 
+
 ```
 
-```{r}
-data %>%
-  filter(phase == "test", distribution == "c(6, 0, 0)") %>%
-  group_by(pick) %>%
-  summarise(n = length(correct_target1),
-            mean = mean(correct_target1)) %>%
-  arrange(mean)
-```
+
