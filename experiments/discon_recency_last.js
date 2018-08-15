@@ -473,7 +473,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "recency",
+                experiment: "recency_last ",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -556,7 +556,7 @@ var experiment = {
     choice2 : function() {
         document.getElementById("next-novel").style.visibility = "hidden";    
 
-        document.getElementById("text_correctItem").innerHTML = "Here's another one. Can you click on it?"
+        document.getElementById("text_correctItem").innerHTML = "Here's the last one. Can you click on it?"
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -605,7 +605,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "recency",
+                experiment: "recency_last",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],

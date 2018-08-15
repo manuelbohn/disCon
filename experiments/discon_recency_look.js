@@ -336,7 +336,7 @@ function findCategory (pick) {
 
 // get client’s ip information and store in app object
 $.getJSON('https://ipapi.co/json/', function(data) {
- ip = JSON.stringify(data, null, 2);
+    ip = JSON.stringify(data, null, 2);
 });
 
 var experiment = {
@@ -433,11 +433,7 @@ var experiment = {
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
 
-        if(correctItem == "apple" || correctItem == "airplane" || correctItem == "elephant" || correctItem == "orange") {
-            document.getElementById("text_correctItem").innerHTML = "Here's an " + correctItem + ". Can you click on the " + correctItem + "?";
-        } else {
-            document.getElementById("text_correctItem").innerHTML = "Here's a " + correctItem + ". Can you click on the " + correctItem + "?";
-        }
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the " + correctItem + "?";
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
@@ -471,9 +467,9 @@ var experiment = {
             clickedItem.style.border = '5px solid blue';
 
             workerIp = JSON.parse(ip);
-            
+
             data = {
-                experiment: "recency",
+                experiment: "recency_look",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -494,7 +490,7 @@ var experiment = {
                 pickPos: pickId,
                 pickCat: findCategory(pick),
                 correct_item: correct_item,
-                
+
                 workerIp: workerIp.ip
             }
 
@@ -556,7 +552,7 @@ var experiment = {
     choice2 : function() {
         document.getElementById("next-novel").style.visibility = "hidden";    
 
-        document.getElementById("text_correctItem").innerHTML = "Here's another one. Can you click on it?"
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on it?"
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -603,9 +599,9 @@ var experiment = {
             clickedItem.style.border = '5px solid blue';
 
             workerIp = JSON.parse(ip);
-            
+
             data = {
-                experiment: "recency",
+                experiment: "recency_look",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -631,7 +627,7 @@ var experiment = {
 
                 lastInputCat: experiment.lastInputCat,
                 same_lastInput: same_lastInput,
-                
+
                 workerIp: workerIp.ip
             }
             experiment.data.push(data);

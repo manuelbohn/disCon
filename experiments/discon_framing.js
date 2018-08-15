@@ -1,4 +1,4 @@
-var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "grapes", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoes", "socks", "pants","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
+var preloadItems = ["car", "truck", "train", "bus", "airplane", "boat", "strawberry", "apple", "banana", "cherry", "orange", "melon", "dog", "cat", "horse", "bear", "cow", "monkey", "bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "shoe", "sock", "hat","shirt", "jacket", "dress", "drum", "flute", "guitar", "piano", "trumpet", "violin", "castle", "church", "factory", "house", "igloo", "tent", "N1_vehicles", "N1_fruits", "N1_mammals", "N1_containers", "N1_furniture", "N1_clothes", "N2_vehicles", "N2_fruits", "N2_mammals", "N2_containers", "N2_furniture", "N2_clothes", "N3_vehicles", "N3_fruits", "N3_mammals", "N3_containers", "N3_furniture", "N3_clothes", "bread", "tv", "pencil"];
 
 var images = new Array();
 for (i = 0; i < preloadItems.length; i++) {
@@ -128,10 +128,10 @@ var currTrialType = trialType[0];
 var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat"])
-var fruitsF = shuffle(["strawberry", "apple", "banana", "grapes", "orange", "melon"])
+var fruitsF = shuffle(["strawberry", "apple", "banana", "cherry", "orange", "melon"])
 var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey"])
 var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp"])
-var clothesF = shuffle(["shoes", "socks", "pants","shirt", "jacket", "dress"])
+var clothesF = shuffle(["shoe", "sock", "hat", "shirt", "jacket", "dress"])
 var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin"])
 var buildingsF = shuffle(["castle", "church", "factory", "house", "igloo", "tent"])
 
