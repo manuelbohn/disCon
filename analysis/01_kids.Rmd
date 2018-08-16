@@ -1,0 +1,38 @@
+---
+title: "DisCon Kids Pilot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(jsonlite)
+library(tidyr)
+library(stringr)
+library(dplyr)
+library(ggthemes)
+library(langcog)
+
+```
+
+```{r}
+# Data pre-processing
+
+files <- dir("../data/kids_pilot/")
+
+raw_data <- data_frame()
+for (f in files) {
+  jf <- paste("../data/kids_pilot/",f,sep="")
+  jd <- fromJSON(paste(readLines(jf), collapse=""))
+  id <- as_data_frame(jd$data$data)
+   # mutate(workerid = jd$WorkerId)
+  raw_data <- bind_rows(raw_data, id)
+}
+
+data <- raw_data %>%
+  mutate(distribution = as.character(distribution),
+         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")))
+```
+

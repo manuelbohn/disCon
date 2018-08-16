@@ -12,16 +12,6 @@ for (i = 1; i <= 12; i++) {
     backgroundImages[i].src = "images/backgrounds/back_int" + i + ".jpg";
 }
 
-$("#button").click(function() {
-    //disable accept button if in turk preview mode
-    if (turk.previewMode) {
-        showSlide("instructions");
-        alert("Please accept HIT to view");
-    } else {
-        showSlide('introAll')
-    }
-});
-
 function showSlide(id) {
     // Hide all slides
     $(".slide").hide();
@@ -349,6 +339,21 @@ var experiment = {
 
     data: [], 
 
+    checkInput: function() {
+        //subject ID
+        if (document.getElementById("subjectID").value.length < 1) {
+            $("#checkMessage").html('<font color="red">You must input a subject ID</font>');
+            return;
+        }
+        if (document.getElementById("subjectAge").value.length < 1) {
+            $("#checkMessage").html('<font color="red">You must input a subject age</font>');
+            return;
+        }
+        experiment.subid = document.getElementById("subjectID").value
+        experiment.subage = document.getElementById("subjectAge").value
+        experiment.introAll()
+    },  
+
     introAll: function() {
         showSlide("introAll");
         document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to click on the things they talk about.";
@@ -419,7 +424,7 @@ var experiment = {
 
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-        
+
         document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the " + correctItem + "?";
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
@@ -453,8 +458,13 @@ var experiment = {
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
+            var subid = experiment.subid;
+            var subage = experiment.subage;    
+            
             data = {
-                experiment: "distribution",
+                subid: subid,
+                subage: subage,
+                experiment: "distribution_kids",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -502,7 +512,7 @@ var experiment = {
         document.getElementById("next-novel").style.visibility = 'hidden';
 
         background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
-        
+
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         showSlide("input"); 
@@ -580,9 +590,14 @@ var experiment = {
 
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
-
+            
+            var subid = experiment.subid;
+            var subage = experiment.subage;    
+            
             data = {
-                experiment: "distribution",
+                subid: subid,
+                subage: subage,
+                experiment: "distribution_kids",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],

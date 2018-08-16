@@ -153,15 +153,19 @@ data_recency <- data_recency %>%
   filter(!workerid %in% drop)
 ```
 
-# Pilot experiment
+# Pilot Experiment
 
 ## Descriptives
 
 ### Task description
+
 Each experiment contains 6 trials. Each trial contains 6 training slides (non-ambiguous utterance) and 1 test slide (ambiguous utterance), as shown below. 
 
 
-![Training slide](../pictures/pilot_training.png){width=250px} ![Test slide](../pictures/pilot_test.png){width=250px}
+![Training slide](../pictures/pilot_training.png){width=350px} ![Test slide](../pictures/pilot_test.png){width=350px}
+
+Left: training slide, Right: test slide
+
 
 The items appearing in a trial belong to a set of 3 categories of items (for e.g. musical instruments, fruits, vehicles) that is unique across 6 trials. We run the experiment with distributions (6-0-0), (4-2-0), and (2-2-2), with each number corresponding to how many times a category has items appear in the trial. 
 
@@ -178,9 +182,9 @@ sample_size %>%
  kable()
 ```
 
-### Finding
-```{r plot1, fig.width = 8, echo=FALSE}
-plot1 <- data_pilot_another %>%
+## Finding
+```{r pilot_plot1, fig.width = 8, echo=FALSE}
+pilot_plot1 <- data_pilot_another %>%
   filter(phase == 'test') %>%
   group_by(distribution, workerid) %>%
   summarise(correct = mean(correct_target1),
@@ -191,7 +195,7 @@ plot1 <- data_pilot_another %>%
   multi_boot_standard(col = "prop_correct")
 
 
-ggplot(plot1,
+ggplot(pilot_plot1,
        aes(x = item, y=mean, fill=item)) +
   geom_bar(stat='identity') +
   geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -207,19 +211,19 @@ ggplot(plot1,
   labs(x="", y= "proportion chosen")
 ```
 
-There is a graded response in distribution (4-2-0) corresponding to the frequency of appearance of each category. This fits with our hypothesis that people use common ground to resolve anaphora. 
+There is a graded response in distribution (4-2-0) corresponding to the frequency of appearance of each category. This fits with our hypothesis that people use common ground to identify the reference of an ambiguous utterance. 
 
 However, this result could also be driven by a recency effect where people simply choose according to the category of the last seen item.
 
-```{r plot2, echo=FALSE}
-plot2 <- data_pilot_another %>%
+```{r pilot_plot2, fig.width = 8, echo=FALSE}
+pilot_plot2 <- data_pilot_another %>%
   filter(phase == "test", distribution != "c(6, 0, 0)") %>%
   group_by (distribution, workerid) %>%
   summarise (lastInput = mean(same_lastInput),
              n = n()) %>% 
   multi_boot_standard(col = "lastInput")
 
-ggplot(plot2,
+ggplot(pilot_plot2,
        aes(x = distribution, y = mean, fill = distribution)) +
   geom_bar(stat='identity', width = 0.3) +
   geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
@@ -233,7 +237,133 @@ ggplot(plot2,
   labs(x="", y= "proportion chosen same as last item")
 ```
 
-In order to look at the recency, we manipulate the experiment 
-2 new types of expression for the test slide
+We see that people are choosing the item in the test slide in the same category as the last training item above chance, suggesting a possbily strong recency effect.
+
+# Recency Effect Experiment
+
+## Descriptives
+
+### Task description
+
+In order to look at the recency effect more closely, we manipulate the experiment to look at distribution (5-1-0) where the last item preceding the test slide is never in the most frequent category. We also use 2 new phrasing for the test slide, "Here's the last one" and "Look at that" Distribution (2-2-2), with all category appearances randomized, is used as the control.
+
+![Training slide](../pictures/last_training.png){width=350px} ![Test slide](../pictures/last_test.png){width=350px}
+
+![Training slide](../pictures/look_training.png){width=350px} ![Test slide](../pictures/look_test.png){width=350px}
+
+Left: training slide, Right: test slide
+
+### Sample size
+We remove responses that get less than 5/6 correct in training slides. If there are duplicated IPs, we only take the first response.
+```{r sample size data_recency, echo=FALSE}
+# summarise all unique ips across 3 experiments (do this after general description of task)
+
+sample_size <- data_recency %>%
+  distinct(workerid, .keep_all = TRUE)
+
+sample_size %>%
+ summarise(n = n()) %>%
+ kable()
+```
+
+## Finding
+```{r recency_plot1, fig.width = 8, echo = FALSE}
+recency_plot1 <- data_recency %>%
+  filter(phase == 'test', distribution == "c(5, 1, 0)") %>%
+  group_by(distribution, workerid, experiment) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -experiment) %>%
+  group_by(distribution, item, experiment) %>%
+  multi_boot_standard(col = "prop_correct")
+
+
+ggplot(recency_plot1,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(~experiment, 
+             labeller = as_labeller(c(`c(5, 1, 0)` = "Distribution\n(5-1-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)", recency = "Here's another one.", recency_last = "Here's the last one.", recency_look = "Look at that."))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```
+
+Distribution (5, 1, 0)
+
+We see that the recency effect is reduced when "Here's the last one" and "Look at that" are used. We observe a higher increase in proportion of people choosing the item from the least frequent category in the condition "Here's the last one", perhaps because it is possible to interpret "the last one" as the item from the category that has not appeared. "Look at that" looks closest to the graded response that corresponds to people using common ground to identify reference.
+```{r recency_plot3, fig.height = 5, fig.width = 10, echo = FALSE}
+recency_plot3 <- data_recency %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, experiment) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -experiment) %>%
+  group_by(distribution, item, experiment)
+
+recency_plot3a <- recency_plot3 %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot() +
+  geom_jitter(data = recency_plot3, aes(x = item, y = prop_correct, col = item, alpha = .2), width = .3,height = .025)+
+  geom_pointrange(data = recency_plot3a, aes(x = item, y = mean, col = item, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  scale_colour_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(experiment~distribution,
+             labeller = as_labeller(c(`c(5, 1, 0)` = "Distribution\n(5-1-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)", recency = "Here's another one.", recency_last = "Here's the last one.", recency_look = "Look at that.")))+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="item chosen", y="proportion chosen")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())
+```
+
+```{r recency_plot2, fig.width = 8, echo = FALSE}
+recency_plot2 <- data_recency %>%
+  filter(phase == "test", distribution != "c(6, 0, 0)") %>%
+  group_by (distribution, workerid, experiment) %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = n()) %>%
+  group_by(distribution, experiment) %>%
+  multi_boot_standard(col = "lastInput")
+  
+ggplot(recency_plot2,
+       aes(x = distribution, y = mean, fill = distribution)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Distribution",
+                       breaks = c("c(5, 1, 0)", "c(2, 2, 2)"),
+                       labels = c("(5-1-0)", "(2-2-2)"))+
+  facet_grid(~experiment, 
+             labeller = as_labeller(c(recency = "Here's another one.", recency_last = "Here's the last one.", recency_look = "Look at that.")))+ 
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen same as last item")
+```
+
+# Moving forward
+We stay with "Look at that." as the phrasing for the test slide.
+
+We run 2 experiments with adults, with the same setup:
+
+1. (6-0-0) vs (4-2-0) vs (2-2-2)
+2. (3-0-0) vs (2-1-0) vs (1-1-1)
+
+to test the effect of relative and absolute strength.
+
+We run the 3rd experiment with other distributions that are interesting, such as (1-0-0) and (3-2-1).
+
+We start pilotting on kids, with the distributions (6-0-0) vs (4-2-0) vs (2-2-2).
 
 
