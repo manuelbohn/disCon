@@ -451,7 +451,7 @@ var experiment = {
             }
 
             // stores category of the final input slide
-            if (experiment.slides[0] == 6) {
+            if (experiment.slides[0] == slides.length - 1) {
                 experiment.lastInputCat = findCategory(pick);
             }
 
