@@ -16,26 +16,6 @@ library(ggthemes)
 library(langcog)
 ```
 
-#Recency data
-```{r}
-files <- dir("../../recency_raw_data/production-results")
-
-raw_data <- data_frame()
-for (f in files) {
-  jf <- paste("../../recency_raw_data/production-results/",f,sep="")
-  jd <- fromJSON(paste(readLines(jf), collapse=""))
-  id <- as_data_frame(jd$answers$data$data) %>%
-    mutate(workerid = jd$WorkerId)
-  raw_data <- bind_rows(raw_data, id)
-}
-
-data <- raw_data %>%
-  mutate(distribution = as.character(distribution),
-         distribution = factor(distribution, levels = c("c(5, 1, 0)", "c(2, 2, 2)")))
-data$workerIp
-
-```
-
 #Pilot 1 data
 ```{r data preprocessing}
 # Data pre-processing
@@ -181,8 +161,6 @@ ggplot(plot1,
   theme_few() +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   labs(x="", y= "proportion chosen")
-
-
 ```
 # How does the last item seen affect the object chosen in the anaphora case? 
 ```{r}
@@ -210,6 +188,67 @@ ggplot(plot2,
   ylim(0, 1) +
   theme_few()
 ```
+
+# Are there 2 strategies in determining what "another one" means?
+```{r}
+plot3 <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid) %>%
+  group_by(distribution, item) 
+
+plot3a <- plot3 %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot() +
+  geom_jitter(data = plot3, aes(x = item, y = prop_correct, col = distribution, alpha = .2), width = .3,height = .025)+
+  geom_pointrange(data = plot3a, aes(x = item, y = mean, col = distribution, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  facet_grid(~distribution)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Item Chosen", y="Proportion Chosen")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+ 
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+  scale_colour_solarized(name="Control",
+                     breaks=c("false", "true"),
+                     labels=c("No", "Yes"))
+
+#No - if 2 strategies: there should be fewer dots in the middle
+```
+# Does where (5,1,0) occurs determine the strategy of chosing the last item?
+```{r}
+plot3 <- data %>%
+  filter(phase == 'test', distribution == "c(5, 1, 0)") %>%
+  mutate(distType = ifelse(trial < 4, "early", "late")) %>%
+  group_by(distribution, workerid, distType) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -distType) %>%
+  group_by(distribution, item, distType) 
+
+plot3a <- plot3 %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot() +
+  geom_jitter(data = plot3, aes(x = item, y = prop_correct, col = distribution, alpha = .2), width = .3,height = .025)+
+  geom_pointrange(data = plot3a, aes(x = item, y = mean, col = distribution, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  facet_grid(~distType)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Item Chosen", y="Proportion Chosen")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+ 
+ # theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+  scale_colour_solarized(name="Control",
+                     breaks=c("false", "true"),
+                     labels=c("No", "Yes"))
+```
+
 # Does the graded distribution come through in cases where the last input does not affect the object choice?
 ```{r}
 plot3 <- data %>%
@@ -311,8 +350,6 @@ b <- b %>%
 # 30/59 trials picking the same category as the last input slide.
 # 24/33 for 4, 2, 0
 # 7/26 for 2, 2, 2
-
-
 ```
 
 

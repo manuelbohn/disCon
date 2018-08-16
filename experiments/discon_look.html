@@ -1,0 +1,149 @@
+
+<html>
+
+    <head>
+        <title>Learning words from animals</title>
+        <script src="jquery-1.11.2.min.js"></script>
+        <script src="mmturkey-0.6.js"></script>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+
+<body>
+        <!--<div id="progressbar" style="width: 200px;" align="center"></div>-->
+        <!-- The instructions slide. -->
+        <div class="slide" id="instructions">
+            <div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
+                <img src="images/stanford.png" height="46" width="360" alt="Stanford University">
+            </div>
+            <p id='logo-text'>Stanford Language and Cognition Lab</p>
+            <p class="block-text">In this experiment, your task is to click on the things that the animals talk about. The materials were designed for children. Even if they seem strange at times, we ask you to try to be as accurate as possible.  The experiment takes about 6 - 8 minutes.</p>
+            <button id="button" type="button" onClick="this.blur(); experiment.introAll();">Press to begin</button>
+
+<!--             Legal blurb that we're required to show. -->
+            <p class="block-text" id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Manuel Bohn at <a href="mailto://bohn@stanford.edu">bohn@stanford.edu</a>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+        </div> 
+    
+    
+        <!-- The training slide. -->
+        <div class="slide" id="introAll">
+            <div align="center" width="500px">
+                <p id='logo-text'>Instructions</p>
+                <table style="width:100%">
+                    <tbody>
+                        <p class="block-text" id="text_introAll">
+                        </p>
+                        <p class="block-text" id="text_introAll_2">
+                        </p>
+
+
+                        <tr align="center" height="300px">
+                            <td>
+
+                            </td>
+                            <td>
+                                <img src="images/agents/Bear_straight.png" style="position:absolute;TOP: 230px;LEFT: 390px;WIDTH: 200px;">
+                            </td>
+                            <td>
+
+                            </td>
+
+                        <tr align="center" height="50px">
+                            <td>
+                                <img src="images/bread.png" style="position:absolute; BOTTOM: 180px;LEFT: 240px;WIDTH: 110px;z-index:1;">
+                            </td>
+
+                            <td> 
+                                <img src="images/pencil.png" style="position:absolute;BOTTOM: 180px;LEFT: 440px;WIDTH: 110px;z-index:1;">
+                            </td>
+
+                            <td>
+                                <img src="images/tv.png" style=" position:absolute;BOTTOM: 180px;LEFT: 630;WIDTH: 110px;z-index:1;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button id="button" type="button" onClick="this.blur(); experiment.intro();">Let's begin</button>
+
+            </div>
+        </div>
+
+
+        <!-- The main slide (input + choice slide). -->   
+        <div class="slide" id="input"> 
+            <div class="speech" id="text_correctItem"></div>
+            <img class="background" id="background" src=""> 
+            <audio id="sound" src = ""></audio> 
+
+            <!--all agents-->
+            <p style="text-align:center;">
+                <img id="Bear_straight" class="agent"  src="images/agents/Bear_straight.png">  
+                <img id="Beaver_straight" class="agent"  src="images/agents/Beaver_straight.png"> 
+                <img id="Bunny_straight" class="agent"  src="images/agents/Bunny_straight.png"> 
+                <img id="Cat_straight" class="agent"  src="images/agents/Cat_straight.png"> 
+                <img id="Dog_straight" class="agent"  src="images/agents/Dog_straight.png"> 
+                <img id="Elephant_straight" class="agent"  src="images/agents/Elephant_straight.png"> 
+                <img id="Frog_straight" class="agent"  src="images/agents/Frog_straight.png"> 
+                <img id="Monkey_straight" class="agent"  src="images/agents/Monkey_straight.png"> 
+                <img id="Mouse_straight" class="agent"  src="images/agents/Mouse_straight.png"> 
+                <img id="Pig_straight" class="agent"  src="images/agents/Pig_straight.png"> 
+                <img id="Sheep_straight" class="agent"  src="images/agents/Sheep_straight.png"> 
+                <img id="Tiger_straight" class="agent"  src="images/agents/Tiger_straight.png"> 
+            </p>
+
+            <img id="item_l" class="item" src="">
+
+            <img id="item_m" class="item" src="">
+
+            <img id="item_r" class="item" src="">
+
+            <nextButton class ="button" type="button" id="next-input" align="center" onclick="this.blur(); experiment.train2();">Next</nextButton>
+            
+            <nextButton class ="button" type="button" id="next-novel" align="center" onclick="this.blur(); experiment.choice2();">Next</nextButton>
+        </div>
+
+        <!--  transition slide-->
+
+        <div class="slide" id="transition"> 
+
+            <div class="speech" id="text_intro"></div>
+            <div class="speech" id="text_transition"></div>
+
+            <!--all agents-->
+            <img id="Bear_transition" class="agent_transition"  src="images/agents/Bear_transition.png">
+            <img id="Beaver_transition" class="agent_transition"  src="images/agents/Beaver_transition.png">
+            <img id="Bunny_transition" class="agent_transition"  src="images/agents/Bunny_transition.png">
+            <img id="Cat_transition" class="agent_transition"  src="images/agents/Cat_transition.png">
+            <img id="Dog_transition" class="agent_transition"  src="images/agents/Dog_transition.png">
+            <img id="Elephant_transition" class="agent_transition"  src="images/agents/Elephant_transition.png">
+            <img id="Frog_transition" class="agent_transition"  src="images/agents/Frog_transition.png">
+            <img id="Monkey_transition" class="agent_transition"  src="images/agents/Monkey_transition.png">
+            <img id="Mouse_transition" class="agent_transition"  src="images/agents/Mouse_transition.png">
+            <img id="Pig_transition" class="agent_transition"  src="images/agents/Pig_transition.png">
+            <img id="Sheep_transition" class="agent_transition"  src="images/agents/Sheep_transition.png">
+            <img id="Tiger_transition" class="agent_transition"  src="images/agents/Tiger_transition.png">
+
+            <img class="background" id="background2" src=""> 
+
+        </div>
+
+
+        <!-- The finish slide. -->
+        <div class="slide" id="finished">
+            <div style="width: 500px; margin: 0 auto; text-align: center; ">	
+            </div>
+            <br><br>
+            <center>
+                <p id='logo-text'>Thank you for participating.</p>
+                <p id='logo-text'>In this study, we want to find out how people keep track of topics of conversations.</p>
+            </center>
+        </div>
+        <!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. For instance, one of the immediately executed commands is <code>showSlide("instructions")</code>. If we loaded experiment.js, say, in the <code>head</code> section, <code>showSlide("instructions")</code> would fail because the <code>instructions</code> slide doesn't exist yet. It is possible to load the script in <code>head</code> but you have to ensure that any immediately executed commands, if they rely on potentially uninitialized HTML elements, are _delayed_ until the page is ready, using either [window.onload][onload] or jQuery's more robust [$(document).ready()][domReady]  -->
+        <!-- [onload]: https://developer.mozilla.org/en/DOM/window.onload -->
+        <!-- [domReady]: http://api.jquery.com/ready/ -->
+        <script src="discon_look.js"></script>
+
+
+    </body>
+
+</html>
