@@ -6,5 +6,6 @@ experiments/images_other
 experiments/images_old
 experiments/dots/
 experiments/watch
-Experiments/data
+data
 .Rproj.user
+

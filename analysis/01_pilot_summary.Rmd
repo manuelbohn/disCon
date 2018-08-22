@@ -3,6 +3,8 @@ title: "DisCon Pilot Summary"
 output: html_document
 ---
 
+Successful communication requires coordination between speakers and listeners in a variety of ways. The accrual of shared knowledge between interlocutors (e.g. "common ground") during discourse is of particular interest. To date, most theories characterize common ground in a categorical fashion - either you have it or you don't. We explore the degree to which interlocutors display graded sensitivity to common ground, maintaining uncertainty over shared knowledge during a conversation.
+
 ```{r setup, include=FALSE}
 #Libraries
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE) #no code, no warning printed
@@ -155,11 +157,9 @@ data_recency <- data_recency %>%
 
 # Pilot Experiment
 
-## Descriptives
+## Task description
 
-### Task description
-
-Each experiment contains 6 trials. Each trial contains 6 training slides (non-ambiguous utterance) and 1 test slide (ambiguous utterance), as shown below. 
+Each experiment contains 6 trials. Each trial contains 6 training slides (non-ambiguous utterance) and 1 test slide (ambiguous utterance), as shown below. For the first experiment, the ambiguous utterance consists of saying "Here's another one."
 
 
 ![Training slide](../pictures/pilot_training.png){width=350px} ![Test slide](../pictures/pilot_test.png){width=350px}
@@ -169,7 +169,7 @@ Left: training slide, Right: test slide
 
 The items appearing in a trial belong to a set of 3 categories of items (for e.g. musical instruments, fruits, vehicles) that is unique across 6 trials. We run the experiment with distributions (6-0-0), (4-2-0), and (2-2-2), with each number corresponding to how many times a category has items appear in the trial. 
 
-### Sample size
+## Sample size
 We remove responses that get less than 5/6 correct in training slides. If there are duplicated IPs, we only take the first response.
 ```{r sample size data_pilot_another, echo=FALSE}
 # summarise all unique ips across 3 experiments (do this after general description of task)
@@ -211,9 +211,13 @@ ggplot(pilot_plot1,
   labs(x="", y= "proportion chosen")
 ```
 
+The dotted line represents performance expected by chance (1/3), and the error bar are 95% CIs.
+
+In distribution (6-0-0), most participants choose the most frequent category. 
+
 There is a graded response in distribution (4-2-0) corresponding to the frequency of appearance of each category. This fits with our hypothesis that people use common ground to identify the reference of an ambiguous utterance. 
 
-However, this result could also be driven by a recency effect where people simply choose according to the category of the last seen item.
+However, this result could also be driven by a recency effect where participants simply choose according to the category of the last seen item.
 
 ```{r pilot_plot2, fig.width = 8, echo=FALSE}
 pilot_plot2 <- data_pilot_another %>%
@@ -237,15 +241,17 @@ ggplot(pilot_plot2,
   labs(x="", y= "proportion chosen same as last item")
 ```
 
-We see that people are choosing the item in the test slide in the same category as the last training item above chance, suggesting a possbily strong recency effect.
+We see that participants are choosing the item in the test slide in the same category as the last training item above chance, suggesting a possibly strong recency effect.
+
+The reason we're seeing this recency effect may be the semantics of "another" as it makes strong reference to the last category seen.
 
 # Recency Effect Experiment
 
-## Descriptives
+In order to look at the recency effect more closely, we manipulate the experiment to look at distribution (5-1-0) where the last item preceding the test slide is never in the most frequent category. We vary the wording in the ambiguous utterance. 
 
-### Task description
+## Task description
 
-In order to look at the recency effect more closely, we manipulate the experiment to look at distribution (5-1-0) where the last item preceding the test slide is never in the most frequent category. We also use 2 new phrasing for the test slide, "Here's the last one" and "Look at that" Distribution (2-2-2), with all category appearances randomized, is used as the control.
+We use 2 new phrasings for the test slide, "Here's the last one" and "Look at that." Distribution (2-2-2), with all category appearances randomized, is used as the control.
 
 ![Training slide](../pictures/last_training.png){width=350px} ![Test slide](../pictures/last_test.png){width=350px}
 
@@ -253,7 +259,7 @@ In order to look at the recency effect more closely, we manipulate the experimen
 
 Left: training slide, Right: test slide
 
-### Sample size
+## Sample size
 We remove responses that get less than 5/6 correct in training slides. If there are duplicated IPs, we only take the first response.
 ```{r sample size data_recency, echo=FALSE}
 # summarise all unique ips across 3 experiments (do this after general description of task)
@@ -262,6 +268,8 @@ sample_size <- data_recency %>%
   distinct(workerid, .keep_all = TRUE)
 
 sample_size %>%
+ mutate(wording = ifelse(experiment == "recency", "another one", ifelse(experiment == "recency_last ", "last one", "look at that"))) %>%
+ group_by(wording) %>%
  summarise(n = n()) %>%
  kable()
 ```
@@ -295,37 +303,9 @@ ggplot(recency_plot1,
   labs(x="", y= "proportion chosen")
 ```
 
-Distribution (5, 1, 0)
+Distribution (5, 1, 0) where the last item preceding the test slide is never in the most frequent category
 
-We see that the recency effect is reduced when "Here's the last one" and "Look at that" are used. We observe a higher increase in proportion of people choosing the item from the least frequent category in the condition "Here's the last one", perhaps because it is possible to interpret "the last one" as the item from the category that has not appeared. "Look at that" looks closest to the graded response that corresponds to people using common ground to identify reference.
-```{r recency_plot3, fig.height = 5, fig.width = 10, echo = FALSE}
-recency_plot3 <- data_recency %>%
-  filter(phase == 'test') %>%
-  group_by(distribution, workerid, experiment) %>%
-  summarise(correct = mean(correct_target1),
-            correct2 = mean(correct_target2),
-            correct3 = mean(correct_target3)) %>%
-  gather(item, prop_correct, -distribution, -workerid, -experiment) %>%
-  group_by(distribution, item, experiment)
-
-recency_plot3a <- recency_plot3 %>%
-  multi_boot_standard(col = "prop_correct")
-
-ggplot() +
-  geom_jitter(data = recency_plot3, aes(x = item, y = prop_correct, col = item, alpha = .2), width = .3,height = .025)+
-  geom_pointrange(data = recency_plot3a, aes(x = item, y = mean, col = item, ymin = ci_lower, ymax = ci_upper),size = .8)+
-  scale_colour_solarized(name = "Chosen item",
-                       breaks = c("correct", "correct2", "correct3"),
-                       labels = c("most frequent", "second most frequent", "least frequent"))+
-  facet_grid(experiment~distribution,
-             labeller = as_labeller(c(`c(5, 1, 0)` = "Distribution\n(5-1-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)", recency = "Here's another one.", recency_last = "Here's the last one.", recency_look = "Look at that.")))+
-  geom_hline(yintercept = 1/3, lty=2)+
-  labs(x="item chosen", y="proportion chosen")+
-  theme_few() +
-  ylim(-0.05,1.05)+
-  guides(alpha = F)+
-  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())
-```
+We see that the recency effect is reduced when "Here's the last one" and "Look at that" are used. We observe a higher increase in proportion of participants choosing the item from the least frequent category in the condition "Here's the last one", perhaps because it is possible to interpret "the last one" as the item from the category that has not appeared. "Look at that" looks closest to the graded response that corresponds to people using common ground to identify reference.
 
 ```{r recency_plot2, fig.width = 8, echo = FALSE}
 recency_plot2 <- data_recency %>%
@@ -352,15 +332,17 @@ ggplot(recency_plot2,
   labs(x="", y= "proportion chosen same as last item")
 ```
 
+Proportion of participants choosing the item at test slide in the same category that appears on the last training slide.
+
 # Moving forward
-We stay with "Look at that." as the phrasing for the test slide.
+We stay with "Look at that." as the phrasing for the test slide because it produces an inference that is closest to a common ground inference. Furthermore, it's also compatible with a potential speaker change condition.
 
 We run 2 experiments with adults, with the same setup:
 
 1. (6-0-0) vs (4-2-0) vs (2-2-2)
 2. (3-0-0) vs (2-1-0) vs (1-1-1)
 
-to test the effect of relative and absolute strength.
+to test the effect of relative and absolute input.
 
 We run the 3rd experiment with other distributions that are interesting, such as (1-0-0) and (3-2-1).
 
