@@ -127,7 +127,7 @@ nextButton[disabled] {
 
 .agent {
     position: absolute;
-    bottom: 300px;
+    bottom: 150px;
     left: 300px;
     width: 350px;
     z-index: 2;
@@ -172,7 +172,7 @@ nextButton[disabled] {
 
 #item_r {
     position: absolute;
-    bottom: 100px;  
+    bottom: 450px;  
     left: 700px;
     width: 150px;
     z-index: 2
@@ -180,7 +180,7 @@ nextButton[disabled] {
 
 #item_l {
     position: absolute;
-    bottom: 100px;
+    bottom: 450px;
     left: 130px;
     width: 150px;
     z-index: 2
@@ -188,7 +188,7 @@ nextButton[disabled] {
 
 #item_m {
     position: absolute;
-    bottom: 100px;
+    bottom: 550px;
     left: 405px;
     width: 150px;
     z-index: 2

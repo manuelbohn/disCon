@@ -300,7 +300,7 @@ for (var i=0; i < trials.length; i++) {
     shuffle(trainingDist[i]);
 }
 
-var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Pig", "Sheep", "Tiger"])
+var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Beaver", "Sheep", "Tiger"])
 
 //var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
@@ -365,15 +365,15 @@ var experiment = {
     },
 
     intro: function () {
+        
+        $(".agent_transition").unbind("click");
+        
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". These are the things I have at home.";
-
-        document.getElementById("text_transition").innerHTML = "";
-        
+     
         sourceSound("sounds/" + "hi_" + trainingAgents[trials[0]] + ".mp3");
         playSound();
         
@@ -389,8 +389,10 @@ var experiment = {
         };
     },
 
-    train : function () {
-        document.getElementById("text_correctItem").style.visibility = "hidden";
+    train : function () { 
+        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
+
+        showSlide("input");
 
         document.getElementById("next-input").style.visibility = "hidden";        
         document.getElementById("next-novel").style.visibility = "hidden";
@@ -403,10 +405,6 @@ var experiment = {
         }
 
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
-
-        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
-
-        showSlide("input");
 
         showAgent(trainingAgents[trials[0]], "straight");
 
@@ -421,32 +419,21 @@ var experiment = {
 
         // pause for 1s before images appear
         setTimeout(function() {
-            document.getElementById("text_correctItem").style.visibility = "visible";
-            document.getElementById("text_correctItem").innerHTML = "Let's see...";
             
             showLeftItem();
             showMiddleItem();
             showRightItem();
             
-            sourceSound("sounds/" + "lets_" + trainingAgents[trials[0]] + ".mp3");
-            playSound();
-
-            sound = document.getElementById("sound");
+            document.getElementById("next-input").style.visibility = "visible";
             
-            sound.onended = function() {
-                document.getElementById("next-input").style.visibility = "visible";
-            }
         }, 1000);
     },
 
     train2 : function() {
 
         document.getElementById("next-input").style.visibility = "hidden";        
-
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
-
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you touch the " + correctItem + "?";
 
         sourceSound("sounds/" + correctItem + "_" + trainingAgents[trials[0]] + ".mp3");
         playSound();
@@ -531,16 +518,15 @@ var experiment = {
     },
 
     choice : function () {
-        document.getElementById("text_correctItem").style.visibility = "hidden";
+        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
+        
+        showSlide("input"); 
 
         document.getElementById("next-input").style.visibility = 'hidden';
         document.getElementById("next-novel").style.visibility = 'hidden';
 
-        background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
-
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
-        showSlide("input"); 
         showAgent(trainingAgents[trials[0]], "straight");
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
@@ -554,28 +540,18 @@ var experiment = {
 
         // pause for 1s before items appear.
         setTimeout(function() {
-            document.getElementById("text_correctItem").style.visibility = "visible";
-            document.getElementById("text_correctItem").innerHTML = "Let's see...";
             
             showLeftItem();
             showMiddleItem();
             showRightItem();
             
-            sourceSound("sounds/" + "lets_" + trainingAgents[trials[0]] + ".mp3");
-            playSound();
+            document.getElementById("next-novel").style.visibility = 'visible';
             
-            sound = document.getElementById("sound");
-            
-            sound.onended = function() {
-                document.getElementById("next-novel").style.visibility = 'visible';
-            }  
         }, 1000);
     },
 
     choice2 : function() {
         document.getElementById("next-novel").style.visibility = "hidden";    
-
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you touch it?"
         
         sourceSound("sounds/" + "it_" + trainingAgents[trials[0]] + ".mp3");
         playSound();
@@ -677,10 +653,6 @@ var experiment = {
 
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
-
-        document.getElementById("text_intro").innerHTML = "";
-
-        document.getElementById("text_transition").innerHTML = "Thank you for coming! Goodbye!";
         
         sourceSound("sounds/" + "thank_" + trainingAgents[trials[0]] + ".mp3");
         playSound();
