@@ -17,17 +17,15 @@ library(langcog)
 
 ```
 
-```{r}
-# Data pre-processing
+```{r data pre-processing}
 
-files <- dir("../data/kids_pilot/")
+files <- dir("../../data/kids_pilot/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../data/kids_pilot/",f,sep="")
+  jf <- paste("../../data/kids_pilot/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$data$data)
-   # mutate(workerid = jd$WorkerId)
   raw_data <- bind_rows(raw_data, id)
 }
 
@@ -36,3 +34,134 @@ data <- raw_data %>%
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")))
 ```
 
+```{r sanity checks}
+data <- data %>% 
+  filter(subid != "", subid != "test", subid != "Test")
+
+data %>%
+  filter(phase == 'training') %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_item))
+
+drop <- data %>%
+  filter(phase == 'training') %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_item)) %>%
+  filter(correct < 0.83) %>%
+  pull(subid)
+
+data <- data %>%
+  filter(!subid %in% drop)
+
+```
+
+# Do proportion of choices match the frequency in the distribution
+
+```{r proportion of choices}
+plot1 <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, subid) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -subid) %>%
+  group_by(distribution, item) %>%
+  multi_boot_standard(col = "prop_correct")
+
+
+ggplot(plot1,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(~distribution, 
+             labeller = as_labeller(c(`c(6, 0, 0)` = "Distribution\n(6-0-0)", `c(4, 2, 0)` = "Distribution\n(4-2-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)", preference = "preference", statistical = "statistical"))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```
+
+# How does the last item seen affect the object chosen in the anaphora case? 
+```{r last item}
+plot2 <- data %>%
+  filter(phase == "test", distribution != "c(6, 0, 0)") %>%
+  mutate(trackLast = ifelse(lastInputCat == target1, "yes", "no")) %>%
+  group_by (distribution, subid) %>%
+  summarise (lastInput = mean(same_lastInput),
+             n = n()) %>% 
+  multi_boot_standard(col = "lastInput")
+  
+ggplot(plot2,
+       aes(x = distribution, y = mean, fill = distribution)) +
+  geom_bar(stat='identity', width = 0.3) +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few()
+```
+
+# Are participants choosing the middle item more? 
+```{r middle item}
+plot3 <- data %>%
+  filter(phase == 'test') %>%
+  mutate(pick_l = ifelse(pickPos == "item_l", 1, 0), 
+         pick_m = ifelse(pickPos == "item_m", 1, 0),
+         pick_r = ifelse(pickPos == "item_r", 1, 0)) %>%
+  group_by(distribution, subid) %>%
+  summarise(choose_l = mean(pick_l),
+            choose_m = mean(pick_m),
+            choose_r = mean(pick_r)) %>%
+  gather(item, prop_choose, -distribution, -subid) %>%
+  group_by(distribution, item) %>%
+  multi_boot_standard(col = "prop_choose")
+  
+ggplot(plot3,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("choose_l", "choose_m", "choose_r"),
+                       labels = c("left", "middle", "right"))+
+  facet_grid(~distribution, 
+             labeller = as_labeller(c(`c(6, 0, 0)` = "Distribution\n(6-0-0)", `c(4, 2, 0)` = "Distribution\n(4-2-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)"))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```
+
+# Are participants choosing the middle item even when the middle item is wrong? 
+```{r middle item, chose incorrectly}
+plot4 <- data %>%
+  filter(phase == 'test', correct_target1 == 0) %>%
+  mutate(pick_l = ifelse(pickPos == "item_l", 1, 0), 
+         pick_m = ifelse(pickPos == "item_m", 1, 0),
+         pick_r = ifelse(pickPos == "item_r", 1, 0)) %>%
+  group_by(distribution, subid) %>%
+  summarise(choose_l = mean(pick_l),
+            choose_m = mean(pick_m),
+            choose_r = mean(pick_r)) %>%
+  gather(item, prop_choose, -distribution, -subid) %>%
+  group_by(distribution, item) %>%
+  multi_boot_standard(col = "prop_choose")
+  
+ggplot(plot4,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("choose_l", "choose_m", "choose_r"),
+                       labels = c("left", "middle", "right"))+
+  facet_grid(~distribution, 
+             labeller = as_labeller(c(`c(6, 0, 0)` = "Distribution\n(6-0-0)", `c(4, 2, 0)` = "Distribution\n(4-2-0)", `c(2, 2, 2)` = "Distribution\n(2-2-2)"))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```

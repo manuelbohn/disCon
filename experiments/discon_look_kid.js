@@ -300,7 +300,9 @@ for (var i=0; i < trials.length; i++) {
     shuffle(trainingDist[i]);
 }
 
-var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
+var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Pig", "Sheep", "Tiger"])
+
+//var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
 var trainingAgents = new Array();
 for (var m=0; m < trials.length; m++) {
@@ -338,6 +340,8 @@ var experiment = {
     lastInputCat: "",
 
     data: [], 
+    
+    sound: new Audio(),
 
     checkInput: function() {
         //subject ID
@@ -356,7 +360,7 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to click on the things they talk about.";
+        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to touch the things they talk about.";
         document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
     },
 
@@ -369,8 +373,20 @@ var experiment = {
         document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". These are the things I have at home.";
 
         document.getElementById("text_transition").innerHTML = "";
-
-        $(".agent_transition").click(experiment.train);      
+        
+        sourceSound("sounds/" + "hi_" + trainingAgents[trials[0]] + ".mp3");
+        playSound();
+        
+        sound = document.getElementById("sound");
+        
+        sound.onended = function() {
+            sourceSound("sounds/" + "intro_" + trainingAgents[trials[0]] + ".mp3");
+            playSound();
+            sound = document.getElementById("sound");
+            sound.onended = function() {
+                $(".agent_transition").click(experiment.train);
+            };
+        };
     },
 
     train : function () {
@@ -407,15 +423,20 @@ var experiment = {
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
             document.getElementById("text_correctItem").innerHTML = "Let's see...";
+            
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 1000);
+            
+            sourceSound("sounds/" + "lets_" + trainingAgents[trials[0]] + ".mp3");
+            playSound();
 
-        // pause for 1.5s before "next" button appears.
-        setTimeout(function() {
-            document.getElementById("next-input").style.visibility = "visible";
-        }, 1500);
+            sound = document.getElementById("sound");
+            
+            sound.onended = function() {
+                document.getElementById("next-input").style.visibility = "visible";
+            }
+        }, 1000);
     },
 
     train2 : function() {
@@ -425,84 +446,88 @@ var experiment = {
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
 
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the " + correctItem + "?";
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you touch the " + correctItem + "?";
 
-        //        sourceSound("sounds/" + correctItem + ".mp3");
-        //        playSound();
+        sourceSound("sounds/" + correctItem + "_" + trainingAgents[trials[0]] + ".mp3");
+        playSound();
 
-        $(".item").click(function() {
-            var clickedItem = event.target;
+        sound = document.getElementById("sound");
+        
+        sound.onended = function() {
+            $(".item").click(function() {
+                var clickedItem = event.target;
 
-            var pickId = event.target.id;
+                var pickId = event.target.id;
 
-            if(pickId == "item_l") {
-                var pick = experiment.position[0];
-            } else if(pickId == "item_m") {
-                var pick = experiment.position[1];
-            } else if (pickId == "item_r") {
-                var pick = experiment.position[2];
-            }
+                if(pickId == "item_l") {
+                    var pick = experiment.position[0];
+                } else if(pickId == "item_m") {
+                    var pick = experiment.position[1];
+                } else if (pickId == "item_r") {
+                    var pick = experiment.position[2];
+                }
 
-            // compare to correct item of input
-            if (pick == correctItem) {
-                var correct_item = 1;
-            } else {
-                var correct_item = 0;
-            }
+                // compare to correct item of input
+                if (pick == correctItem) {
+                    var correct_item = 1;
+                } else {
+                    var correct_item = 0;
+                }
 
-            // stores category of the final input slide
-            if (experiment.slides[0] == slides.length - 1) {
-                experiment.lastInputCat = findCategory(pick);
-            }
+                // stores category of the final input slide
+                if (experiment.slides[0] == slides.length - 1) {
+                    experiment.lastInputCat = findCategory(pick);
+                }
 
-            $(".item").unbind("click");
-            clickedItem.style.border = '5px solid blue';
+                $(".item").unbind("click");
+                clickedItem.style.border = '5px solid blue';
 
-            var subid = experiment.subid;
-            var subage = experiment.subage;    
-            
-            data = {
-                subid: subid,
-                subage: subage,
-                experiment: "distribution_kids",
-                trial: trials[0] + 1,
+                var subid = experiment.subid;
+                var subage = experiment.subage;    
 
-                agent: trainingAgents[trials[0]],
-                phase: "training",
-                slide: experiment.slides[0],
+                data = {
+                    subid: subid,
+                    subage: subage,
+                    experiment: "distribution_kids",
+                    trial: trials[0] + 1,
 
-                distribution: posDist[trials[0]],
-                target1: trialTargets[trials[0]][0],
-                target2: trialTargets[trials[0]][1],
-                target3: trialTargets[trials[0]][2],
+                    agent: trainingAgents[trials[0]],
+                    phase: "training",
+                    slide: experiment.slides[0],
 
-                item_l: experiment.position[0],
-                item_m: experiment.position[1],
-                item_r: experiment.position[2],
+                    distribution: posDist[trials[0]],
+                    target1: trialTargets[trials[0]][0],
+                    target2: trialTargets[trials[0]][1],
+                    target3: trialTargets[trials[0]][2],
 
-                correctItem: correctItem,
-                pick: pick,
-                pickPos: pickId,
-                pickCat: findCategory(pick),
-                correct_item: correct_item
-            }
+                    item_l: experiment.position[0],
+                    item_m: experiment.position[1],
+                    item_r: experiment.position[2],
 
-            experiment.data.push(data);
+                    correctItem: correctItem,
+                    pick: pick,
+                    pickPos: pickId,
+                    pickCat: findCategory(pick),
+                    correct_item: correct_item
+                }
 
-            experiment.targetsF[0].shift();
-            experiment.targetsF2[0].shift();
-            experiment.targetsF3[0].shift();
+                experiment.data.push(data);
 
-            experiment.trainingDist[trials[0]].shift();
+                experiment.targetsF[0].shift();
+                experiment.targetsF2[0].shift();
+                experiment.targetsF3[0].shift();
 
-            experiment.slides.shift();
-            experiment.backgrounds.shift();
+                experiment.trainingDist[trials[0]].shift();
 
-            setTimeout(function() {
-                clickedItem.style.border = '0px';
-                experiment.train();
-            }, 1500);
-        });
+                experiment.slides.shift();
+                experiment.backgrounds.shift();
+
+                setTimeout(function() {
+                    clickedItem.style.border = '0px';
+                    experiment.train();
+                }, 1500);
+            }); 
+        };
     },
 
     choice : function () {
@@ -531,108 +556,120 @@ var experiment = {
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
             document.getElementById("text_correctItem").innerHTML = "Let's see...";
+            
             showLeftItem();
             showMiddleItem();
             showRightItem();
+            
+            sourceSound("sounds/" + "lets_" + trainingAgents[trials[0]] + ".mp3");
+            playSound();
+            
+            sound = document.getElementById("sound");
+            
+            sound.onended = function() {
+                document.getElementById("next-novel").style.visibility = 'visible';
+            }  
         }, 1000);
-
-        // pause for 1.5s before "next" button appears.
-        setTimeout(function() {
-            document.getElementById("next-novel").style.visibility = 'visible';
-        }, 1500);
     },
 
     choice2 : function() {
         document.getElementById("next-novel").style.visibility = "hidden";    
 
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on it?"
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you touch it?"
+        
+        sourceSound("sounds/" + "it_" + trainingAgents[trials[0]] + ".mp3");
+        playSound();
+        
+        sound = document.getElementById("sound");
+        
+        sound.onended = function() {
+            $(".item").click(function() {
+                var clickedItem = event.target;
 
-        $(".item").click(function() {
-            var clickedItem = event.target;
+                var pickId = event.target.id;
 
-            var pickId = event.target.id;
+                if(pickId == "item_l") {
+                    var pick = experiment.position[0];
+                } else if(pickId == "item_m") {
+                    var pick = experiment.position[1];
+                } else if (pickId == "item_r") {
+                    var pick = experiment.position[2];
+                }
 
-            if(pickId == "item_l") {
-                var pick = experiment.position[0];
-            } else if(pickId == "item_m") {
-                var pick = experiment.position[1];
-            } else if (pickId == "item_r") {
-                var pick = experiment.position[2];
-            }
+                var pickCat = findCategory(pick);
 
-            var pickCat = findCategory(pick);
+                // compare to 1st target
+                if (pickCat == trialTargets[trials[0]][0]) {
+                    var correct_target1 = 1;
+                } else {
+                    var correct_target1 = 0;
+                }
 
-            // compare to 1st target
-            if (pickCat == trialTargets[trials[0]][0]) {
-                var correct_target1 = 1;
-            } else {
-                var correct_target1 = 0;
-            }
+                // compare to 2nd target
+                if (pickCat == trialTargets[trials[0]][1]) {
+                    var correct_target2 = 1;
+                } else {
+                    var correct_target2 = 0;
+                }
 
-            // compare to 2nd target
-            if (pickCat == trialTargets[trials[0]][1]) {
-                var correct_target2 = 1;
-            } else {
-                var correct_target2 = 0;
-            }
+                if (pickCat == trialTargets[trials[0]][2]) {
+                    var correct_target3 = 1;
+                } else {
+                    var correct_target3 = 0;
+                }
 
-            if (pickCat == trialTargets[trials[0]][2]) {
-                var correct_target3 = 1;
-            } else {
-                var correct_target3 = 0;
-            }
+                if (pickCat == experiment.lastInputCat) {
+                    var same_lastInput = 1;
+                } else {
+                    var same_lastInput = 0;
+                }
 
-            if (pickCat == experiment.lastInputCat) {
-                var same_lastInput = 1;
-            } else {
-                var same_lastInput = 0;
-            }
+                $(".item").unbind("click");
+                clickedItem.style.border = '5px solid blue';
 
-            $(".item").unbind("click");
-            clickedItem.style.border = '5px solid blue';
-            
-            var subid = experiment.subid;
-            var subage = experiment.subage;    
-            
-            data = {
-                subid: subid,
-                subage: subage,
-                experiment: "distribution_kids",
-                trial: trials[0] + 1,
+                var subid = experiment.subid;
+                var subage = experiment.subage;    
 
-                agent: trainingAgents[trials[0]],
-                phase: "test",
-                slide: experiment.slides[0],
+                data = {
+                    subid: subid,
+                    subage: subage,
+                    experiment: "distribution_kids",
+                    trial: trials[0] + 1,
 
-                distribution: posDist[trials[0]],
-                target1: trialTargets[trials[0]][0],
-                target2: trialTargets[trials[0]][1],
-                target3: trialTargets[trials[0]][2],
+                    agent: trainingAgents[trials[0]],
+                    phase: "test",
+                    slide: experiment.slides[0],
 
-                item_l: experiment.position[0],
-                item_m: experiment.position[1],
-                item_r: experiment.position[2],
+                    distribution: posDist[trials[0]],
+                    target1: trialTargets[trials[0]][0],
+                    target2: trialTargets[trials[0]][1],
+                    target3: trialTargets[trials[0]][2],
 
-                pick: pick,
-                pickPos: pickId,
-                pickCat: pickCat,
+                    item_l: experiment.position[0],
+                    item_m: experiment.position[1],
+                    item_r: experiment.position[2],
 
-                correct_target1: correct_target1,
-                correct_target2: correct_target2,
-                correct_target3: correct_target3,
+                    pick: pick,
+                    pickPos: pickId,
+                    pickCat: pickCat,
 
-                lastInputCat: experiment.lastInputCat,
-                same_lastInput: same_lastInput
-            }
-            experiment.data.push(data);
+                    correct_target1: correct_target1,
+                    correct_target2: correct_target2,
+                    correct_target3: correct_target3,
 
-            experiment.lastInputCat = "";
+                    lastInputCat: experiment.lastInputCat,
+                    same_lastInput: same_lastInput
+                }
+                experiment.data.push(data);
 
-            setTimeout(function() {
-                clickedItem.style.border = '0px';
-                experiment.transition();
-            }, 1500);
-        });
+                experiment.lastInputCat = "";
+
+                setTimeout(function() {
+                    clickedItem.style.border = '0px';
+                    experiment.transition();
+                }, 1500);
+            });
+        };       
     },
 
     transition: function() {
@@ -644,6 +681,9 @@ var experiment = {
         document.getElementById("text_intro").innerHTML = "";
 
         document.getElementById("text_transition").innerHTML = "Thank you for coming! Goodbye!";
+        
+        sourceSound("sounds/" + "thank_" + trainingAgents[trials[0]] + ".mp3");
+        playSound();
 
         experiment.trials.shift();
 
@@ -661,6 +701,9 @@ var experiment = {
 
         experiment.slides = slides.slice();
 
-        $(".agent_transition").click(experiment.intro); 
+        sound = document.getElementById("sound");
+        sound.onended = function() {
+            $(".agent_transition").click(experiment.intro);
+        };
     },
 }
