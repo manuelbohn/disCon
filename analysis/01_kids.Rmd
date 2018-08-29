@@ -19,11 +19,11 @@ library(langcog)
 
 ```{r data pre-processing}
 
-files <- dir("../../data/kids_pilot/")
+files <- dir("../../kids_simple/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../../data/kids_pilot/",f,sep="")
+  jf <- paste("../../kids_simple/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$data$data)
   raw_data <- bind_rows(raw_data, id)

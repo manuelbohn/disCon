@@ -6,6 +6,27 @@ for (i = 0; i < preloadItems.length; i++) {
     images[i].src = "images/" + preloadItems[i] + ".png";
 }
 
+//only preload relevant audios (no speaker change)
+var preloadAudios = ["hi", "lets", "intro", "thank", "it"];
+
+var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Beaver", "Sheep", "Tiger"])
+
+//var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
+
+var audios = new Array();
+for (i = 0; i < posAgents.length; i++) {
+    for (j = 0; j < preloadAudios.length; j++) {
+        var audio = new Audio();
+        audio.src = "sounds/" + preloadAudios[j] + "_" + posAgents[i] + ".mp3"
+        audios.push(audio);
+    }
+    for (k = 0; k < preloadItems.length - 3; k++) {
+        var audio = new Audio();
+        audio.src = "sounds/" + preloadItems[k] + "_" + posAgents[i] + ".mp3"
+        audios.push(audio);
+    }
+}
+
 var backgroundImages = new Array();
 for (i = 1; i <= 12; i++) {
     backgroundImages[i] = new Image();
@@ -299,10 +320,6 @@ for (var i=0; i < trials.length; i++) {
     }
     shuffle(trainingDist[i]);
 }
-
-var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Beaver", "Sheep", "Tiger"])
-
-//var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
 var trainingAgents = new Array();
 for (var m=0; m < trials.length; m++) {
