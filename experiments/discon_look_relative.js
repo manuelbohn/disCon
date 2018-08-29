@@ -454,7 +454,7 @@ var experiment = {
             clickedItem.style.border = '5px solid blue';
 
             data = {
-                experiment: "distribution",
+                experiment: "distribution_adults_relative",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -582,7 +582,7 @@ var experiment = {
             clickedItem.style.border = '5px solid blue';
 
             data = {
-                experiment: "distribution",
+                experiment: "distribution_adults_relative",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
