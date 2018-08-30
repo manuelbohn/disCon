@@ -326,6 +326,11 @@ function findCategory (pick) {
     }
 }
 
+// get client’s ip information and store in app object
+$.getJSON('https://ipapi.co/json/', function(data) {
+ ip = JSON.stringify(data, null, 2);
+});
+
 var experiment = {
     slides: slides.slice(),
     trials: trials,
@@ -453,6 +458,8 @@ var experiment = {
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
+            workerIp = JSON.parse(ip);
+            
             data = {
                 experiment: "distribution_adults",
                 trial: trials[0] + 1,
@@ -474,7 +481,9 @@ var experiment = {
                 pick: pick,
                 pickPos: pickId,
                 pickCat: findCategory(pick),
-                correct_item: correct_item
+                correct_item: correct_item,
+                
+                workerIp: workerIp.ip
             }
 
             experiment.data.push(data);
@@ -581,6 +590,8 @@ var experiment = {
             $(".item").unbind("click");
             clickedItem.style.border = '5px solid blue';
 
+            workerIp = JSON.parse(ip);
+            
             data = {
                 experiment: "distribution_adults",
                 trial: trials[0] + 1,
@@ -607,7 +618,9 @@ var experiment = {
                 correct_target3: correct_target3,
 
                 lastInputCat: experiment.lastInputCat,
-                same_lastInput: same_lastInput
+                same_lastInput: same_lastInput,
+                
+                workerIp: workerIp.ip
             }
             experiment.data.push(data);
 

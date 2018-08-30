@@ -20,11 +20,11 @@ library(langcog)
 ```{r data preprocessing}
 # Data pre-processing
 
-files <- dir("../../pilot_1_raw_data/production-results")
+files <- dir("../../adult_relative_raw_data/production-results/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../../pilot_1_raw_data/production-results/",f,sep="")
+  jf <- paste("../../adult_relative_raw_data/production-results/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$answers$data$data) %>%
     mutate(workerid = jd$WorkerId)
@@ -33,7 +33,8 @@ for (f in files) {
 
 data <- raw_data %>%
   mutate(distribution = as.character(distribution),
-         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")))
+         distribution = ifelse(distribution == "2:0", "c(2, 1, 0)", distribution),
+         distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
 
  # data <- raw_data %>%
  #  mutate(correct_target3 = ifelse(correct_target1 == 0 & correct_target2 == 0, 1, 0)) %>%
