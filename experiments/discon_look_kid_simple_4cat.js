@@ -9,7 +9,7 @@ for (i = 0; i < preloadItems.length; i++) {
 //only preload relevant audios (no speaker change)
 var preloadAudios = ["hi", "lets", "intro", "thank", "it"];
 
-var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Beaver", "Sheep", "Tiger"])
+var posAgents = shuffle(["Bunny", "Frog", "Mouse", "Beaver", "Sheep", "Tiger", "Pig"])
 
 //var posAgents = shuffle(["Bear", "Beaver", "Bunny", "Cat", "Dog", "Elephant", "Frog", "Monkey", "Mouse", "Pig", "Sheep", "Tiger"])
 
