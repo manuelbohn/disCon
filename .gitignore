@@ -8,5 +8,8 @@ experiments/watch
 data
 pictures
 Recordings
-.Rproj.user
+analysis/.Rproj.user
+analysis/.RData
+analysis/.Rhistory
 analysis/rsconnect
+analysis/01_study1_adult_models
