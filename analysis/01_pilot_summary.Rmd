@@ -38,6 +38,9 @@ data_pilot_another <- raw_data %>%
   mutate(distribution = as.character(distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")))
 
+write.csv(data_pilot_another, file="../data/01_piot_summary_pilot_another.data.csv")
+data_pilot_another <- read_csv(file="../data/01_piot_summary_pilot_another.data.csv")
+
 #Recency "Here's another one" data preprocessing
 files <- dir("../../recency_raw_data/production-results")
 
@@ -112,6 +115,9 @@ data_recency_look <- data_recency_look %>%
 
 #Combine recency data
 data_recency <- bind_rows(data_recency_another, data_recency_last, data_recency_look)
+
+write.csv(data_recency, file="../data/01_piot_summary_recency.data.csv")
+data_recency <- read_csv(file="../data/01_piot_summary_recency.data.csv")
 ```
 
 ```{r sanity checks, include=FALSE} 

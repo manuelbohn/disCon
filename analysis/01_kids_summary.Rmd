@@ -35,6 +35,10 @@ data <- raw_data %>%
   mutate(distribution = as.character(distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)")),
          subage = ifelse(subid == '180831_5', 2, subage)) # child 180831_5 is 2 but recorded as 3
+
+write.csv(data, file="../data/01_kids_summary.data.csv")
+
+data <- read_csv(file="../data/pilot.data.csv")
 ```
 
 ```{r sanity checks, include=FALSE} 

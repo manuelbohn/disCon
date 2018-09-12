@@ -33,6 +33,9 @@ data_high <- raw_data %>%
          distribution = ifelse(distribution == "2:0", "c(2, 1, 0)", distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
 
+write.csv(data_high, file="../data/01_study1_adult_high.data.csv")
+data_high <- read_csv(file="../data/01_study1_adult_high.data.csv")
+
 files <- dir("../../adult_relative_raw_data/production-results/")
 
 raw_data <- data_frame()
@@ -48,6 +51,10 @@ data_low <- raw_data %>%
   mutate(distribution = as.character(distribution),
          distribution = ifelse(distribution == "2:0", "c(2, 1, 0)", distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
+
+write.csv(data_high, file="../data/01_study1_adult_low.data.csv")
+data_low <- read_csv(file="../data/01_study1_adult_low.data.csv")
+
 ```
 
 ```{r sanity checks, include=FALSE} 
