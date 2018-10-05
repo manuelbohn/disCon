@@ -12,3 +12,5 @@ analysis/.RData
 analysis/.Rhistory
 analysis/rsconnect
 analysis/01_study1_adult_models
+.Rproj.user
+analysis/01_analysis.Rmd
