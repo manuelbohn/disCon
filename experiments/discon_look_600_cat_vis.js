@@ -125,7 +125,7 @@ var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
 var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat", "motorbike"])
 var fruitsF = shuffle(["strawberry", "apple", "banana", "cherry", "orange", "melon", "pineapple"])
-var animalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey", "elephant"])
+var mammalsF = shuffle(["dog", "cat", "horse", "bear", "cow", "monkey", "elephant"])
 var furnitureF = shuffle(["bed", "chair", "table", "closet", "drawer", "sofa", "lamp", "stool"])
 var clothesF = shuffle(["shoe", "sock", "hat", "shirt", "jacket", "dress", "skirt"])
 var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "violin", "xylophone"])
@@ -133,7 +133,7 @@ var instrumentsF = shuffle(["drum", "flute", "guitar", "piano", "trumpet", "viol
 var allFamiliar = {
     vehicles: vehiclesF,
     fruits: fruitsF,
-    animals: animalsF,
+    mammals: mammalsF,
     furniture: furnitureF,
     clothes: clothesF,
     instruments: instrumentsF,
@@ -359,6 +359,11 @@ var experiment = {
         document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to click on the things they talk about.";
         document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
     },
+    
+    introCat: function() {
+        showSlide("introCat");
+        document.getElementById("text_introCat").innerHTML = "Here are the kinds of things they will talk about:"; 
+    },
 
     intro: function () {
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
@@ -425,13 +430,7 @@ var experiment = {
         var correctCategory = trialFamiliarItems[trials[0]].get(trainingDist[trials[0]][0]);
         var correctItem = correctCategory[0];
         
-        if(trialTargets[trials[0]][0] == "furniture" || trialTargets[trials[0]][0] == "clothes") {
-            var correctTarget = trialTargets[trials[0]][0];
-        } else {
-            var correctTarget = trialTargets[trials[0]][0].substring(0, trialTargets[trials[0]][0].length - 1)
-        }
-        
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the " + correctTarget + "?";
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the " + correctItem + "?";
 
         //        sourceSound("sounds/" + correctItem + ".mp3");
         //        playSound();
