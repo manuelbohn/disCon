@@ -366,9 +366,15 @@ var experiment = {
             $("#checkMessage").html('<font color="red">You must input a subject age</font>');
             return;
         }
+        if (document.getElementById("subjectOrder").value.length < 1) {
+			$("#checkMessage").html('<font color="red">You must input an order number</font>');
+			return;
+		}
         experiment.subid = document.getElementById("subjectID").value;
         experiment.subage = document.getElementById("subjectAge").value;
+        experiment.suborder = document.getElementById("subjectOrder").value
         experiment.trainingDot()
+        
     },  
 
     introAll: function() {
@@ -483,11 +489,13 @@ var experiment = {
                 clickedItem.style.border = '5px solid blue';
 
                 var subid = experiment.subid;
-                var subage = experiment.subage;    
+                var subage = experiment.subage; 
+                var suborder =  experiment.suborder;
 
                 data = {
                     subid: subid,
                     subage: subage,
+                    suborder: suborder,
                     experiment: "distribution_kids_simple",
                     trial: trials[0] + 1,
 
@@ -617,11 +625,13 @@ var experiment = {
                 clickedItem.style.border = '5px solid blue';
 
                 var subid = experiment.subid;
-                var subage = experiment.subage;    
+                var subage = experiment.subage;  
+                var suborder =  experiment.suborder;
 
                 data = {
                     subid: subid,
                     subage: subage,
+                    suborder: suborder,
                     experiment: "distribution_kids_simple",
                     trial: trials[0] + 1,
 
