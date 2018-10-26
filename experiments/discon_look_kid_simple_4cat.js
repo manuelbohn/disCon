@@ -379,8 +379,8 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        document.getElementById("text_introAll").innerHTML = "In this game, you're going to the house of little animals. Each animal has a lot of things in their house and they will tell you the kinds of things they have in their house. You have to find the thing the animal is talking about.";
-        document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
+        document.getElementById("text_introAll").innerHTML = "In this game, you're going to meet the little animals. They each live in a house and they have many different kinds of things at home. Each animal will tell you about some of things they have in their house.";
+        document.getElementById("text_introAll_2").innerHTML = "Your job is to touch the thing the animal is talking about. So, listen carefully and find out which one you have to touch.";
     },
 
     intro: function () {
