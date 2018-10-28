@@ -365,8 +365,10 @@ var experiment = {
         document.getElementById("text_introCat").innerHTML = "Here are the kinds of things they will talk about:";
         document.getElementById("text_introCat_1").innerHTML = "clothes";
         document.getElementById("text_introCat_2").innerHTML = "vehicles";
-        document.getElementById("text_introCat_3").innerHTML = "fruits";
+        document.getElementById("text_introCat_3").innerHTML = "furniture";
         document.getElementById("text_introCat_4").innerHTML = "animals";
+        document.getElementById("text_introCat_5").innerHTML = "instruments";
+        document.getElementById("text_introCat_6").innerHTML = "fruits";
     },
 
     intro: function () {
