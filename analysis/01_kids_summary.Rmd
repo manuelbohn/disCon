@@ -38,7 +38,7 @@ data <- raw_data %>%
 
 write.csv(data, file="../data/01_kids_summary.data.csv")
 
-data <- read_csv(file="../data/pilot.data.csv")
+data <- read_csv(file="../data/01_kids_summary.data.csv")
 ```
 
 ```{r sanity checks, include=FALSE} 

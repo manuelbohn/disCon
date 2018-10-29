@@ -116,8 +116,8 @@ data_recency_look <- data_recency_look %>%
 #Combine recency data
 data_recency <- bind_rows(data_recency_another, data_recency_last, data_recency_look)
 
-write.csv(data_recency, file="../data/01_piot_summary_recency.data.csv")
-data_recency <- read_csv(file="../data/01_piot_summary_recency.data.csv")
+write.csv(data_recency, file="../data/01_pilot_summary_recency.data.csv")
+data_recency <- read_csv(file="../data/01_pilot_summary_recency.data.csv")
 ```
 
 ```{r sanity checks, include=FALSE} 
