@@ -76,39 +76,38 @@
                     <tbody>
                         <p class="block-text" id="text_introCat">
                         </p>
-
-
+                        <p class="block-text" id="text_introCat_2"></p>
                         <tr align="center" height="280px">
                             <td>
-                                <img src="images/clothes.png" style="position:absolute;BOTTOM: 430px;LEFT: 150px; width: 250px">
+                                <img src="images/clothes.png" style="position:absolute;BOTTOM: 340px;LEFT: 70px; width: 250px">
                             </td>
+                            
                             <td>
-                                <img src="images/vehicles.png" style="position:absolute;BOTTOM: 430px;LEFT: 600px;width: 250px">
+                                <img src="images/vehicles.png" style="position:absolute;BOTTOM: 340px;LEFT: 430px;width: 250px">
+                            </td>
+                            
+                             <td>
+                                <img src="images/furniture.png" style="position:absolute; BOTTOM: 340px;LEFT: 780px;width: 250px">
                             </td>
             
-                        <tr align="center" height="280px">
-                            <td>
-                                <img src="images/furniture.png" style="position:absolute; BOTTOM: 210px;LEFT: 150px;width: 250px">
+                        <tr align="center" height="280px">           
+                            <td> 
+                                <img src="images/animals.png" style="position:absolute;BOTTOM: 90px;LEFT: 70px;width: 250px"> 
+                            </td>
+                            
+                             <td>
+                                <img src="images/instruments.png" style="position:absolute; BOTTOM: 90px;LEFT: 430px;width: 250px">
                             </td>
 
                             <td> 
-                                <img src="images/animals.png" style="position:absolute;BOTTOM: 210px;LEFT: 600px;width: 250px">
+                                <img src="images/fruits.png" style="position:absolute;BOTTOM: 90px;LEFT: 780px;width: 250px">
                             </td>
                         </tr>
                         
-                        <tr align="center" height="280px">
-                            <td>
-                                <img src="images/instruments.png" style="position:absolute; BOTTOM: -50px;LEFT: 150px;width: 250px">
-                            </td>
-
-                            <td> 
-                                <img src="images/fruits.png" style="position:absolute;BOTTOM: -50px;LEFT: 600px;width: 250px">
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
 
-                <button id="button" type="button" onClick="this.blur(); experiment.intro();">Let's begin</button>
+                 <nextButton class ="button" type="button" id="next-intro" align="center" onclick="this.blur(); experiment.intro();">Next</nextButton>
 
             </div>
         </div>
@@ -169,6 +168,8 @@
             <img id="Tiger_transition" class="agent_transition"  src="images/agents/Tiger_transition.png">
 
             <img class="background" id="background2" src=""> 
+            
+            <nextButton class ="button" type="button" id="next-trial" align="center" onclick="this.blur(); experiment.train();">Next</nextButton>
 
         </div>
 

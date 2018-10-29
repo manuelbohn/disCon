@@ -362,16 +362,27 @@ var experiment = {
     
     introCat: function() {
         showSlide("introCat");
-        document.getElementById("text_introCat").innerHTML = "Here are the kinds of things they will talk about:";
-        document.getElementById("text_introCat_1").innerHTML = "clothes";
-        document.getElementById("text_introCat_2").innerHTML = "vehicles";
-        document.getElementById("text_introCat_3").innerHTML = "furniture";
-        document.getElementById("text_introCat_4").innerHTML = "animals";
-        document.getElementById("text_introCat_5").innerHTML = "instruments";
-        document.getElementById("text_introCat_6").innerHTML = "fruits";
+        document.getElementById("next-intro").style.visibility = "hidden";
+        document.getElementById("text_introCat").innerHTML = "Here are the kinds of things they will talk about. Take a good look and try to remember them."; 
+        
+        document.getElementById("text_introCat_2").innerHTML = "Wait for the Next button to appear to start the game.";
+        
+        document.getElementById("text_cat1").innerHTML = "clothes";
+        document.getElementById("text_cat2").innerHTML = "vehicles";
+        document.getElementById("text_cat3").innerHTML = "furniture";
+        document.getElementById("text_cat4").innerHTML = "animals";
+        document.getElementById("text_cat5").innerHTML = "instruments";
+        document.getElementById("text_cat6").innerHTML = "fruits";
+         setTimeout(function() {
+            document.getElementById("next-intro").style.visibility = "visible";
+        }, 15000);
     },
-
+    
     intro: function () {
+        document.getElementById("next-intro").style.visibility = "hidden"; 
+        
+        document.getElementById("next-trial").style.visibility = "hidden";
+        
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
         showSlide("transition");
@@ -381,11 +392,15 @@ var experiment = {
 
         document.getElementById("text_transition").innerHTML = "";
 
-        $(".agent_transition").click(experiment.train);      
+        setTimeout(function() {
+            document.getElementById("next-trial").style.visibility = "visible";
+        }, 1500);       
     },
 
     train : function () {
         document.getElementById("text_correctItem").style.visibility = "hidden";
+        
+        document.getElementById("next-trial").style.visibility = "hidden";
 
         document.getElementById("next-input").style.visibility = "hidden";        
         document.getElementById("next-novel").style.visibility = "hidden";
@@ -472,7 +487,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults",
+                experiment: "distribution_adults_name",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -604,7 +619,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults",
+                experiment: "distribution_adults_name",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
