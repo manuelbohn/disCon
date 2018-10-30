@@ -1,0 +1,89 @@
+---
+title: "DisCon Kids Pilot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(jsonlite)
+library(tidyr)
+library(stringr)
+library(dplyr)
+library(ggthemes)
+library(langcog)
+
+library(lsr)
+library(pwr)
+
+```
+
+```{r data}
+# data from pilot
+data <- read_csv(file="../data/kids_4cat_pilot.data.csv")
+```
+# Data processing
+```{r sanity checks}
+data <- data %>% 
+  filter(subid != "", subid != "test", subid != "Test")
+
+# check training performance
+data %>%
+  filter(phase == 'training') %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_item))
+
+# filter out children that don't get known words right
+drop <- data %>%
+  filter(phase == 'training') %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_item)) %>%
+  filter(correct < 0.83) %>%
+  pull(subid)
+
+data %>%
+  filter(!subid %in% drop) %>%
+  group_by(subage) %>%
+  summarise(n = length(unique(subid)))
+
+```
+
+# Visualizing the data
+
+```{r}
+p1 <- data %>%
+      filter(phase == "test")%>% # only test trials
+  group_by(subage, subid) %>%
+  summarise(correct = mean(correct_target1)) 
+
+p2 <- p1 %>%
+  multi_boot_standard(col = "correct")
+
+
+ggplot() +
+  geom_jitter(data = p1, aes(x = subage, y = correct, col = subage, alpha = .2),width = .3,height = .025)+
+  geom_pointrange(data = p2, aes(x = subage, y = mean, col = subage, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="",y="Proportion Correct Choice")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+ 
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+  scale_colour_solarized(name="Age")
+```
+
+# Power analysis
+``` {r power analysis}
+power <- data %>%
+  filter(phase == 'test') %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_target1))
+
+t.test(power$correct, mu = 1/3)
+
+d <- cohensD(power$correct, mu = 1/3)
+
+pwr.t.test(d = d, sig.level = 0.05, power = .8, type = c("one.sample"))
+```
