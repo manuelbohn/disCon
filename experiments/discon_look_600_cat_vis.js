@@ -656,6 +656,8 @@ var experiment = {
 
     transition: function() {
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
+        
+        document.getElementById("next-trial").style.visibility = "hidden";
 
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
@@ -680,6 +682,8 @@ var experiment = {
 
         experiment.slides = slides.slice();
 
-        $(".agent_transition").click(experiment.intro); 
+        setTimeout(function() {
+            document.getElementById("next-trial").style.visibility = "visible";
+        }, 1500);       
     },
 }
