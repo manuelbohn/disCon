@@ -175,8 +175,10 @@
 
             <img class="background" id="background2" src=""> 
             
-            <nextButton class ="button" type="button" id="next-trial" align="center" onclick="this.blur(); experiment.train();">Next</nextButton>
-
+            <!--after beginning slide of each trial-->
+            <nextButton class ="button" type="button" id="next-train" align="center" onclick="this.blur(); experiment.train();">Next</nextButton>
+            <!--after end slide of each trial-->
+            <nextButton class ="button" type="button" id="next-trial" align="center" onclick="this.blur(); experiment.intro();">Next</nextButton>
         </div>
 
 

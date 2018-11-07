@@ -356,21 +356,25 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
+        
+        document.getElementById("next-watchout").style.visibility = "visible";
+       
+        document.getElementById("next-intro").style.visibility = "hidden"; 
         document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to the kinds of things they have at home. Your task is to click on the things they talk about.";
-        document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
+         document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button.";
+        
     },
     
-    introCat: function() {
-        showSlide("introCat");
-        
-        document.getElementById("next-intro").style.visibility = "hidden";
-        document.getElementById("text_introCat").innerHTML = "Here are the kinds of things they will talk about. Take a good look and try to remember them."; 
-        
-        document.getElementById("text_introCat_2").innerHTML = "Wait for the Next button to appear to start the game.";
-        
-        setTimeout(function() {
-            document.getElementById("next-intro").style.visibility = "visible";
-        }, 15000);
+    introAll2: function() {
+       showSlide("introAll"); 
+        document.getElementById("next-watchout").style.visibility = "hidden";
+       
+        document.getElementById("next-intro").style.visibility = "visible"; 
+        document.getElementById("text_introAll").innerHTML = "";
+        document.getElementById("text_watchout").innerHTML = "Watch out!"
+        document.getElementById("text_watchout_2").innerHTML = "Sometimes the animals mumble and you will not be able to hear the word they say. In such cases, choose the object you think they were talking about.";
+        document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
+       
     },
 
     intro: function () {
@@ -388,13 +392,11 @@ var experiment = {
 
         setTimeout(function() {
             document.getElementById("next-train").style.visibility = "visible";
-        }, 1500); 
+        }, 1500);      
     },
 
     train : function () {
         document.getElementById("text_correctItem").style.visibility = "hidden";
-        
-        document.getElementById("next-trial").style.visibility = "hidden";
 
         document.getElementById("next-input").style.visibility = "hidden";        
         document.getElementById("next-novel").style.visibility = "hidden";
@@ -481,7 +483,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults_visual",
+                experiment: "distribution_adults",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -562,9 +564,10 @@ var experiment = {
     },
 
     choice2 : function() {
-        document.getElementById("next-novel").style.visibility = "hidden";    
-
-        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on it?"
+        document.getElementById("next-novel").style.visibility = "hidden";   
+        
+        var mumble = "mumble mumble";
+        document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on the ["+ mumble.italics()+ "]?"
 
         $(".item").click(function() {
             var clickedItem = event.target;
@@ -613,7 +616,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults_visual",
+                experiment: "distribution_adults",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -654,11 +657,12 @@ var experiment = {
     },
 
     transition: function() {
+        
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
         
         document.getElementById("next-trial").style.visibility = "hidden";
         document.getElementById("next-train").style.visibility = "hidden";
-
+        
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
 
@@ -682,7 +686,7 @@ var experiment = {
 
         experiment.slides = slides.slice();
 
-        setTimeout(function() {
+         setTimeout(function() {
             document.getElementById("next-trial").style.visibility = "visible";
         }, 1500);       
     },

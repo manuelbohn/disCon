@@ -20,11 +20,11 @@ library(langcog)
 ```{r data preprocessing}
 # Data pre-processing
 
-files <- dir("../../adult_600_raw_data/sandbox-results/")
+files <- dir("../../adult_600_visual/sandbox-results/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../../adult_600_raw_data/sandbox-results/",f,sep="")
+  jf <- paste("../../adult_600_visual/sandbox-results/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$answers$data$data) %>%
     mutate(workerid = jd$WorkerId)

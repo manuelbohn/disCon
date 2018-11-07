@@ -32,6 +32,10 @@
                     <tbody>
                         <p class="block-text" id="text_introAll">
                         </p>
+                        <p class="warning-text" id="text_watchout">
+                        </p>
+                        <p class="block-text" id="text_watchout_2">
+                        </p>
                         <p class="block-text" id="text_introAll_2">
                         </p>
 
@@ -63,51 +67,9 @@
                     </tbody>
                 </table>
 
-                <button id="button" type="button" onClick="this.blur(); experiment.introCat();">Next</button>
-
-            </div>
-        </div>
-    
-    <!-- The training slide. -->
-        <div class="slide" id="introCat">
-            <div align="center" width="500px">
-                <p id='logo-text'>Instructions</p>
-                <table style="width:100%">
-                    <tbody>
-                        <p class="block-text" id="text_introCat">
-                        </p>
-                        <p class="block-text" id="text_introCat_2"></p>
-                        <tr align="center" height="280px">
-                            <td>
-                                <img src="images/clothes.png" style="position:absolute;BOTTOM: 340px;LEFT: 70px; width: 250px">
-                            </td>
-                            
-                            <td>
-                                <img src="images/vehicles.png" style="position:absolute;BOTTOM: 340px;LEFT: 430px;width: 250px">
-                            </td>
-                            
-                             <td>
-                                <img src="images/furniture.png" style="position:absolute; BOTTOM: 340px;LEFT: 780px;width: 250px">
-                            </td>
-            
-                        <tr align="center" height="280px">           
-                            <td> 
-                                <img src="images/animals.png" style="position:absolute;BOTTOM: 90px;LEFT: 70px;width: 250px"> 
-                            </td>
-                            
-                             <td>
-                                <img src="images/instruments.png" style="position:absolute; BOTTOM: 90px;LEFT: 430px;width: 250px">
-                            </td>
-
-                            <td> 
-                                <img src="images/fruits.png" style="position:absolute;BOTTOM: 90px;LEFT: 780px;width: 250px">
-                            </td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
-
-                 <nextButton class ="button" type="button" id="next-intro" align="center" onclick="this.blur(); experiment.intro();">Next</nextButton>
+                <nextButton class ="button" type="button" id="next-watchout" align="center" onclick="this.blur(); experiment.introAll2();">Next</nextButton>
+                
+                <nextButton class ="button" type="button" id="next-intro" align="center" onclick="this.blur(); experiment.intro();">Next</nextButton>
 
             </div>
         </div>
@@ -190,7 +152,7 @@
         <!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. For instance, one of the immediately executed commands is <code>showSlide("instructions")</code>. If we loaded experiment.js, say, in the <code>head</code> section, <code>showSlide("instructions")</code> would fail because the <code>instructions</code> slide doesn't exist yet. It is possible to load the script in <code>head</code> but you have to ensure that any immediately executed commands, if they rely on potentially uninitialized HTML elements, are _delayed_ until the page is ready, using either [window.onload][onload] or jQuery's more robust [$(document).ready()][domReady]  -->
         <!-- [onload]: https://developer.mozilla.org/en/DOM/window.onload -->
         <!-- [domReady]: http://api.jquery.com/ready/ -->
-        <script src="discon_look_600_cat_vis.js"></script>
+        <script src="discon_look_600_mumble.js"></script>
 
 
     </body>

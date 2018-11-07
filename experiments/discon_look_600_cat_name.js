@@ -379,9 +379,9 @@ var experiment = {
     },
     
     intro: function () {
-        document.getElementById("next-intro").style.visibility = "hidden"; 
         
         document.getElementById("next-trial").style.visibility = "hidden";
+        document.getElementById("next-train").style.visibility = "hidden";
         
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
 
@@ -393,7 +393,7 @@ var experiment = {
         document.getElementById("text_transition").innerHTML = "";
 
         setTimeout(function() {
-            document.getElementById("next-trial").style.visibility = "visible";
+            document.getElementById("next-train").style.visibility = "visible";
         }, 1500);       
     },
 
@@ -662,7 +662,8 @@ var experiment = {
     transition: function() {
         background2("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
         
-        document.getElementById("next-trial").style.visibility = "hidden";
+       document.getElementById("next-trial").style.visibility = "hidden";
+        document.getElementById("next-train").style.visibility = "hidden";
 
         showSlide("transition");
         showAgent(trainingAgents[trials[0]], "transition");
