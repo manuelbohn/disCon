@@ -483,7 +483,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults",
+                experiment: "distribution_adults_mumble",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
@@ -616,7 +616,7 @@ var experiment = {
             workerIp = JSON.parse(ip);
             
             data = {
-                experiment: "distribution_adults",
+                experiment: "distribution_adults_mumble",
                 trial: trials[0] + 1,
 
                 agent: trainingAgents[trials[0]],
