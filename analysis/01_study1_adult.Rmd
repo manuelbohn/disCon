@@ -1,5 +1,5 @@
 ---
-title: "DisCon Adult Study 1"
+title: "DisCon Adult Study 1 (Absolute and Relative Strength of Inputs)"
 output: html_document
 ---
 

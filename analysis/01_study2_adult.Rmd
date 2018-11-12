@@ -1,5 +1,5 @@
 ---
-title: "DisCon Adult Study 2"
+title: "DisCon Adult Study 2 (with only Distribution 6-0-0)"
 output: html_document
 ---
 
