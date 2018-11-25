@@ -90,6 +90,10 @@ data_name <- data_name %>%
   distinct(workerIp, trial, slide, .keep_all = TRUE)
       
 data <- bind_rows(data_control, data_name, data_visual)
+
+write.csv(data, file="../data/adult_intros.data.csv")
+
+data <- read_csv(file="../data/adult_intros.data.csv")
 ```
 
 ```{r}
