@@ -538,6 +538,9 @@ var experiment = {
 
             setTimeout(function() {
                 document.getElementById("text_correctItem").style.visibility = "hidden";
+                hideLeftItem();
+                hideMiddleItem();
+                hideRightItem();
             }, 2000);
 
         }, 2000);
@@ -551,8 +554,8 @@ var experiment = {
                 $("#"+alternativeAgents[0]+"_look_l").animate({opacity: 1, queue: true},1000);
                 $("#"+alternativeAgents[0]+"_look_l").animate({left: 300, queue: true},2000);
                 setTimeout(function() {
-                document.getElementById("text_correctItem").style.visibility = "visible";
-                document.getElementById("text_correctItem").innerHTML = "Oh hi, I'm " + alternativeAgents[0] +"!";
+                    document.getElementById("text_correctItem").style.visibility = "visible";
+                    document.getElementById("text_correctItem").innerHTML = "Oh hi, I'm " + alternativeAgents[0] +"!";
                 }, 1000);
                
             }, 5000)
@@ -568,8 +571,8 @@ var experiment = {
                 $("#"+trainingAgents[trials[0]]+"_look_l").animate({opacity: 1, queue: true},1000);
                 $("#"+trainingAgents[trials[0]]+"_look_l").animate({left: 300, queue: true},2000);
                 setTimeout(function() {
-                document.getElementById("text_correctItem").style.visibility = "visible";
-                document.getElementById("text_correctItem").innerHTML = "I'm back."
+                    document.getElementById("text_correctItem").style.visibility = "visible";
+                    document.getElementById("text_correctItem").innerHTML = "I'm back."
                 }, 1000);
                 
             }, 5000)
@@ -596,14 +599,11 @@ var experiment = {
         }
 
         sourceLeftItem("images/" + experiment.position[0] + ".png");
-        hideLeftItem();
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
-        hideMiddleItem();
-
+      
         sourceRightItem("images/" + experiment.position[2] + ".png");
-        hideRightItem();
-
+       
         // pause for 1s before items appear.
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
@@ -718,8 +718,12 @@ var experiment = {
         document.getElementById("next-train").style.visibility = "hidden";
 
         showSlide("transition");
-        showAgent(trainingAgents[trials[0]], "transition");
-
+        if (experiment.speakerChange[0] == "change") {
+            showAgent(alternativeAgents[0], "transition");
+        } else {
+            showAgent(trainingAgents[trials[0]], "transition");
+        }
+        
         document.getElementById("text_intro").innerHTML = "";
 
         document.getElementById("text_transition").innerHTML = "Thank you for coming! Goodbye!";
