@@ -186,7 +186,8 @@ ggplot() +
 
 ```{r}
 d510 %>%
-  filter(phase != "training") %>%
+  filter(phase != "training",
+         experiment == "recency_look") %>%
   group_by(experiment, workerid) %>%
   summarise(correct = mean(correct_target1)) %>%
   summarise(correct = list(correct)) %>%
