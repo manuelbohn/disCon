@@ -667,7 +667,8 @@ var experiment = {
                 agent: trainingAgents[trials[0]],
                 phase: "test",
                 slide: experiment.slides[0], speakerChange:experiment.speakerChange[0],
-
+                alternativeAgent: alternativeAgents[0],
+                    
                 distribution: posDist[trials[0]],
                 target1: trialTargets[trials[0]][0],
                 target2: trialTargets[trials[0]][1],
