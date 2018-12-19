@@ -117,7 +117,7 @@ function getKeys(obj){
 
 showSlide("instructions");
 
-var slides = [1, 2, 3, 4, 5, 6, "speaker", "choice"]
+var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1, 2, 3, 4, 5]
 
@@ -400,11 +400,6 @@ var experiment = {
             return;
         }
 
-        if (experiment.slides[0] == "speaker") {
-            experiment.speaker();
-            return;
-        }
-
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         background("images/backgrounds/back_int" + experiment.backgrounds[0] + ".jpg");
@@ -526,9 +521,8 @@ var experiment = {
 
     speaker : function () {
        
-        showSlide("input");
-        showAgent(trainingAgents[trials[0]], "straight");
-        document.getElementById("text_correctItem").style.visibility = "visible";
+        //showAgent(trainingAgents[trials[0]], "straight");
+        //document.getElementById("text_correctItem").style.visibility = "visible";
         document.getElementById("text_correctItem").innerHTML = "I need to go.";
 
         setTimeout(function() {
@@ -538,9 +532,9 @@ var experiment = {
 
             setTimeout(function() {
                 document.getElementById("text_correctItem").style.visibility = "hidden";
-                hideLeftItem();
+/*                hideLeftItem();
                 hideMiddleItem();
-                hideRightItem();
+                hideRightItem();*/
             }, 2000);
 
         }, 2000);
@@ -556,7 +550,8 @@ var experiment = {
                 setTimeout(function() {
                     document.getElementById("text_correctItem").style.visibility = "visible";
                     document.getElementById("text_correctItem").innerHTML = "Oh hi, I'm " + alternativeAgents[0] +"!";
-                }, 1000);
+                    showAgent(alternativeAgents[0], "straight");
+                }, 3000);
                
             }, 5000)
             
@@ -573,12 +568,13 @@ var experiment = {
                 setTimeout(function() {
                     document.getElementById("text_correctItem").style.visibility = "visible";
                     document.getElementById("text_correctItem").innerHTML = "I'm back."
-                }, 1000);
+                    showAgent(trainingAgents[trials[0]], "straight");
+                }, 3000);
                 
             }, 5000)
         };
 
-        setTimeout(experiment.choice, 9000);
+       // setTimeout(experiment.choice, 9000);
     },
 
     choice : function () {
@@ -592,12 +588,8 @@ var experiment = {
         experiment.position = shuffle([experiment.targetsF[0][0], experiment.targetsF2[0][0], experiment.targetsF3[0][0]]);
 
         showSlide("input"); 
-        if (experiment.speakerChange[0] == "change"){
-            showAgent(alternativeAgents[0], "straight");
-        } else {
-            showAgent(trainingAgents[trials[0]], "straight");
-        }
-
+        showAgent(trainingAgents[trials[0]], "straight");
+       
         sourceLeftItem("images/" + experiment.position[0] + ".png");
 
         sourceMiddleItem("images/" + experiment.position[1] + ".png");
@@ -607,20 +599,26 @@ var experiment = {
         // pause for 1s before items appear.
         setTimeout(function() {
             document.getElementById("text_correctItem").style.visibility = "visible";
-            document.getElementById("text_correctItem").innerHTML = "Let's see...";
+            //document.getElementById("text_correctItem").innerHTML = "Let's see...";
             showLeftItem();
             showMiddleItem();
             showRightItem();
-        }, 1000);
+            setTimeout(experiment.speaker(), 1000);
+        }, 2000);
 
         // pause for 1.5s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
-        }, 1500);
+        }, 10000);
+        
     },
 
     choice2 : function() {
-        document.getElementById("next-novel").style.visibility = "hidden";    
+        document.getElementById("next-novel").style.visibility = "hidden";   if (experiment.speakerChange[0] == "change"){
+            showAgent(alternativeAgents[0], "straight");
+        } else {
+            showAgent(trainingAgents[trials[0]], "straight");
+        }
 
         document.getElementById("text_correctItem").innerHTML = "Look at that. Can you click on it?"
 
