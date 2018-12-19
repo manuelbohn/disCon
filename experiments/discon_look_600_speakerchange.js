@@ -520,9 +520,6 @@ var experiment = {
     },
 
     speaker : function () {
-       
-        //showAgent(trainingAgents[trials[0]], "straight");
-        //document.getElementById("text_correctItem").style.visibility = "visible";
         document.getElementById("text_correctItem").innerHTML = "I need to go.";
 
         setTimeout(function() {
@@ -532,12 +529,9 @@ var experiment = {
 
             setTimeout(function() {
                 document.getElementById("text_correctItem").style.visibility = "hidden";
-/*                hideLeftItem();
-                hideMiddleItem();
-                hideRightItem();*/
             }, 2000);
 
-        }, 2000);
+        }, 500);
 
         if (experiment.speakerChange[0] == "change"){
 
@@ -573,8 +567,6 @@ var experiment = {
                 
             }, 5000)
         };
-
-       // setTimeout(experiment.choice, 9000);
     },
 
     choice : function () {
@@ -603,10 +595,10 @@ var experiment = {
             showLeftItem();
             showMiddleItem();
             showRightItem();
-            setTimeout(experiment.speaker(), 1000);
-        }, 2000);
+            experiment.speaker();
+        }, 1000);
 
-        // pause for 1.5s before "next" button appears.
+        // pause for 10s before "next" button appears.
         setTimeout(function() {
             document.getElementById("next-novel").style.visibility = 'visible';
         }, 10000);
