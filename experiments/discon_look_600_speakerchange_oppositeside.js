@@ -543,24 +543,13 @@ var experiment = {
                 $("#"+alternativeAgents[0]+"_look_r").animate({left: 300, queue: true},2000);
 
                 setTimeout(function() {
-
-                    showAgent(alternativeAgents[0], "look_l");
-                    document.getElementById(alternativeAgents[0]+"_look_l").style.left="300px";
-                    setTimeout(function() {
-
-                        showAgent(alternativeAgents[0], "look_r");
-                        document.getElementById(alternativeAgents[0]+"_look_l").style.left="300px";
-                    }, 1000);
-                }, 3000);
-
-                setTimeout(function() {
                     showAgent(alternativeAgents[0], "straight");
                     document.getElementById("text_correctItem").style.visibility = "visible";
                     document.getElementById("text_correctItem").innerHTML = "Hi, I'm " + alternativeAgents[0] + "!";
                     setTimeout(function() {
                         document.getElementById("text_correctItem").innerHTML = "What's going on here?";
                     }, 1500);
-                }, 5000);
+                }, 3000);
 
             }, 5000)
 
@@ -621,7 +610,7 @@ var experiment = {
         if (experiment.speakerChange[0] == "change"){
             setTimeout(function() {
                 document.getElementById("next-novel").style.visibility = 'visible';
-            }, 15000);
+            }, 12000);
         };
     },
 
