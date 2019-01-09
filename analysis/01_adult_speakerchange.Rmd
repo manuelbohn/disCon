@@ -20,11 +20,11 @@ library(langcog)
 ```{r data preprocessing}
 # Data pre-processing
 
-files <- dir("../../adult_600_speakerchange/sandbox-results/")
+files <- dir("../../adult_600_speakerchange/production-results/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../../adult_600_speakerchange/sandbox-results/",f,sep="")
+  jf <- paste("../../adult_600_speakerchange/production-results/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$answers$data$data) %>%
     mutate(workerid = jd$WorkerId)
@@ -82,7 +82,6 @@ plot1 <- data %>%
   group_by(distribution, item, speakerChange) %>%
   multi_boot_standard(col = "prop_correct")
 
-
 ggplot(plot1,
        aes(x = item, y=mean, fill=item)) +
   geom_bar(stat='identity') +
@@ -98,4 +97,65 @@ ggplot(plot1,
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   labs(x="", y= "proportion chosen")
 
+plot3 <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, speakerChange) %>%
+  summarise(correct = mean(correct_target1)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -speakerChange) %>%
+  group_by(distribution, item, speakerChange) 
+
+plot3a <- plot3 %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot() +
+  geom_jitter(data = plot3, aes(x = speakerChange, y = prop_correct, col = speakerChange, alpha = .2), width = .3,height = .025)+
+  geom_pointrange(data = plot3a, aes(x = speakerChange, y = mean, col = speakerChange, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Speaker Change", y="Correct Item Chosen")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F) +
+scale_colour_solarized(name = "Speaker Change",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))
+
+
 ```
+#Check how many of the participants choosing correct in the no change condition is affected in the speaker change condition
+```{r plot2}
+pull <- data %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, speakerChange) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  filter(speakerChange == "same" & correct > 1/3) %>%
+  pull(workerid)
+
+plot2 <- data%>%
+  filter(workerid %in% pull) %>%
+  filter(phase == 'test') %>%
+  group_by(distribution, workerid, speakerChange) %>%
+  summarise(correct = mean(correct_target1),
+            correct2 = mean(correct_target2),
+            correct3 = mean(correct_target3)) %>%
+  gather(item, prop_correct, -distribution, -workerid, -speakerChange) %>%
+  group_by(distribution, item, speakerChange) %>%
+  multi_boot_standard(col = "prop_correct")
+
+ggplot(plot2,
+       aes(x = item, y=mean, fill=item)) +
+  geom_bar(stat='identity') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  scale_fill_solarized(name = "Chosen item",
+                       breaks = c("correct", "correct2", "correct3"),
+                       labels = c("most frequent", "second most frequent", "least frequent"))+
+  facet_grid(~speakerChange, 
+             labeller = as_labeller(c(change = "speaker change", same = "no change"))) +
+  geom_hline(yintercept = 1/3, lty=2) +
+  ylim(0, 1) +
+  theme_few() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(x="", y= "proportion chosen")
+```
+
