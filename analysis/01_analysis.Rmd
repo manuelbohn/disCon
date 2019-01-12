@@ -20,11 +20,11 @@ library(langcog)
 ```{r data preprocessing}
 # Data pre-processing
 
-files <- dir("../../adult_600_mumble/production-results/")
+files <- dir("../../pilot_1_raw_data/production-results_framing/")
 
 raw_data <- data_frame()
 for (f in files) {
-  jf <- paste("../../adult_600_mumble/production-results/",f,sep="")
+  jf <- paste("../../pilot_1_raw_data/production-results_framing/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
   id <- as_data_frame(jd$answers$data$data) %>%
     mutate(workerid = jd$WorkerId)
@@ -276,15 +276,14 @@ ggplot(plot3,
 ```{r plot 2}
 plot2 <- data %>%
   filter(phase == 'test') %>%
-  group_by(distribution, workerid, trialType) %>%
-  summarise(correct = mean(correct_target1),
-            correct2 = mean(correct_target2),
-            correct3 = mean(correct_target3)) %>%
-  gather(item, prop_correct, -distribution, -workerid, -trialType) %>%
+  group_by(distribution, trialType) %>%
+  summarise(correct = mean(correct_target1)
+            ) %>%
+  gather(item, prop_correct, -distribution, -trialType) %>%
   arrange(workerid)
 
- # group_by(distribution, trialType, item) %>%
- # multi_boot_standard(col = "prop_correct")
+  group_by(distribution, trialType, item) %>%
+  multi_boot_standard(col = "prop_correct")
     
 ggplot() + 
   geom_jitter(data = plot2, 
