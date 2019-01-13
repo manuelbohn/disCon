@@ -365,7 +365,7 @@ var experiment = {
 
     introAll: function() {
         showSlide("introAll");
-        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to their favroite things. Your task is to click on the things they talk about.";
+        document.getElementById("text_introAll").innerHTML = "You're visiting the house of these little animals. They will introduce you to their favorite things. Your task is to click on the things they talk about.";
         document.getElementById("text_introAll_3").innerHTML = "Pay close attention to the animals. Sometimes one animal goes away and a different animal returns.";
         document.getElementById("text_introAll_2").innerHTML = "To move forward within the experiment, press the \"Next\" button. Press below to start.";
     },
@@ -379,7 +379,7 @@ var experiment = {
         showSlide("transition");
 
         showAgent(trainingAgents[trials[0]], "transition");
-        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". These are the things I like.";
+        document.getElementById("text_intro").innerHTML = "Hi, I'm " + trainingAgents[trials[0]] + ". Let me tell you about my favorite things.";
 
         document.getElementById("text_transition").innerHTML = "";
 
@@ -546,7 +546,7 @@ var experiment = {
                 setTimeout(function() {
                     showAgent(alternativeAgents[0], "straight");
                     document.getElementById("text_correctItem").style.visibility = "visible";
-                    document.getElementById("text_correctItem").innerHTML = "Hi, I'm " + alternativeAgents[0] + "!";
+                    document.getElementById("text_correctItem").innerHTML = "Hi, I'm " + alternativeAgents[0] + ". Let me tell you about my favorite things.";
                 }, 3000);
 
             }, 5000)
