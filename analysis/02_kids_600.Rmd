@@ -36,16 +36,17 @@ for (f in files) {
   raw_data <- bind_rows(raw_data, id)
 }
 
+#unique(raw_data$subid)
 
 
-
+# linking the data to the demographics spreadsheet
+# always check if subjects get "lost" due do differetn subids
 log <- read_excel("../../DisCon-subject_log.xlsx", 1)%>%
   filter(Condition == "d600")%>%
   mutate(dob = as.Date(dob))%>%
   select(subid,experimenter,keep_drop,sex,dob)
 
 #unique(log$subid)
-#sum(log$keep_drop == "drop")
 
 data <- left_join(raw_data,log, by = "subid")%>%
   filter(keep_drop == "keep")%>%
@@ -54,8 +55,7 @@ data <- left_join(raw_data,log, by = "subid")%>%
          age_num = lubridate::time_length(difftime(test_date,dob), "years"),
          check_age = ifelse(substr(age_num,1,1) == subage, T, F))
 
-
-unique(data$subid)
+#unique(data$subid)
 
 #write.csv(data, file="../data/kids_600.data.csv")
 
@@ -63,6 +63,7 @@ unique(data$subid)
 ```
 
 ```{r sanity checks}
+# filtering out subjects that perform poorly on training trials
 data %>%
   filter(phase == 'training') %>%
   group_by(subid) %>%
@@ -75,12 +76,20 @@ drop <- data %>%
   filter(correct < 0.83) %>%
   pull(subid)
 
-data %>%
-  filter(!subid %in% drop) %>%
-  group_by(subage) %>%
-  summarise(n = length(unique(subid)))
-
+data <- data %>%
+  filter(!subid %in% drop)
 ```
+
+# Participants
+
+```{r}
+data %>%
+  group_by(subage)%>%
+  summarise(n = length(unique(subid)))%>%
+  knitr::kable(digits = 2)
+```
+
+
 # Proportion correct choice in training trials
 
 ```{r}
