@@ -16,7 +16,7 @@ library(ggthemes)
 library(langcog)
 ```
 
-#Pilot 1 data
+# Data for speaker change with preference framing
 ```{r data preprocessing}
 # Data pre-processing
 
@@ -37,24 +37,17 @@ data <- raw_data %>%
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
 
 
-write.csv(data, file="../data/01_adult_speakerchange_preference.data.csv")
+#write.csv(data, file="../data/01_adult_speakerchange_preference.data.csv")
+
 data <- read_csv(file="../data/01_adult_speakerchange_preference.data.csv")
 ```
 
-```{r}
-data_ip <- data %>%
-  filter(phase == 'training') %>%
-  group_by(workerIp) %>%
-  summarise(correct = mean(correct_item))
-```
+## Cleaning data
+
+Remove participants who perform below cut-off in training and who participated
 
 ```{r sanity checks}
-data %>%
-  filter(phase == 'training') %>%
-  group_by(workerid) %>%
-  summarise(correct = mean(correct_item))
-
-drop <- data %>%
+drop_train <- data %>%
   filter(phase == 'training') %>%
   group_by(workerid) %>%
   summarise(correct = mean(correct_item)) %>%
@@ -62,45 +55,23 @@ drop <- data %>%
   pull(workerid)
 
 data <- data %>%
-  filter(!workerid %in% drop)
+  distinct(workerid, trial, slide, .keep_all = TRUE)%>%
+  filter(!workerid %in% drop_train)
 ```
+## Sample size
+
 ```{r}
+data %>%
+  filter(phase=="test")%>%
+  group_by(speakerChange)%>%
+  summarise(N = length(unique(workerid)),
+            datapoints = n())
 
-sample_size <- data %>%
-  distinct(workerid, .keep_all = TRUE)
-
-sample_size %>%
- group_by(experiment) %>%
- summarise(n = n())
 ```
 
+# Plotting performance by condition
 
 ```{r plot1}
-plot1 <- data %>%
-  filter(phase == 'test') %>%
-  group_by(distribution, workerid, speakerChange) %>%
-  summarise(correct = mean(correct_target1),
-            correct2 = mean(correct_target2),
-            correct3 = mean(correct_target3)) %>%
-  gather(item, prop_correct, -distribution, -workerid, -speakerChange) %>%
-  group_by(distribution, item, speakerChange) %>%
-  multi_boot_standard(col = "prop_correct")
-
-ggplot(plot1,
-       aes(x = item, y=mean, fill=item)) +
-  geom_bar(stat='identity') +
-  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  scale_fill_solarized(name = "Chosen item",
-                       breaks = c("correct", "correct2", "correct3"),
-                       labels = c("most frequent", "second most frequent", "least frequent"))+
-  facet_grid(~speakerChange, 
-             labeller = as_labeller(c(change = "speaker change", same = "no change"))) +
-  geom_hline(yintercept = 1/3, lty=2) +
-  ylim(0, 1) +
-  theme_few() +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-  labs(x="", y= "proportion chosen")
-
 plot3 <- data %>%
   filter(phase == 'test') %>%
   group_by(distribution, workerid, speakerChange) %>%
@@ -125,19 +96,98 @@ scale_colour_solarized(name = "Speaker Change",
 
 
 ```
+
+# Comparison to chance in each condition
+
 ```{r wilcoxon test}
 ## Wilcoxon tests against chance
 library(exactRankTests)
 
 data %>%
   filter(phase == "test") %>%
-  group_by(distribution, workerid) %>%
+  group_by(speakerChange, workerid) %>%
   summarise(correct = mean(correct_target1)) %>%
   summarise(correct = list(correct)) %>%
-  group_by(distribution) %>%
+  group_by(speakerChange) %>%
   mutate(mean= mean(unlist(correct)),
-         stat = wilcox.exact(unlist(correct), mu = 0.5)$statistic,
-         p = wilcox.exact(unlist(correct), mu = 0.5)$p.value) %>%
-  select(distribution,mean,stat,p) %>%
+         stat = wilcox.exact(unlist(correct), mu = 1/3)$statistic,
+         p = wilcox.exact(unlist(correct), mu = 1/3)$p.value) %>%
+  select(speakerChange,mean,stat,p) %>%
   knitr::kable(digits = 3)
 ```
+
+# Model
+
+```{r Bayesian}
+library(brms)
+
+model_data <- data%>%
+  filter(phase == "test")
+
+#   model
+
+bm1 <- readRDS("../saves/01_adult_speakerchange_model_bm1.rds")
+
+brm(correct_target1 ~ speakerChange +
+                      (speakerChange | workerid) + (speakerChange | target1),
+                    data = model_data, family = bernoulli(),
+          control = list(adapt_delta = 0.95),
+          sample_prior = F,
+          save_all_pars = TRUE,
+          iter = 2000)
+
+saveRDS(bm1, "../saves/01_adult_speakerchange_model_bm1.rds")
+
+
+```
+
+## Plot model predictors
+
+```{r}
+bayesplot::mcmc_areas(as.array(bm1), pars = c("b_Intercept", "b_speakerChangesame"), prob = 0.95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  theme_few()
+```
+
+## Model comparison
+
+```{r}
+# model comparison
+# reduced model
+
+bm2 <- readRDS("../saves/01_adult_speakerchange_model_bm2.rds")
+
+bm2 <- brm(correct_target1 ~ 1 +
+                      (speakerChange | workerid) + (speakerChange | target1),
+                    data = model_data, family = bernoulli(),
+          control = list(adapt_delta = 0.95),
+          sample_prior = F,
+          save_all_pars = TRUE,
+          iter = 2000)
+
+saveRDS(bm2, "../saves/01_adult_speakerchange_model_bm2.rds")
+
+# WAIC scores
+
+child_waic <- brms::WAIC(bm1, bm2, compare = F)
+
+child_weights <- model_weights(bm1, bm2)
+
+# Bayes Factors (slightly variable)
+bf_full_null <- bayes_factor(bm1, bm2, log = FALSE, maxiter = 5000)
+
+```
+## Model comparison using WAIC and Bayes Factor
+```{r}
+data_frame(
+  model = c("bm1_w_condition","bm2"),
+  WAIC = c(child_waic$bm1$estimates[3,1],child_waic$bm2$estimates[3,1]),
+  SE = c(child_waic$bm1$estimates[3,2],child_waic$bm2$estimates[3,2]),
+  weight = c(child_weights[1],child_weights[2]),
+  BF_bm1_bm2 = c(round(bf_full_null$bf,2),"-"))%>%
+  kable(digits = 2)
+```
+
+
+
+
