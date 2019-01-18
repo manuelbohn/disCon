@@ -35,8 +35,6 @@ data <- raw_data %>%
          distribution = ifelse(distribution == "2:0", "c(2, 1, 0)", distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
 
-write.csv(data, file="../data/01_adult_speakerchange_preference.data.csv")
-data <- read_csv(file="../data/01_adult_speakerchange_preference.data.csv")
 ```
 
 ```{r}

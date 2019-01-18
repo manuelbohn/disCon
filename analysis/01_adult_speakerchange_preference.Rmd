@@ -35,6 +35,10 @@ data <- raw_data %>%
   mutate(distribution = as.character(distribution),
          distribution = ifelse(distribution == "2:0", "c(2, 1, 0)", distribution),
          distribution = factor(distribution, levels = c("c(6, 0, 0)", "c(4, 2, 0)", "c(2, 2, 2)", "c(3, 0, 0)", "c(1, 1, 1)", "c(2, 1, 0)")))
+
+
+write.csv(data, file="../data/01_adult_speakerchange_preference.data.csv")
+data <- read_csv(file="../data/01_adult_speakerchange_preference.data.csv")
 ```
 
 ```{r}
@@ -121,41 +125,19 @@ scale_colour_solarized(name = "Speaker Change",
 
 
 ```
-#Check how many of the participants choosing correct in the no change condition is affected in the speaker change condition
-```{r plot2}
-pull <- data %>%
-  filter(phase == 'test') %>%
-  group_by(distribution, workerid, speakerChange) %>%
-  summarise(correct = mean(correct_target1),
-            correct2 = mean(correct_target2),
-            correct3 = mean(correct_target3)) %>%
-  filter(speakerChange == "same" & correct > 1/3) %>%
-  pull(workerid)
+```{r wilcoxon test}
+## Wilcoxon tests against chance
+library(exactRankTests)
 
-plot2 <- data%>%
-  filter(workerid %in% pull) %>%
-  filter(phase == 'test') %>%
-  group_by(distribution, workerid, speakerChange) %>%
-  summarise(correct = mean(correct_target1),
-            correct2 = mean(correct_target2),
-            correct3 = mean(correct_target3)) %>%
-  gather(item, prop_correct, -distribution, -workerid, -speakerChange) %>%
-  group_by(distribution, item, speakerChange) %>%
-  multi_boot_standard(col = "prop_correct")
-
-ggplot(plot2,
-       aes(x = item, y=mean, fill=item)) +
-  geom_bar(stat='identity') +
-  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  scale_fill_solarized(name = "Chosen item",
-                       breaks = c("correct", "correct2", "correct3"),
-                       labels = c("most frequent", "second most frequent", "least frequent"))+
-  facet_grid(~speakerChange, 
-             labeller = as_labeller(c(change = "speaker change", same = "no change"))) +
-  geom_hline(yintercept = 1/3, lty=2) +
-  ylim(0, 1) +
-  theme_few() +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-  labs(x="", y= "proportion chosen")
+data %>%
+  filter(phase == "test") %>%
+  group_by(distribution, workerid) %>%
+  summarise(correct = mean(correct_target1)) %>%
+  summarise(correct = list(correct)) %>%
+  group_by(distribution) %>%
+  mutate(mean= mean(unlist(correct)),
+         stat = wilcox.exact(unlist(correct), mu = 0.5)$statistic,
+         p = wilcox.exact(unlist(correct), mu = 0.5)$p.value) %>%
+  select(distribution,mean,stat,p) %>%
+  knitr::kable(digits = 3)
 ```
-
