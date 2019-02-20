@@ -90,9 +90,9 @@ ggplot() +
   theme_few() +
   ylim(-0.05,1.05)+
   guides(alpha = F) +
-scale_colour_solarized(name = "Speaker Change",
-                       breaks = c("correct", "correct2", "correct3"),
-                       labels = c("most frequent", "second most frequent", "least frequent"))
+  scale_colour_solarized(name = "Speaker Change",
+                       breaks = c("change", "same"),
+                       labels = c("Different Speaker", "Same Speaker"))
 
 
 ```

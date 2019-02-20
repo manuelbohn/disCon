@@ -43,7 +43,8 @@ for (f in files) {
 # always check if subjects get "lost" due do differetn subids
 log <- read_excel("../../DisCon-subject_log.xlsx", 1)%>%
   filter(Condition == "d600")%>%
-  mutate(dob = as.Date(dob))%>%
+  mutate(dob = as.numeric(dob),
+         dob = as.Date(dob,origin = "1899-12-30"))%>%
   select(subid,experimenter,keep_drop,sex,dob)
 
 #unique(log$subid)
@@ -113,21 +114,45 @@ ggplot() +
   scale_color_solarized()
 ```
 
-# Proportion correct choice in test trials by age bin
+# Proportion correct choice in test trials across age bins
 
 ```{r proportion of choices}
 p1 <- data %>%
   filter(phase == 'test')%>%
-  group_by(subage, subid) %>%
+  group_by(experiment,subid) %>%
   summarise(correct = mean(correct_target1)) 
 
 p2 <- p1 %>%
+  group_by(experiment) %>%
   multi_boot_standard(col = "correct")
 
 
 ggplot() +
-  geom_jitter(data = p1, aes(x = subage, y = correct, col = subage, alpha = .2),width = .1,height = .025)+
-  geom_pointrange(data = p2, aes(x = subage, y = mean, col = subage, ymin = ci_lower, ymax = ci_upper),size = .8)+
+  geom_jitter(data = p1, aes(x = experiment, y = correct,  alpha = .2),width = .2,height = .01)+
+  geom_pointrange(data = p2, aes(x = experiment, y = mean,  ymin = ci_lower, ymax = ci_upper),size = .8)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="",y="Proportion correct in training")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_solarized()
+```
+
+# Proportion correct choice in test trials by age bin
+
+```{r proportion of choices}
+p3 <- data %>%
+  filter(phase == 'test')%>%
+  group_by(subage, subid) %>%
+  summarise(correct = mean(correct_target1)) 
+
+p4 <- p1 %>%
+  multi_boot_standard(col = "correct")
+
+
+ggplot() +
+  geom_jitter(data = p3, aes(x = subage, y = correct, col = subage, alpha = .2),width = .2,height = .01)+
+  geom_pointrange(data = p4, aes(x = subage, y = mean, col = subage, ymin = ci_lower, ymax = ci_upper),size = .8)+
   geom_hline(yintercept = 1/3, lty=2)+
   labs(x="",y="Proportion correct in training")+
   theme_few() +
@@ -139,12 +164,12 @@ ggplot() +
 Proportion correct choice by age continous
 
 ```{r}
-p3 <- data %>%
+p5 <- data %>%
   filter(phase == 'test')%>%
   group_by(age_num, subid) %>%
   summarise(correct = mean(correct_target1)) 
 
-ggplot(data = p3, aes(x = age_num, y = correct)) +
+ggplot(data = p5, aes(x = age_num, y = correct)) +
   geom_jitter(width = .0,height = .0, alpha = .5)+
   geom_smooth(method = "lm",  se = T,  alpha = .5, size = .6, span = 2)+
   geom_hline(yintercept = 1/3, lty=2)+
