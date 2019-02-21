@@ -146,7 +146,8 @@ p3 <- data %>%
   group_by(subage, subid) %>%
   summarise(correct = mean(correct_target1)) 
 
-p4 <- p1 %>%
+p4 <- p3 %>%
+  group_by(subage) %>%
   multi_boot_standard(col = "correct")
 
 
