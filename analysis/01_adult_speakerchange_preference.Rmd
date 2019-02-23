@@ -169,9 +169,9 @@ saveRDS(bm2, "../saves/01_adult_speakerchange_model_bm2.rds")
 
 # WAIC scores
 
-child_waic <- brms::WAIC(bm1, bm2, compare = F)
+waic <- brms::WAIC(bm1, bm2, compare = F)
 
-child_weights <- model_weights(bm1, bm2)
+weights <- model_weights(bm1, bm2)
 
 # Bayes Factors (slightly variable)
 bf_full_null <- bayes_factor(bm1, bm2, log = FALSE, maxiter = 5000)
@@ -181,9 +181,9 @@ bf_full_null <- bayes_factor(bm1, bm2, log = FALSE, maxiter = 5000)
 ```{r}
 data_frame(
   model = c("bm1_w_condition","bm2"),
-  WAIC = c(child_waic$bm1$estimates[3,1],child_waic$bm2$estimates[3,1]),
-  SE = c(child_waic$bm1$estimates[3,2],child_waic$bm2$estimates[3,2]),
-  weight = c(child_weights[1],child_weights[2]),
+  WAIC = c(waic$bm1$estimates[3,1],waic$bm2$estimates[3,1]),
+  SE = c(waic$bm1$estimates[3,2],waic$bm2$estimates[3,2]),
+  weight = c(weights[1],weights[2]),
   BF_bm1_bm2 = c(round(bf_full_null$bf,2),"-"))%>%
   kable(digits = 2)
 ```

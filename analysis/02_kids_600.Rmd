@@ -15,6 +15,7 @@ library(dplyr)
 library(ggthemes)
 library(langcog)
 library(readxl)
+library(knitr)
 
 library(lsr)
 library(pwr)
@@ -171,7 +172,7 @@ p5 <- data %>%
   summarise(correct = mean(correct_target1)) 
 
 ggplot(data = p5, aes(x = age_num, y = correct)) +
-  geom_jitter(width = .0,height = .0, alpha = .5)+
+  geom_jitter(width = .01,height = .01, alpha = .5)+
   geom_smooth(method = "lm",  se = T,  alpha = .5, size = .6, span = 2)+
   geom_hline(yintercept = 1/3, lty=2)+
   labs(x="Age",y="Proportion correct choice")+
@@ -181,3 +182,87 @@ ggplot(data = p5, aes(x = age_num, y = correct)) +
   guides(alpha = F)
 ```
 
+# Bayesian t-test against chance across age groups
+
+```{r}
+## one sample bayesian t-tests
+library(BayesFactor)
+
+data %>%
+  filter(phase != "training") %>%
+  group_by(subage, subid) %>%
+  summarise(correct = mean(correct_target1)) %>%
+  summarise(correct = list(correct)) %>%
+  group_by(subage) %>%
+  mutate(mean= mean(unlist(correct)),
+         bf = extractBF(ttestBF(unlist(correct), mu = 1/3))$bf) %>%
+  select(subage,mean,bf) %>%
+  knitr::kable(digits = 3)
+
+samples = ttestBF(x$correct, mu = 1/3, posterior = T, iterations = 1000)
+
+```
+
+# Model 
+```{r}
+library(brms)
+
+model_data <- data%>%
+  filter(phase == "test")%>%
+  mutate(age_num = scale(age_num))
+
+mean(model_data$age_num)
+
+#   model
+
+kbm1 <- brm(correct_target1 ~ age_num +
+                      (1| subid) + (1 | target1),
+                    data = model_data, family = bernoulli(),
+          control = list(adapt_delta = 0.95),
+          sample_prior = F,
+          save_all_pars = TRUE,
+          iter = 2000)
+
+summary(kbm1)
+```
+
+```{r}
+bayesplot::mcmc_areas(as.array(kbm1), pars = c("b_Intercept", "b_age_num"), prob = 0.95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  theme_few()
+```
+
+```{r}
+kbm2 <- brm(correct_target1 ~ 1 +
+                      (1| subid) + (1 | target1),
+                    data = model_data, family = bernoulli(),
+          control = list(adapt_delta = 0.95),
+          sample_prior = F,
+          save_all_pars = TRUE,
+          iter = 2000)
+
+summary(kbm2)
+```
+
+
+## Model comparison
+
+```{r}
+child_waic <- brms::WAIC(kbm1, kbm2, compare = F)
+
+child_weights <- model_weights(kbm1, kbm2)
+
+# Bayes Factors (slightly variable)
+bf_full_null <- bayes_factor(kbm1, kbm2, log = FALSE, maxiter = 5000)
+```
+
+
+```{r}
+data_frame(
+  model = c("kbm1_w_age","kbm2"),
+  WAIC = c(child_waic$kbm1$estimates[3,1],child_waic$kbm2$estimates[3,1]),
+  SE = c(child_waic$kbm1$estimates[3,2],child_waic$kbm2$estimates[3,2]),
+  weight = c(child_weights[1],child_weights[2]),
+  BF_bm1_bm2 = c(round(bf_full_null$bf,2),"-"))%>%
+  kable(digits = 2)
+```
