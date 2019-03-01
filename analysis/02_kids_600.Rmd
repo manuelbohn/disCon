@@ -20,6 +20,24 @@ library(knitr)
 library(lsr)
 library(pwr)
 
+library(coda)
+library(reshape2)
+
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+
 ```
 
 ```{r data pre-processing}
@@ -190,7 +208,25 @@ library(BayesFactor)
 
 data %>%
   filter(phase != "training") %>%
-  group_by(subage, subid) %>%
+  group_by(subid) %>%
+  summarise(correct = mean(correct_target1)) %>%
+  summarise(correct = list(correct)) %>%
+  mutate(mean= mean(unlist(correct)),
+         bf = extractBF(ttestBF(unlist(correct), mu = 1/3))$bf) %>%
+  select(mean,bf) %>%
+  knitr::kable(digits = 3)
+
+```
+
+# BAyesian t-test by age group
+
+```{r}
+## one sample bayesian t-tests
+library(BayesFactor)
+
+data %>%
+  filter(phase != "training") %>%
+  group_by(subage,subid) %>%
   summarise(correct = mean(correct_target1)) %>%
   summarise(correct = list(correct)) %>%
   group_by(subage) %>%
@@ -199,9 +235,67 @@ data %>%
   select(subage,mean,bf) %>%
   knitr::kable(digits = 3)
 
-samples = ttestBF(x$correct, mu = 1/3, posterior = T, iterations = 1000)
+```
+Plotting posterior based on t-test
+
+```{r}
+plot_post <- data %>%
+  filter(phase != "training") %>%
+  group_by(subage,subid) %>%
+  summarise(correct = mean(correct_target1))%>%
+  summarise(correct = list(correct)) %>%
+  group_by(subage) %>%
+  mutate(posterior = list((ttestBF(unlist(correct), mu = 1/3, posterior = T, iterations = 10000)[,"mu"])))%>%
+  select(-correct)
+
+
+plot_dens_ci <- plot_post %>%
+  summarise(mode = estimate_mode(unlist(posterior)),
+            lci = hdi_lower(unlist(posterior)),
+            uci = hdi_upper(unlist(posterior)))
+
+#### make density plot ?
+
+plot_dens <- data_frame(
+  age = rep(c(3,4), each = 10000),
+  posterior = c(unlist(plot_post%>%filter(subage == "3") %>% pull(posterior)),unlist(plot_post%>%filter(subage == "4") %>% pull(posterior)))
+)
+
+densities <- plot_dens %>%
+  group_by(age) %>%
+  do(., dens = density(.$posterior))
+
+densities_df <-
+  data.frame(
+    age = c(rep('3', 512),
+              rep('4', 512)),
+    x = c(densities$dens[[1]]$x, 
+          densities$dens[[2]]$x),
+    y = c(densities$dens[[1]]$y,
+          densities$dens[[2]]$y)
+  ) %>%
+  group_by(age)%>%
+  mutate (
+    ci_shade = ifelse( age == "3",
+      ifelse( x <= plot_dens_ci%>%filter(subage == "3")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "3")%>%pull(uci), "OFF", "ON"), ifelse( x <= plot_dens_ci%>%filter(subage == "4")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "4")%>%pull(uci), "OFF", "ON")))
+
+
+ggplot(plot_dens, aes(posterior, group = factor(age))) +
+  geom_density(alpha = .5)+
+  geom_vline(xintercept = 1/3, lty=2)+
+  geom_area(data = densities_df %>% filter(ci_shade == "ON"), aes(x = x, y = y, fill = age), alpha = .5) + 
+  labs(x="Proportion Correct")+
+  theme_few() +
+  xlim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_fill_solarized(name = "Age")+
+  theme(axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
 
 ```
+
+
 
 # Model 
 ```{r}
@@ -211,7 +305,6 @@ model_data <- data%>%
   filter(phase == "test")%>%
   mutate(age_num = scale(age_num))
 
-mean(model_data$age_num)
 
 #   model
 
@@ -266,3 +359,7 @@ data_frame(
   BF_bm1_bm2 = c(round(bf_full_null$bf,2),"-"))%>%
   kable(digits = 2)
 ```
+
+
+
+
