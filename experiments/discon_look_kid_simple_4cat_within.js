@@ -132,9 +132,6 @@ var slides = [1, 2, 3, 4, 5, 6, "choice"]
 
 var trials = [0, 1, 2, 3]
 
-// 2 times with 6 trial slides, 2 times with 1 trial slides
-var nTrials = shuffle([6, 6, 1, 1])
-
 var backgrounds = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
 var vehiclesF = shuffle(["car", "truck", "train", "bus", "airplane", "boat", "motorbike"])
@@ -306,6 +303,12 @@ shuffleByIndex(trialTargets);
 shuffleByIndex(trialFamiliarItems);
 
 var posDist = shuffle([[6, 0, 0], [6, 0, 0], [1, 0, 0], [1, 0, 0]]);
+
+// 2 times with 6 trial slides, 2 times with 1 trial slides
+var nTrials = new Array();
+for (var i = 0; i < posDist.length; i++) {
+    nTrials.push(posDist[i][0]);
+}
 
 //distribution for each trial
 var trainingDist = new Array();
