@@ -343,12 +343,12 @@ model_data <- data%>%
 #   model
 
 kbm1 <- brm(correct_target1 ~ age_num +
-                      (1| subid) + (1 | target1),
+                      (1| subid) + (age_num | target1),
                     data = model_data, family = bernoulli(),
-          control = list(adapt_delta = 0.95),
+          control = list(adapt_delta = 0.99),
           sample_prior = F,
           save_all_pars = TRUE,
-          iter = 2000)
+          iter = 5000)
 
 summary(kbm1)
 ```
@@ -361,12 +361,12 @@ bayesplot::mcmc_areas(as.array(kbm1), pars = c("b_Intercept", "b_age_num"), prob
 
 ```{r, include = F}
 kbm2 <- brm(correct_target1 ~ 1 +
-                      (1| subid) + (1 | target1),
+                      (1| subid) + (age_num | target1),
                     data = model_data, family = bernoulli(),
-          control = list(adapt_delta = 0.95),
+          control = list(adapt_delta = 0.99),
           sample_prior = F,
           save_all_pars = TRUE,
-          iter = 2000)
+          iter = 5000)
 
 summary(kbm2)
 ```
