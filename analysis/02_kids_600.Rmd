@@ -44,30 +44,40 @@ hdi_lower<- function(s){
 ```{r data pre-processing, include = F}
 
 #files <- dir("../../kids_simple_4cat/")
-files <- dir("../../kids_raw_data/600/")
+files <- dir("../../kids_raw_data/test/")
 
 raw_data <- data_frame()
 for (f in files) {
 #  jf <- paste("../../kids_simple_4cat/",f,sep="")
-  jf <- paste("../../kids_raw_data/600/",f,sep="")
+  jf <- paste("../../kids_raw_data/test/",f,sep="")
   jd <- fromJSON(paste(readLines(jf), collapse=""))
-  date <- str_sub(jf,36,str_length(jf)-11)
+  date <- str_sub(jf,37,str_length(jf)-11)
   id <- as_data_frame(jd$data$data)%>% mutate(test_date = date)
   raw_data <- bind_rows(raw_data, id)
 }
 
-#unique(raw_data$subid)
+raw_data <- raw_data %>%
+  filter(subid != "190402_3_d600")
 
+#unique(raw_data$subid)
 
 # linking the data to the demographics spreadsheet
 # always check if subjects get "lost" due do differetn subids
 log <- read_excel("../../DisCon-subject_log.xlsx", 1)%>%
+  mutate(subid = ifelse(subid == "190416_4_d6v1","190416_4_d600",subid))%>%
   filter(Condition == "d600")%>%
   mutate(dob = as.numeric(dob),
          dob = as.Date(dob,origin = "1899-12-30"))%>%
   select(subid,experimenter,keep_drop,sex,dob)
 
 #unique(log$subid)
+
+raw_data%>%
+  filter(experiment !="distribution_kids_simple_within")%>%
+  group_by(subid)%>%
+  summarise(n())%>%
+  filter(!(subid %in% unique(log$subid)))
+
 
 data <- left_join(raw_data,log, by = "subid")%>%
   filter(keep_drop == "keep")%>%
@@ -77,11 +87,12 @@ data <- left_join(raw_data,log, by = "subid")%>%
          check_age = ifelse(substr(age_num,1,1) == subage, T, F))%>%
   select(-dob, -check_age,-keep_drop,-experimenter,-test_date,-numberOfTrials,-nunberOfTrials)
 
-#unique(data$subid)
+unique(data$subid)
 
 #write.csv(data, file="../data/kids_600.data.csv")
 
 ##data <- read_csv(file="../data/kids_600.data.csv")
+
 ```
 
 ```{r sanity checks}
@@ -201,7 +212,7 @@ ggplot(data = p5, aes(x = age_num, y = correct)) +
   labs(x="Age",y="Proportion correct")+
   theme_few() +
   ylim(-0.05,1.05)+
-  xlim(3,5)+
+  xlim(2,5)+
   guides(alpha = F)
 ```
 
@@ -262,8 +273,8 @@ plot_dens_ci <- plot_post %>%
 #### make density plot ?
 
 plot_dens <- data_frame(
-  age = rep(c(3,4), each = 1000),
-  posterior = c(unlist(plot_post%>%filter(subage == "3") %>% pull(posterior)),unlist(plot_post%>%filter(subage == "4") %>% pull(posterior)))
+  age = rep(c(2,3,4), each = 1000),
+  posterior = c(unlist(plot_post%>%filter(subage == "2") %>% pull(posterior)),unlist(plot_post%>%filter(subage == "3") %>% pull(posterior)),unlist(plot_post%>%filter(subage == "4") %>% pull(posterior)))
 )
 
 densities <- plot_dens %>%
@@ -272,17 +283,22 @@ densities <- plot_dens %>%
 
 densities_df <-
   data.frame(
-    age = c(rep('3', 512),
+    age = c(rep('2', 512),
+            rep('3', 512),
               rep('4', 512)),
     x = c(densities$dens[[1]]$x, 
-          densities$dens[[2]]$x),
+          densities$dens[[2]]$x,
+          densities$dens[[3]]$x),
     y = c(densities$dens[[1]]$y,
-          densities$dens[[2]]$y)
+          densities$dens[[2]]$y,
+          densities$dens[[3]]$y)
   ) %>%
   group_by(age)%>%
   mutate (
     ci_shade = ifelse( age == "3",
-      ifelse( x <= plot_dens_ci%>%filter(subage == "3")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "3")%>%pull(uci), "OFF", "ON"), ifelse( x <= plot_dens_ci%>%filter(subage == "4")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "4")%>%pull(uci), "OFF", "ON")))
+                       ifelse( x <= plot_dens_ci%>%filter(subage == "3")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "3")%>%pull(uci), "OFF", "ON"),
+                       ifelse(age == "2", ifelse( x <= plot_dens_ci%>%filter(subage == "2")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "2")%>%pull(uci), "OFF", "ON"),
+      ifelse( x <= plot_dens_ci%>%filter(subage == "4")%>%pull(lci) | x >= plot_dens_ci%>%filter(subage == "4")%>%pull(uci), "OFF", "ON"))))
 
 
 ggplot(plot_dens, aes(posterior, group = factor(age))) +
