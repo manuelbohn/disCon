@@ -319,18 +319,17 @@ ggplot(plot_dens, aes(posterior, group = factor(age))) +
 # Comparison to chance based on model
 
 ```{r}
-chance_data <- data %>%
-  filter(phase != "training") %>%
-  group_by(subage,subid) %>%
-  summarise(correct = mean(correct_target1)) %>%
-  mutate(comp_chance= ifelse(correct<1/3,0,1))
+model_data <- data%>%
+  filter(phase != "training")%>%
+  mutate(age_num = scale(age_num))
 
 library(brms)
 
 
-chance_model <- brm(comp_chance ~ 1,
-                    data = chance_data, family = bernoulli(),
-          control = list(adapt_delta = 0.95),
+chance_model <- brm(correct_target1 ~ 1 + 
+                      (1| subid) + (age_num | target1),
+                    data = model_data, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
           sample_prior = F,
           save_all_pars = TRUE,
           iter = 2000)
