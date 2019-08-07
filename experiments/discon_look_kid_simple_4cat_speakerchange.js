@@ -386,6 +386,11 @@ var experiment = {
         document.getElementById("text_introAll").innerHTML = "In this game, you're going to meet the little animals. They each live in a house and they have many different kinds of things at home. Each animal will tell you about their favorite things.";
         document.getElementById("text_introAll_2").innerHTML = "Your job is to touch the thing the animal is talking about. So, listen carefully and find out which one you have to touch. Pay close attention to the animals when they leave the room. Sometimes a different animal returns.";
     },
+    
+    introAnimal: function() {
+        showSlide("introAnimal");
+    },
+    
 
     intro: function () {
 
@@ -542,38 +547,41 @@ var experiment = {
         };
     },
     
-    /*speaker : function () {
-//        sourceSound("sounds/speakerchange/" +  "needtogo" + "_" + trainingAgents[trials[0]] + ".mp3");
-//        playSound();
-//
-//        sound = document.getElementById("sound");
-//        
-//        sound.onended = function() {
-//
-//            showAgent(trainingAgents[trials[0]], "look_r");
-//           $("#"+trainingAgents[trials[0]]+"_look_r").animate({left: 680, queue: true},2000);
-//            $("#"+trainingAgents[trials[0]]+"_look_r").animate({opacity: 0, queue: true},1000);
-//
-//            if (experiment.speakerChange[0] == "change"){
-//
-//                setTimeout(function() {
+    speaker : function () {
+        
+        sourceSound("sounds/speakerchange/" +  "needtogo" + "_" + trainingAgents[trials[0]] + ".mp3");
+        playSound();
+        sound = document.getElementById("sound");
+        
+        sound.onended = function() {
+            showAgent(trainingAgents[trials[0]], "look_r");
+            $("#"+trainingAgents[trials[0]]+"_look_r").animate({left: 680, queue: true},2000);
+            $("#"+trainingAgents[trials[0]]+"_look_r").animate({opacity: 0, queue: true},1000);
+            
+            if (experiment.speakerChange[0] == "change"){
+
+                setTimeout(function() {
                     showAgent(alternativeAgents[0], "look_r");
                     document.getElementById(alternativeAgents[0]+"_look_r").style.opacity="0";
-                    document.getElementById(alternativeAgents[0]+"_look_r").style.left="0px";
-                    $("#"+alternativeAgents[0]+"_look_r").animate({opacity: 1, queue: true},1000);
-                    $("#"+alternativeAgents[0]+"_look_r").animate({left: 300, queue: true},2000);
+                     document.getElementById(alternativeAgents[0]+"_look_r").style.left="0px";
+                     $("#"+alternativeAgents[0]+"_look_r").animate({opacity: 1, queue: true},1000);
+                     $("#"+alternativeAgents[0]+"_look_r").animate({left: 300, queue: true},2000);
 
-                    setTimeout(function() {
-                        showAgent(alternativeAgents[0], "straight");
-                        
-                        sourceSound("sounds/speakerchange/" +  "hi" + "_" + alternativeAgents[0] + ".mp3");
-                        playSound();
-
+                     setTimeout(function() {
+                         showAgent(alternativeAgents[0], "straight");
+                         sourceSound("sounds/speakerchange/" +  "hi" + "_" + alternativeAgents[0] + ".mp3");
+                         playSound();
+                         sound = document.getElementById("sound");
+                         sound.onended = function() {
+                            document.getElementById("next-novel").style.visibility = 'visible';
+                        }
                     }, 3000);
 
-                }, 5000)
+                }, 3000)
 
-            } else {
+            };
+
+            if (experiment.speakerChange[0] == "same"){
 
                 setTimeout(function() {
                     showAgent(trainingAgents[trials[0]], "look_l");
@@ -583,80 +591,18 @@ var experiment = {
                     $("#"+trainingAgents[trials[0]]+"_look_l").animate({left: 300, queue: true},2000);
                     setTimeout(function() {
                         showAgent(trainingAgents[trials[0]], "straight");
-                       
                         sourceSound("sounds/speakerchange/" +  "imback" + "_" + trainingAgents[trials[0]] + ".mp3");
                         playSound();
-
+                        sound = document.getElementById("sound");
+                        sound.onended = function() {
+                            document.getElementById("next-novel").style.visibility = 'visible';
+                        }
                     }, 3000);
 
-                }, 5000)
+                }, 3000)
             };
-            
-            // pause for 20s before "next" button appears.
-
-            setTimeout(function() {
-                document.getElementById("next-novel").style.visibility = 'visible';
-            }, 10000);
-        };
-    },*/
-    
-    speaker : function () {
-        sourceSound("sounds/speakerchange/" +  "needtogo" + "_" + trainingAgents[trials[0]] + ".mp3");
-        playSound();
-        sound = document.getElementById("sound");
-
-        setTimeout(function() {
-            showAgent(trainingAgents[trials[0]], "look_r");
-            $("#"+trainingAgents[trials[0]]+"_look_r").animate({left: 680, queue: true},2000);
-            $("#"+trainingAgents[trials[0]]+"_look_r").animate({opacity: 0, queue: true},1000);
-
-            setTimeout(function() {
-                document.getElementById("text_correctItem").style.visibility = "hidden";
-            }, 2000);
-
-        }, 1000);
-
-        if (experiment.speakerChange[0] == "change"){
-
-            setTimeout(function() {
-                showAgent(alternativeAgents[0], "look_r");
-                document.getElementById(alternativeAgents[0]+"_look_r").style.opacity="0";
-                document.getElementById(alternativeAgents[0]+"_look_r").style.left="0px";
-                $("#"+alternativeAgents[0]+"_look_r").animate({opacity: 1, queue: true},1000);
-                $("#"+alternativeAgents[0]+"_look_r").animate({left: 300, queue: true},2000);
-
-                setTimeout(function() {
-                    showAgent(alternativeAgents[0], "straight");
-                    sourceSound("sounds/speakerchange/" +  "hi" + "_" + alternativeAgents[0] + ".mp3");
-                        playSound();
-                }, 3000);
-
-            }, 5000)
 
         };
-
-        if (experiment.speakerChange[0] == "same"){
-
-            setTimeout(function() {
-                showAgent(trainingAgents[trials[0]], "look_l");
-                document.getElementById(trainingAgents[trials[0]]+"_look_l").style.opacity="0";
-                document.getElementById(trainingAgents[trials[0]]+"_look_l").style.left="660px";
-                $("#"+trainingAgents[trials[0]]+"_look_l").animate({opacity: 1, queue: true},1000);
-                $("#"+trainingAgents[trials[0]]+"_look_l").animate({left: 300, queue: true},2000);
-                setTimeout(function() {
-                    showAgent(trainingAgents[trials[0]], "straight");
-                    sourceSound("sounds/speakerchange/" +  "imback" + "_" + trainingAgents[trials[0]] + ".mp3");
-                        playSound();
-                }, 3000);
-
-            }, 5000)
-        };
-        
-        // pause for 10s before "next" button appears.
-
-        setTimeout(function() {
-            document.getElementById("next-novel").style.visibility = 'visible';
-        }, 10000);
     },
             
     choice : function () {
@@ -688,8 +634,6 @@ var experiment = {
             showRightItem();
             experiment.speaker();
         }, 1000);
-        
-        
     },
 
     choice2 : function() {

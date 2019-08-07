@@ -48,6 +48,74 @@
                 <button type="button" onClick="this.blur(); experiment.introAll()">Start Game!</button>
             </center>
         </div>
+        
+        <!-- The intro slide. -->
+	<div class="slide" id="introAnimal">
+		<div align="center" width="500px">
+            <p id='logo-text'>Meet the animals!</p>
+			<table style="width:100%">
+				<tbody>
+                    <p class="block-text">
+                          These are the animals that you will see in this game. Take a look at each of them and try to remember them. Click the button below to start the training.
+                        </p>
+					<tr align="center" height="200px">
+						<td>
+                        <img class="animal_intro" src="images/agents/Cat_straight.png">
+                        </td>
+                        <td>
+                        <img class="animal_intro" src="images/agents/Mouse_straight.png">
+                        </td>
+                        <td>
+                        <img class="animal_intro" src="images/agents/Elephant_straight.png">   
+                        </td>
+                         <td>
+                        <img class="animal_intro" src="images/agents/Bear_straight.png">
+                        </td>
+                    </tr>
+                     <tr align="center">
+						<td>
+                        <p>Cat</p> 
+                        </td>
+                        <td>
+                        <p>Mouse</p>
+                        </td>
+                         <td>
+                        <p>Elephant</p>
+                        </td>
+                         <td>
+                        <p>Bear</p>
+                        </td>
+					</tr>
+                   
+                    <tr align="center" height="200px">
+                          <td>
+                        <img class="animal_intro" src="images/agents/Sheep_straight.png">
+                        </td>
+                          <td>
+                        <img class="animal_intro" src="images/agents/Tiger_straight.png">
+                        </td>
+                          <td>
+                        <img class="animal_intro" src="images/agents/Frog_straight.png">
+                        </td>
+					</tr>
+                     <tr align="center">
+                         <td>
+                        <p>Sheep</p>
+                        </td>
+                         <td>
+                        <p>Tiger</p>
+                        </td>
+                         <td>
+                        <p>Frog</p>
+                        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+        <div align="center" width="500px">
+         <button type="button" onClick="this.blur(); experiment.intro()">Start Training</button>
+	   </div>
+    </div>
 
         <!-- The training slide. -->
         <div class="slide" id="introAll">
@@ -88,7 +156,7 @@
                     </tbody>
                 </table>
 
-                <button id="button" type="button" onClick="this.blur(); experiment.intro();">Let's begin</button>
+                <button id="button" type="button" onClick="this.blur(); experiment.introAnimal();">Let's begin</button>
 
             </div>
         </div>
