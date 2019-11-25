@@ -4,6 +4,10 @@ experiments/compile/
 experiments/sounds_other
 experiments/images_other
 experiments/images_old
+analysis/02_kids_600_cache/
+analysis/02_kids_600_files/
+analysis/discon_summary_files/
+analysis/discon_summary_cache/
 experiments/watch
 pictures
 Recordings
@@ -15,3 +19,6 @@ analysis/rsconnect
 analysis/01_study1_adult_models
 .Rproj.user
 analysis/01_analysis.Rmd
+paper/manuscript_cache/
+paper/manuscript_files/
+.Rhistory

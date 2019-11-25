@@ -1,0 +1,493 @@
+---
+title: "DisCon Summary"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(langcog)
+library(readxl)
+library(knitr)
+library(brms)
+library(BayesFactor)
+library(coda)
+library(ggpubr)
+
+
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+```
+
+```{r data files, include = F}
+
+data_ex1 <- read_csv(file="../data/data_ex1.csv")
+
+data_ex2 <- read_csv(file="../data/data_ex2.csv")
+
+data_ex3 <- read_csv(file="../data/data_ex3.csv")
+
+```
+
+# Basic procedure
+
+Each trial has an input phase (left) and a test phase (right). During the input phase the speaker directly names objects from a particular category. In the test phase, new objects from the same category are shown but the speaker ambiguously asks for "it". Main question: Do children pick the object from the same category.
+
+```{r, fig.cap="Setup for child experiment. Input trial on the left and test trial on the right. Children heard pre-recorded utterances."}
+include_graphics("../stimuli_pictures/kids_setup.png")
+```
+
+# General note on inference
+
+I ran Bayesian GLMMs fit via brms. We include random effects for subject and item (speaker) and random slopes for condition whenever applicable. I used model comparisons as the main way of doing inference about age and condition effects. I used the following indicators (following Richard McElreath's book).
+
+* WAIC score: WAIC is an information criterion which guards against overfitting the data by penalizing by the number of parameters in the model. It is taken to be an indicator of how good a model's out of sample predictions are. The lower, the better. 
+
+* WAIC weights: A model’s weight is an estimate of the probability that the model will make the best predictions on new data, conditional on the set of models considered. These sum up to 1.
+
+After finding the "winning model", I use Bayes Factors to compare the winning model to alternative models without the predictors in question and also look at the predictors directly within the model to check the direction (positive vs. negative) and whether the CI overlaps with 0. 
+
+# General note on adult data
+
+We have adult data (MTurk) for Experiment 1 and 3. For Experiment 2, we have data that tests the effect of amount of input but with different conditions. Adult experiments were not pre-registered, mainly because we used them to find the best procedure. If we were to include adults in the paper, we might want to consider running them again with a pre-registration. Here, they are only included in the plots. 
+
+# Experiment 1: Simple inference
+
+Children received 6 input trials before the test trials. Main question was whether they pick the object from the same category.
+
+## Participants
+
+We tested 2,3 and 4yo. We added 2yo later and also increased the sample size for them because we expected a smaller effect. Children received 4 trials in a single condition.
+
+```{r}
+data_ex1 %>%
+  group_by(age_group)%>%
+  summarise(n = length(unique(id)))%>%
+  knitr::kable(digits = 2)
+```
+
+## Results
+
+```{r, fig.width=10, fig.height=5}
+p1_ex1_child <- data_ex1 %>%
+  mutate(age_group = as.character(age_group))%>%
+  group_by(age_group, age_num,id) %>%
+  summarise(correct = mean(correct))
+
+p1_ex1_adult <- read_csv(file="../data/01_study2_adult.data.csv")%>%
+  filter(phase=="test")%>%
+  group_by(workerid)%>%
+  summarise(correct = mean(correct_target1))%>%
+  mutate(age_group = "adult")
+
+p1_ex1 <- bind_rows(
+  p1_ex1_child,
+  p1_ex1_adult
+)
+
+p2_ex1 <- p1_ex1 %>%
+  group_by(age_group) %>%
+  multi_boot_standard(col = "correct")
+
+ex1_age_bin <- ggplot() +
+  geom_jitter(data = p1_ex1, aes(x = age_group, y = correct),alpha = .2, width = .1,height = .0)+
+  geom_pointrange(data = p2_ex1, aes(x = age_group, y = mean,  ymin = ci_lower, ymax = ci_upper),size = .8, position = position_dodge(width = .5))+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Age group",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()
+
+ex1_age_cont <- ggplot(p1_ex1, aes(x = age_num, y = correct)) +
+  geom_jitter(alpha = .2, width = .1,height = .0)+
+  geom_smooth(method = "glm",  se = T,  alpha = .5, size = 1)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Age",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()
+
+ggarrange(ex1_age_bin, ex1_age_cont)
+
+```
+
+### Comparison to chance
+
+We bin data by age and use a one-sample Bayesian t-test to compare performance to chance. The table below shows Bayes Factors (BF) for each age group. 
+
+```{r}
+data_ex1 %>%
+  group_by(age_group,id) %>%
+  summarise(correct = mean(correct)) %>%
+  summarise(correct = list(correct)) %>%
+  group_by(age_group) %>%
+  mutate(mean= mean(unlist(correct)),
+         BF = extractBF(ttestBF(unlist(correct), mu = 1/3))$bf) %>%
+  select(age_group,mean,BF) %>%
+  knitr::kable(digits = 3)
+```
+
+3 and 4yo seem to make the basic inference while the evidence is not that strong for 2yo. Because of that, we did not run 2yo in subsequent experiments.
+
+### Effect of age
+
+Here we use a Bayesian GLMM to look at the effect of age. For inference we compare it to a model without age as a predictor.
+
+```{r, cache = T, include = F}
+model_data_ex1 <- data_ex1 %>%
+  mutate(z_age_num = age_num - mean(age_num))
+
+#   model
+
+ex1_m1 <- brm(correct ~ z_age_num +
+                      (1| id) + (1| item),
+                    data = model_data_ex1, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex1_m1_waic <- as_tibble(waic(ex1_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+ex1_m1_waic_se <- as_tibble(waic(ex1_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex1_m2 <- brm(correct ~ 1 +
+                      (1| id) + (1| item),
+                    data = model_data_ex1, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex1_m2_waic <- as_tibble(waic(ex1_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+ex1_m2_waic_se <- as_tibble(waic(ex1_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex1_waic_weights <- model_weights(ex1_m1, ex1_m2, weights = "waic")
+
+ex1_bf <- bayes_factor(ex1_m1, ex1_m2, log = FALSE, maxiter = 5000)
+
+```
+
+The table below shows WAIC scores and weights for each model (RE = random effects, same for each model). The column BF_age_model shows the Bayes Factor for the model comparison between the full model (with age in that case) and each reduced model (here: without age)
+
+```{r}
+tibble(
+  model = c("model_w_age: age_num + RE","null_model: 1 + RE"),
+  WAIC = c(ex1_m1_waic,ex1_m2_waic),
+  SE = c(ex1_m1_waic_se,ex1_m2_waic_se),
+  weight = c(ex1_waic_weights[1],ex1_waic_weights[2]),
+  BF_age_model = c("-",round(ex1_bf$bf,2)))%>%
+  kable(digits = 2)
+```
+
+The model comparison favors the model with age as predictor. This is broadly in line with the analysis binned by age. However, the effect of age is not too strong: The BF in favor of the model with age is not that high and the predictor for age in the model overlaps with 0 (see plot below). 
+
+```{r, fig.cap="Posterior distribution for model fixed effects. Point indicates posterior mean, thick line shows 50%CI and thin line shows 95% CI.", fig.height=2, fig.align="center"}
+bayesplot::mcmc_intervals(as.array(ex1_m1), pars = c("b_Intercept","b_z_age_num"), prob = 0.50, prob_outer = 0.95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  theme_few()
+```
+
+# Experiment 2: Variable input
+
+Here we varied the number of input children received before each test trial. They either heard the speaker name six objects from the same category (high input) or just one (low input). Main question was whether their performance drops with lower input.
+
+## Participants
+
+The sample size in this study was rather small because age effects were not our major focus. We were mainly interested in the effect of condition. Children received again 4 trials, 2 in each condition.
+
+```{r}
+data_ex2 %>%
+  group_by(age_group)%>%
+  summarise(n = length(unique(id)))%>%
+  knitr::kable(digits = 2)
+```
+
+## Results
+
+```{r, fig.width=10, fig.height=5.5}
+p1_ex2 <- data_ex2 %>%
+  group_by(condition, age_group, age_num,id) %>%
+  summarise(correct = mean(correct))
+
+p2_ex2 <- p1_ex2 %>%
+  group_by(condition,age_group) %>%
+  multi_boot_standard(col = "correct")
+
+ex2_age_bin <- ggplot() +
+ geom_point(data = p1_ex2, aes(x = age_group, y = correct, col = condition), alpha = .2 , position = position_jitterdodge(dodge.width = .5, jitter.width = .1))+
+  geom_pointrange(data = p2_ex2, aes(x = age_group, y = mean,  ymin = ci_lower, ymax = ci_upper, col = condition),size = .8, position = position_dodge(width = .5))+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()
+
+ex2_age_cont <- ggplot(p1_ex2, aes(x = age_num, y = correct, col = condition, fill = condition)) +
+  geom_jitter(alpha = .2, width = .1,height = .0)+
+  geom_smooth(method = "glm",  se = T,  alpha = .5, size = 1)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()+
+  scale_fill_ptol()
+
+ggarrange(ex2_age_bin, ex2_age_cont, common.legend = T)
+
+```
+
+### Effect of condition
+
+```{r, cache = T, include = F}
+model_data_ex2 <- data_ex2 %>%
+  mutate(z_age_num = age_num - mean(age_num))
+
+#   model
+
+ex2_m1 <- brm(correct ~ condition * z_age_num +
+                      (condition| id) + (condition| item),
+                    data = model_data_ex2, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex2_m1_waic <- as_tibble(waic(ex2_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+
+ex2_m1_waic_se <- as_tibble(waic(ex2_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+
+ex2_m2 <- brm(correct ~ condition + z_age_num +
+                      (condition| id) + (condition| item),
+                    data = model_data_ex2, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex2_m2_waic <- as_tibble(waic(ex2_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+
+ex2_m2_waic_se <- as_tibble(waic(ex2_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+
+ex2_m3 <- brm(correct ~ z_age_num +
+                      (condition| id) + (condition| item),
+                    data = model_data_ex2, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex2_m3_waic <- as_tibble(waic(ex2_m3)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+ex2_m3_waic_se <- as_tibble(waic(ex2_m3)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex2_waic_weights <- model_weights(ex2_m1, ex2_m2, ex2_m3, weights = "waic")
+
+ex2_bf_1 <- bayes_factor(ex2_m1, ex2_m3, log = FALSE, maxiter = 5000)
+
+ex2_bf_2 <- bayes_factor(ex2_m1, ex2_m2, log = FALSE, maxiter = 5000)
+```
+
+The table below shows WAIC scores and weights for each model. The column BF_int_model shows the Bayes Factor for the model comparison between the full model (interaction model) and each reduced model (here: with main effect of condition or null model without condition).
+
+```{r}
+tibble(
+  model = c("model_w_interaction: condition * age_num + RE", "model_w_condition: condition + age_num + RE","null_model: age_num + RE"),
+  WAIC = c(ex2_m1_waic,ex2_m2_waic,ex2_m3_waic),
+  SE = c(ex2_m1_waic_se,ex2_m2_waic_se,ex2_m3_waic_se),
+  weight = c(ex2_waic_weights[1],ex2_waic_weights[2],ex2_waic_weights[3]),
+  BF_int_model = c("-",round(ex2_bf_2$bf,2),round(ex2_bf_1$bf,2)))%>%
+  kable(digits = 2)
+```
+
+The model comparison favors the null model with only age as predictor. (Note, however, that the Bayes Factor favors the interaction model). Condition seems not to affect children's performance. Overall, adding a second condition seems to have made the general task harder for younger children. This is also reflected in the reliably positive effect of age in the null model (plotted below).
+
+```{r, fig.cap ="Posterior distribution for model fixed effects. Point indicates posterior mean, thick line shows 50%CI and thin line shows 95% CI.", fig.height=2, fig.align="center"}
+
+bayesplot::mcmc_intervals(as.array(ex2_m3), pars = c("b_Intercept","b_z_age_num"), prob = 0.50, prob_outer = 0.95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  theme_few()
+```
+
+# Experiment 3: Speaker change
+
+Here we tested whether children make speaker specific inferences. That is, whether they see the topic of a conversation as specific to a particular speaker. Children received 6 input trials with one speaker, then the speaker left the scene and either the same or a different speaker returned. At test, the speaker always asked for "it".
+
+## Participants
+
+Here we again tested a larger sample to also look at age effects. Children received 4 trials, 2 in each condition. 
+
+```{r}
+data_ex3 %>%
+  group_by(age_group)%>%
+  summarise(n = length(unique(id)))%>%
+  knitr::kable(digits = 2)
+```
+
+## Results
+
+```{r, fig.width=10, fig.height=5.5}
+p1_ex3_child<- data_ex3 %>%
+  mutate(age_group = as.character(age_group))%>%
+  group_by(condition, age_group, age_num,id) %>%
+  summarise(correct = mean(correct)) 
+
+p1_ex3_adult <- read_csv(file="../data/01_adult_speakerchange_preference.data.csv")%>%
+  filter(phase=="test")%>%
+  mutate(condition = ifelse(speakerChange == "same", "same_speaker", "different_speaker"))%>%
+  group_by(workerid,condition)%>%
+  summarise(correct = mean(correct_target1))%>%
+  mutate(age_group = "adult")
+
+p1_ex3 <- bind_rows(
+  p1_ex3_child,
+  p1_ex3_adult
+)
+
+p2_ex3 <- p1_ex3 %>%
+  group_by(condition,age_group) %>%
+  multi_boot_standard(col = "correct")
+
+ex3_age_bin <- ggplot() +
+ geom_point(data = p1_ex3, aes(x = age_group, y = correct, col = condition), alpha = .2 , position = position_jitterdodge(dodge.width = .5, jitter.width = .1))+
+  geom_pointrange(data = p2_ex3, aes(x = age_group, y = mean,  ymin = ci_lower, ymax = ci_upper, col = condition),size = .8, position = position_dodge(width = .5))+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Age Group",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()
+
+ex3_age_cont <- ggplot(p1_ex3_child, aes(x = age_num, y = correct, col = condition, fill = condition)) +
+  geom_jitter(alpha = .2, width = .1,height = .0)+
+  geom_smooth(method = "glm",  se = T,  alpha = .5, size = 1)+
+  geom_hline(yintercept = 1/3, lty=2)+
+  labs(x="Age",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_color_ptol()+
+  scale_fill_ptol()
+
+ggarrange(ex3_age_bin, ex3_age_cont, common.legend = T)
+
+```
+
+### Effect of condition
+
+```{r, cache = T, include = F}
+model_data_ex3 <- data_ex3 %>%
+  mutate(z_age_num = age_num - mean(age_num))
+
+#   model
+
+ex3_m1 <- brm(correct ~ condition * z_age_num +
+                      (condition| id) + ( condition| item),
+                    data = model_data_ex3, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex3_m1_waic <- as_tibble(waic(ex3_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+
+ex3_m1_waic_se <- as_tibble(waic(ex3_m1)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex3_m2 <- brm(correct ~ condition + z_age_num +
+                      (condition| id) + ( condition| item),
+                    data = model_data_ex3, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex3_m2_waic <- as_tibble(waic(ex3_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+
+ex3_m2_waic_se <- as_tibble(waic(ex3_m2)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex3_m3 <- brm(correct ~ z_age_num +
+                      (condition| id) + ( condition| item),
+                    data = model_data_ex3, family = bernoulli(),
+          control = list(adapt_delta = 0.99),
+          sample_prior = F,
+          chains = 4, 
+          cores = 4,
+          #refresh = 0,
+          save_all_pars = TRUE,
+          iter = 5000)
+
+ex3_m3_waic <- as_tibble(waic(ex3_m3)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(Estimate)
+ex3_m3_waic_se <- as_tibble(waic(ex3_m3)$estimates, rownames = "criterion")%>%filter(criterion == "waic")%>%pull(SE)
+
+ex3_waic_weights <- model_weights(ex3_m1, ex3_m2,ex3_m3, weights = "waic")
+
+ex3_bf_1 <- bayes_factor(ex3_m1, ex3_m2, log = FALSE, maxiter = 5000)
+
+ex3_bf_2 <- bayes_factor(ex3_m1, ex3_m3, log = FALSE, maxiter = 5000)
+```
+
+The table below shows WAIC scores and weights for each model. The column BF_int_model shows the Bayes Factor for the model comparison between the full model (interaction model) and each reduced model (here: with main effect of condition or null model without condition).
+
+```{r}
+tibble(
+  model = c("model_w_interaction: condition * age_num + RE", "model_w_condition: condition + age_num + RE","null_model: age_num + RE"),
+  WAIC = c(ex3_m1_waic,ex3_m2_waic,ex3_m3_waic),
+  SE = c(ex3_m1_waic_se,ex3_m2_waic_se,ex3_m3_waic_se),
+  weight = c(ex3_waic_weights[1],ex3_waic_weights[2],ex3_waic_weights[3]),
+  BF_int_model = c("-",round(ex3_bf_1$bf,2),round(ex3_bf_2$bf,2)))%>%
+  kable(digits = 2)
+```
+
+The model comparison favors the interaction model. Bayes Factors also suggest that this model fits the data better compared to the other models. When looking at the model predictors, we see a positive interaction effect, mirroring what we see in the graphs above, namely that younger children do not distinguish between the two conditions, but older children do. 
+
+
+```{r, fig.cap="Posterior distribution for model fixed effects. Point indicates posterior mean, thick line shows 50%CI and thin line shows 95% CI.", fig.height=4, fig.align="center"}
+bayesplot::mcmc_intervals(as.array(ex3_m1), pars = c("b_Intercept","b_z_age_num", "b_conditionsame_speaker", "b_conditionsame_speaker:z_age_num"), prob = 0.50, prob_outer = .95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  theme_few()
+```
+
+# Conclusion
+
+Children make inferences about what the general "topic" of a discourse is and use this to identify the referent of an ambiguous utterance. The amount of input they receive seems to have no direct effect on this inference. Older children treat the discourse topic as something that is specific to a particular speaker. 
+
