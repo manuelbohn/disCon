@@ -1,0 +1,471 @@
+---
+title             : "What’s she talking about? Category based discourse inferences in young children"
+shorttitle        : "Discourse inferences in early childhood"
+
+author: 
+  - name          : "Manuel Bohn"
+    affiliation   : "1,2"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Jahnallee 59, 04109 Leipzig, Germany"
+    email         : "manuel.bohn@uni-leipzig.de"
+  - name          : "Khuyen Nha Le"
+    affiliation   : "1"
+  - name          : "Benjamin Peloquin"
+    affiliation   : "1"
+  - name          : "Bahar Köymen"
+    affiliation   : "3"
+  - name          : "Michael C. Frank"
+    affiliation   : "1"            
+
+affiliation:
+  - id            : "1"
+    institution   : "Stanford University"
+  - id            : "2"
+    institution   : "Leipzig University"
+  - id            : "3"
+    institution   : "University of Manchester"
+
+authornote: |
+  We thank Megan Merrick and Sabina Zacco for their help with the data collection. MB received funding from the European Union’s Horizon   2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement no. 749229.
+
+abstract: |
+  tbd... 
+  
+keywords          : "keywords"
+wordcount         : "X"
+
+bibliography      : ["library.bib"]
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library(papaja)
+library(tidyverse)
+library(ggplot2)
+library(brms)
+library(ggthemes)
+library(langcog)
+library(ggpubr)
+library(BayesFactor)
+library(broom)
+library(coda)
+library(reshape2)
+
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+```
+
+```{r load data}
+ex1_data <- read_csv(file="../data/data_ex1.csv")
+ex2_data <- read_csv(file="../data/data_ex2.csv")
+```
+
+# Experiment 1
+
+All experimental procedures, sample sizes and statistical analysis were pre-registered (see https://osf.io/9ypxn and https://osf.io/fyaxq). The study material can be found in the associated online repository at https://github.com/manuelbohn/disCon.
+
+## Participants
+```{r participants-ex1, include = F}
+desc_ex1 <- ex1_data%>%
+  mutate(sex = ifelse(sex == "F",1,0))%>%
+  group_by(age_group)%>%
+  summarise(n = length(unique(id)), 
+            age = mean(age_num), 
+            min_age = min(age_num),
+            max_age = max(age_num), 
+            sex = sum(sex, na.rm = T)/4)
+```
+
+We obtained valid data from 71 children, including `r desc_ex1%>%filter(age_group == "2")%>%pull(n)` 2-year-olds (mean = `r desc_ex1%>%filter(age_group == "2")%>%pull(age)`, range = `r desc_ex1%>%filter(age_group == "2")%>%pull(min_age)` - `r desc_ex1%>%filter(age_group == "2")%>%pull(max_age)`, `r desc_ex1%>%filter(age_group == "2")%>%pull(sex)` girls), `r desc_ex1%>%filter(age_group == "3")%>%pull(n)` 3-year-olds (mean = `r desc_ex1%>%filter(age_group == "3")%>%pull(age)`, range = `r desc_ex1%>%filter(age_group == "3")%>%pull(min_age)` - `r desc_ex1%>%filter(age_group == "3")%>%pull(max_age)`, `r desc_ex1%>%filter(age_group == "3")%>%pull(sex)` girls) and `r desc_ex1%>%filter(age_group == "4")%>%pull(n)` 4-year-olds (mean = `r desc_ex1%>%filter(age_group == "4")%>%pull(age)`, range = `r desc_ex1%>%filter(age_group == "4")%>%pull(min_age)` - `r desc_ex1%>%filter(age_group == "4")%>%pull(max_age)`, `r desc_ex1%>%filter(age_group == "4")%>%pull(sex)` girls). We tested a larger sample of 2-year-olds because we expected a weaker effect in this age group. In addition, 12 children were recruited but not tested because their parents reported less than 75% of English exposure at home. Ten children started the experiment but did not finish it because they became impatient (7) or the equipment broke (3). Three children were tested but excluded because they were correct in less than 5/6 training trials (see below). All children were recruited from the floor of a Children's museum in San José, California, USA. The population from which this sample is drawn is characterized by diverse ethnic background (predominantly self identifying as White, Asian or of mixed ethnicity) and high levels of parental education and socioeconomic status. Parents gave informed consent and provided demographic information. Data was collected between January and September 2019. All experiments reported in this paper were approved by the Stanford Institutional Review Board (protocol no. 357 19960).
+
+```{r fig1, include = T, fig.align = "center", fig.cap = "Left: Screenshot from the experimental setup. Right: Stimuli pictures for the four categories: fruits, vehicles, clothes and mammals.", out.width="450px"}
+knitr::include_graphics("../figures/setup.png")
+```
+
+## Method
+
+Study materials were presented as a picture book on a tablet computer [@frank2016using]. Children responded by touching objects on the screen. Responses were automatically saved. The experimenter guided children through the procedure and read out general instructions. The study was framed as visit to the house of the little animals during which the animals would show the child the things they have at home. Utterances made by the different animals were pre-recorded from native English speakers, with one speaker per animal. On each trial, children saw one animal in the middle of the screen with three objects above them (Figure \ref{fig:fig1}, left). Each objects came from a different category (mammals, vehicles, clothes and fruits). For each category, we selected pictures of seven different category members (e.g. for vehicles: car, truck, train, bus, airplane, boat and motorbike). The right panel of figure \ref{fig:fig1} shows all pictures used in the study grouped by category.
+
+The trial started with six training rounds, in which the animal named one of the objects above them, asking the child to touch it (e.g. "Look at that, can you touch the horse"). From one round to the next, the pictures changed but the categories remained the same. For example, children saw a skirt, a horse and a motorcycle on the first training round and a jacket, a dog and a bus on the second. During training, the speaker consistently named objects from the same target category. After six training rounds, children received a test round in which the speaker used an ambiguous pronoun to refer to one of the objects ("Look at that, can you touch *it*"). Categories were randomly selected at the beginning of each trial and so was the order of pictures within each category. The position of each picture (left, right middle) was also randomly determined on each round. Children received four trials, one with each category as the target.       
+
+## Results 
+```{r experiment1, cache = T, include = F}
+
+## comparison to chance
+
+bf_t_age <- ex1_data %>%
+  group_by(age_group, id) %>%
+  summarise(correct = mean(correct)) %>%
+  summarise(correct = list(correct)) %>%
+  group_by(age_group)%>%
+  mutate(mean= mean(unlist(correct)),
+         bf = extractBF(ttestBF(unlist(correct), mu = 1/3))$bf)
+
+## mixed model to look at age continously
+
+ex1_model_data <- ex1_data%>%
+  mutate(age_num = age_num - mean(age_num))
+
+# ex1_m1 <- brm(correct ~ age_num + (1|id) + (1|speaker),
+#                     data = ex1_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 50000)%>%
+#   add_criterion("waic")%>%
+#   saveRDS(., "../saves/ex1_model1.rds")
+# 
+# ex1_m2 <- brm(correct ~ 1 + (1|id) + (1|speaker),
+#                     data = ex1_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 50000)%>%
+#   add_criterion("waic")%>%
+#   saveRDS(., "../saves/ex1_model2.rds")
+
+ex1_m1 <-readRDS("../saves/ex1_model1.rds")
+
+ex1_m2 <-readRDS("../saves/ex1_model2.rds")
+
+#bf_ex1 <- bayes_factor(ex1_m1, ex1_m2, log = FALSE, maxiter = 5000)
+
+t1 <- loo_compare(ex1_m1, ex1_m2, criterion = "waic")%>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Predictors")%>%
+  mutate(
+    Predictors = recode(Predictors, ex1_m1 = "Age", 
+                   ex1_m2 = "Intercept only"),
+    weight = exp(elpd_waic) / sum(exp(elpd_waic)),
+    weight = round(weight, 3),
+    WAIC = round(waic, 2),
+    #BF = c("-",round(bf_ex1$bf,2)),
+    SE = round(se_waic,2))%>%
+  select(Predictors, WAIC, SE, weight)
+``` 
+
+```{r plots1, include = F}
+pex1_1 <- ex1_data %>%
+  group_by(experiment,age_group,age_num, id) %>%
+  summarise(correct = mean(correct)) 
+
+pex1_2 <- pex1_1 %>%
+  group_by(experiment,age_group) %>%
+  multi_boot_standard(col = "correct")
+
+samples1 <- posterior_samples(ex1_m1, "^b")%>%
+  mutate(sample = 1:length(b_age_num))
+
+samples <- expand_grid(samples1,ex1_model_data$age_num)%>%
+  mutate(y = plogis(b_Intercept + b_age_num * `ex1_model_data$age_num`),
+         age = `ex1_model_data$age_num` + mean(ex1_data$age_num),
+         experiment = "simple_inference")%>%
+  filter(sample < 1000)
+
+map_model <- tibble(
+  age = ex1_model_data$age_num,
+  int = fixef(ex1_m1)[1,1],
+  slope = fixef(ex1_m1)[2,1]
+)%>%
+  mutate(y = plogis(int + slope * age),
+         age = age + mean(ex1_data$age_num))
+
+p1 <- ggplot() +
+  geom_hline(yintercept = 1/3, lty=2, size = 1)+
+  geom_jitter(data = pex1_1,aes(x = age_num, y= correct), width = .00, height = .01, alpha = .5)+
+  geom_line(data = samples, aes(x = age, y = y, group = sample), size = .025, col = "grey")+
+  geom_line(data = map_model, aes(x = age, y = y), size = 1)+
+  geom_pointrange(data = pex1_2, aes(x = age_group+.5, y = mean, ymin = ci_lower, ymax = ci_upper, col = experiment),size = .8, position = position_dodge(width = .2), pch = 4)+
+  #geom_smooth(data = ex1_data,aes(x = age_num, y= correct, col = experiment), method = "glm", method.args = list(family = "binomial"), se = T, alpha = .5, size = 1.5)+
+  labs(x="Age",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  xlim(2,5)+
+  guides(alpha = F, col = F)+
+  scale_color_manual(values = "#CC6677")
+
+
+
+# density plot
+plot_post <- ex1_data %>%
+  group_by(age_group,id) %>%
+  summarise(correct = mean(correct))%>%
+  summarise(correct = list(correct)) %>%
+  group_by(age_group) %>%
+  mutate(posterior = list((ttestBF(unlist(correct), mu = 1/3, posterior = T, iterations = 2000)[,"mu"])))%>%
+  select(-correct)
+
+
+plot_dens_ci <- plot_post %>%
+  summarise(mode = estimate_mode(unlist(posterior)),
+            lci = hdi_lower(unlist(posterior)),
+            uci = hdi_upper(unlist(posterior)))
+
+
+
+plot_dens <- tibble(
+  age = rep(c(2,3,4), each = 2000),
+  posterior = c(unlist(plot_post%>%filter(age_group == "2") %>% pull(posterior)),unlist(plot_post%>%filter(age_group == "3") %>% pull(posterior)),unlist(plot_post%>%filter(age_group == "4") %>% pull(posterior)))
+)
+
+densities <- plot_dens %>%
+  group_by(age) %>%
+  do(., dens = density(.$posterior))
+
+densities_df <-
+  tibble(
+    age = c(rep('2', 512),
+            rep('3', 512),
+              rep('4', 512)),
+    x = c(densities$dens[[1]]$x, 
+          densities$dens[[2]]$x,
+          densities$dens[[3]]$x),
+    y = c(densities$dens[[1]]$y,
+          densities$dens[[2]]$y,
+          densities$dens[[3]]$y)
+  ) %>%
+  group_by(age)%>%
+  mutate (
+    ci_shade = ifelse( age == "3",
+                       ifelse( x <= plot_dens_ci%>%filter(age_group == "3")%>%pull(lci) | x >= plot_dens_ci%>%filter(age_group == "3")%>%pull(uci), "OFF", "ON"),
+                       ifelse(age == "2", ifelse( x <= plot_dens_ci%>%filter(age_group == "2")%>%pull(lci) | x >= plot_dens_ci%>%filter(age_group == "2")%>%pull(uci), "OFF", "ON"),
+      ifelse( x <= plot_dens_ci%>%filter(age_group == "4")%>%pull(lci) | x >= plot_dens_ci%>%filter(age_group == "4")%>%pull(uci), "OFF", "ON"))))
+
+
+post_plot <- ggplot(plot_dens, aes(posterior, group = age)) +
+  geom_vline(xintercept = 1/3, lty=2, size = 1)+
+  geom_area(data = densities_df %>% filter(ci_shade == "ON"), aes(x = x, y = y, fill = age), alpha = .5) + 
+  geom_density(alpha = .5, size = 1)+
+  labs(y="Probability density", x="Proportion correct")+
+  theme_few() +
+  xlim(-0.05,1.05)+
+  guides(alpha = F)+
+  scale_fill_colorblind(name = "Age")
+```
+
+```{r fig2, include = T, fig.align = "center", fig.cap = "A: Posterior probability distribution for the mean for each age bin based on one sample Bayesian t-test. Shaded regions indicate 95\\% credible intervals for each age bin. B: Correct responses for age continously. Transparent dots show data aggregated for each individual participants. Red crosses show mean within age bin with 95\\% confidence intervals based on non-parametric bootstrap. Black line shows the mean of the posterior distribution of the model including age. Grey lines show 1000 random draws from the model posterior to depict uncertainty in the model. Dotted line indicates level of performance expected by chance.", fig.width=10, fig.height=4}
+ggarrange(post_plot,p1, nrow = 1, labels = c("A","B"))
+```
+
+The dependent variable in all analysis was whether the touched object at test was from the same category as the objects named throughout the training rounds. All analysis were computed in R [@R-base]. As a first step, we aggregated responses across trials for each child and compared the proportion of correct responses to a level expected by chance (33% correct) within each age bin. We used the function `ttestBF` from the R-package `BayesFactor` [@R-BayesFactor] to compute a Bayes factor (BF) in favor of the hypothesis that performance is above chance (0.33 correct). Figure \ref{fig:fig2}A shows the corresponding posterior distribution for each age bin. We found little evidence that 2-year olds performed above chance (mean proportion correct = `r bf_t_age%>%filter(age_group == "2")%>%pull(mean)`, BF~10~ = `r bf_t_age%>%filter(age_group == "2")%>%pull(bf)`) but found substantial evidence for 3-year-olds (mean proportion correct = `r bf_t_age%>%filter(age_group == "3")%>%pull(mean)`, BF~10 = `r bf_t_age%>%filter(age_group == "3")%>%pull(bf)`) and 4-year-olds (mean proportion correct = `r bf_t_age%>%filter(age_group == "4")%>%pull(mean)`, BF~10~ = `r bf_t_age%>%filter(age_group == "4")%>%pull(bf)`)\footnote{This result is robust to changes in the prior on the standardized effect size. Choosing a wider prior results in slightly smaller Bayes factors, see online repository for details}. 
+
+To analyse responses continuously across age we used generalized linear mixed models (GLMM) fit via the function `brm` from the R-package `brms` [@R-brms_a]. All models had default priors and included random effects for participant id and speaker. Inference was based on comparing models that differed in whether they included the key predictor of interest, in this case age. Following McElreath [-@rethinking], we compared models using WAIC (widely applicable information criterion) scores and weights. The WAIC score is an indicator of the model's predictive accuracy for out of sample data; model's with lower scores are preferred. WAIC weights are an estimate of the probability that this model (compared to all other models considered) will make the best predictions on new data. In addition, we inspected the posterior distribution for the key parameters in the model via it's mean and 95 % credible interval (CI).  
+
+For experiment 1, the model comparison favored the model including age as a predictor (Table \ref{tab:table1}). The mean model estimate for age was positive ($\beta$ = `r fixef(ex1_m1)[2,1]`, 95% CI = `r fixef(ex1_m1)[2,3]` - `r fixef(ex1_m1)[2,4]`), suggesting an increase in performance with age (see also Figure \ref{fig:fig2}B). However, the small difference in model weights and the fact that the 95% CI for the model estimate also overlapped with zero speak against substantial developmental gains in the age range considered.  
+
+```{r table1,results = "asis"}
+apa_table(
+  t1
+  , caption = "Model comparison for Experiment 1"
+  , note = "All models included random intercepts for participant and speaker."
+  , escape = T
+)
+```
+
+## Discussion
+This experiment presents evidence that children make inferences about conversational topics. Based on hearing a speaker consistently refer to objects from a certain category, children first inferred this category and then used it to interpret an ambiguous pronoun in a subsequent utterance. This suggests that children track common ground with a speaker not just in terms of remembering what has been talked about previously, but also in form of an overarching topic that guides the conversation and allows predictions about what will be talked about in the future. 
+
+In a follow-up experiment we tested whether the number of training rounds affected children's ability to make the inference. WE contrasted one training round with six training rounds. The results suggest that fewer training rounds do not necessarily mean worse performance. However, the data is not conclusive and we therefore present the details of this experiment in the supplementary material. In the next experiment, we focus instead on whether this inference is conditional on the identity of a speaker.
+
+# Experiment 2
+
+Here we test whether children expect a conversational topic to be specific to a speaker. Because we only found limited evidence that 2-year-olds make category based discourse inferences in experiment 1, we only tested 3- and 4-year-olds in Experiment 2. The preregistration for this experiment can be found at https://osf.io/5e9pk and the study material are in the associated online repository.
+
+## Participants
+```{r participants-ex2, include = F}
+desc_ex2 <- ex2_data%>%
+  mutate(sex = ifelse(sex == "F",1,0))%>%
+  group_by(age_group)%>%
+  summarise(n = length(unique(id)), 
+            age = mean(age_num), 
+            min_age = min(age_num),
+            max_age = max(age_num),
+            sex = sum(sex)/4)
+```
+
+We tested 60 children, including `r desc_ex2%>%filter(age_group == "3")%>%pull(n)` 3-year-olds (mean = `r desc_ex2%>%filter(age_group == "3")%>%pull(age)`, range = `r desc_ex2%>%filter(age_group == "3")%>%pull(min_age)` - `r desc_ex2%>%filter(age_group == "3")%>%pull(max_age)`, `r desc_ex2%>%filter(age_group == "3")%>%pull(sex)` girls) and `r desc_ex2%>%filter(age_group == "4")%>%pull(n)` 4-year-olds (mean = `r desc_ex2%>%filter(age_group == "4")%>%pull(age)`, range = `r desc_ex2%>%filter(age_group == "4")%>%pull(min_age)` - `r desc_ex2%>%filter(age_group == "4")%>%pull(max_age)`, `r desc_ex2%>%filter(age_group == "4")%>%pull(sex)` girls). Four additional children were recruited but not included because parents reported less than 75% English exposure at home. Another four children were tested but ended up not contributing data because the equipment failed (2) or because they did not finish the experiment (2). Data was collected in August and September of 2019. For details on population characteristics and ethical approval see experiment 1.
+
+## Method
+
+The general setup and procedure were the same as in experiment 1 except for the following changes. The animals were introduced as showing children their *favorite* things (experiment 1: things they have at home). We included this to focus children's attention on the individual speakers. Conversely, when making a request, speakers said: "I like that. Can you touch [object/it]". The speaker change manipulation was implemented in the following way: After the six training rounds, the speaker announced that they had to leave and left the scene by walking off the left edge of the screen. Then, either the same or a different animal returned to the scene and made a request using the ambiguous pronoun. If the same speaker returned, they entered from the same side as they left, if a new speaker appeared, they entered from the other side. This measure served to emphasize that the different speaker was new to the scene and therefore unfamiliar with the preceding discourse. We tested conditions within participant in a randomized order. Each child received four trials, two with the same and two with a different speaker returning.
+
+## Results
+
+```{r experiment2, cache = T, include = F}
+ex2_model_data <- ex2_data%>%
+  mutate(age_num = age_num - mean(age_num))
+
+# ex2_m1 <- brm(correct ~ age_num * condition + (condition|id) + (condition|speaker),
+#                     data = ex2_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 50000)%>%
+#    add_criterion("waic")%>%
+#     saveRDS(., "../saves/ex2_model1.rds")
+# 
+# ex2_m2 <- brm(correct ~ age_num + condition + (condition|id) + (condition|speaker),
+#                     data = ex2_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 50000)%>%
+#    add_criterion("waic")%>%
+#     saveRDS(., "../saves/ex2_model2.rds")
+# 
+# ex2_m3 <- brm(correct ~ age_num + (condition|id) + (condition|speaker),
+#                     data = ex2_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 50000)%>%
+#    add_criterion("waic")%>%
+#     saveRDS(., "../saves/ex2_model3.rds")
+
+ex2_m1 <-readRDS("../saves/ex2_model1.rds")
+
+ex2_m2 <-readRDS("../saves/ex2_model2.rds")
+
+ex2_m3 <-readRDS("../saves/ex2_model3.rds")
+
+t2 <- loo_compare(ex2_m1, ex2_m2, ex2_m3, criterion = "waic")%>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Predictors")%>%
+  mutate(
+    Predictors = recode(Predictors, ex2_m1 = "Age * Condition", 
+                   ex2_m2 = "Age + Condition",
+                   ex2_m3 = "Age"),
+    weight = exp(elpd_waic) / sum(exp(elpd_waic)),
+    weight = round(weight, 3),
+    WAIC = round(waic, 2),
+    SE = round(se_waic,2))%>%
+  select(Predictors, WAIC, SE, weight)
+```
+
+```{r table2,results = "asis"}
+apa_table(
+  t2
+  , caption = "Model comparison for Experiment 2"
+  , note = "All models included random intercepts for participant and speaker and random slopes for condition."
+  , escape = T
+)
+```
+
+```{r plots2}
+pex2_1 <- ex2_data %>%
+  group_by(condition,age_group,age_num, id) %>%
+  summarise(correct = mean(correct)) 
+
+pex2_2 <- pex2_1 %>%
+  group_by(condition,age_group) %>%
+  multi_boot_standard(col = "correct")
+
+
+samples2 <- posterior_samples(ex2_m1, "^b")%>%
+  mutate(sample = 1:length(b_age_num))
+
+sample2 <- expand_grid(samples2,ex2_model_data$age_num)%>%
+  filter(sample < 2000)%>%
+  mutate(condition = ifelse(sample <1000, "same_speaker", "different_speaker"),
+         y = ifelse(condition == "different_speaker", plogis(b_Intercept + b_age_num * `ex2_model_data$age_num`), plogis(b_Intercept + b_conditionsame_speaker + b_age_num * `ex2_model_data$age_num` + `b_age_num:conditionsame_speaker` * `ex2_model_data$age_num`)),
+         age = `ex2_model_data$age_num` + mean(ex2_data$age_num))
+
+
+map_model_2 <- tibble(
+  age = rep(ex2_model_data$age_num, 2),
+  condition = c(rep("same_speaker", length(ex2_model_data$age_num)),rep("different_speaker", length(ex2_model_data$age_num))),
+  int = fixef(ex2_m1)[1,1],
+  slope = fixef(ex2_m1)[2,1],
+  speak = fixef(ex2_m1)[3,1],
+  int_act = fixef(ex2_m1)[4,1]
+)%>%
+  mutate(y = ifelse(condition == "different_speaker", plogis(int + slope * age), plogis(int + speak + slope * age + int_act * age)),
+         age = age + mean(ex2_data$age_num))
+
+
+p2 <- ggplot() +
+  geom_hline(yintercept = 1/3, lty=2, size = 1)+
+  geom_jitter(data = pex2_1,aes(x = age_num, y= correct, col = condition), width = .00, height = .01, alpha = .5)+
+  geom_line(data = sample2, aes(x = age, y = y, col = condition, group = sample), size = .025)+
+  geom_line(data = map_model_2, aes(x = age, y = y, col = condition), size = 1)+
+  #geom_smooth(data = ex2_data,aes(x = age_num, y= correct, col = condition), method = "glm", method.args = list(family = "binomial"), se = T, alpha = .5, size = 1.5)+
+  geom_pointrange(data = pex2_2, aes(x = age_group+.5, y = mean, ymin = ci_lower, ymax = ci_upper, col = condition),size = .8, position = position_dodge(width = .2), pch = 4)+
+  labs(x="Age",y="Proportion correct")+
+  theme_few() +
+  ylim(-0.05,1.05)+
+  xlim(3,5)+
+  guides(alpha = F)+
+  scale_color_ptol(name = "Speaker",
+                   breaks = c("different_speaker", "same_speaker"),
+                   labels = c("Different", "Same"))+
+  theme(legend.position = "bottom")
+```
+
+```{r fig3, include = T, fig.align = "center", fig.cap = "Correct responses in experiment 2 for age continously by age and condition. Transparent dots show aggregated data from individual participants. Blue and red crosses show mean within age bin based on aggregated data with 95\\% CI based on non-parametric bootstrap. Colored line shows the mean of the posterior distribution for each condition based on the interaction model. Lighter lines show 1000 random draws per condition from the model posterior to depict uncertainty. Dotted line indicates level of performance expected by chance.", out.width = '50%'}
+p2
+```
+
+We tested the effect of speaker change on children's discourse inferences via a model comparison. We compared a base model including only age as a fixed effect to models also including condition, either as a main effect or in form of an interaction with age. Models were fitted and compared in the same way as in experiment 1. The model comparison clearly favored the interaction model (Table \ref{tab:table2}). The interaction term in the model itself was large and reliably different from zero ($\beta$ = `r fixef(ex2_m1)[4,1]`, 95% CI = `r fixef(ex2_m1)[4,3]` - `r fixef(ex2_m1)[4,4]`). Figure \ref{fig:fig3} visualizes the data and the model and shows that while younger children did not take into account speaker identity, older children (starting at around age 4) only interpreted the ambiguous pronoun in light of the previous discourse topic when the speaker remained the same.
+
+## Discussion 
+
+In Experiment 2, we found evidence that children from four years onward assume that a conversational topic is specific to the identity of the speaker. When one speaker repeatedly referred to objects from the same category, they expected the same speaker, but not a different one, to continue communicating about the same category. Younger children did not take into account speaker identity. 
+
+# General Discussion
+
+
+
+
+\newpage
+
+# References
+```{r create_r-references}
+r_refs(file = "r-references.bib")
+```
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id = "refs"></div>
+\endgroup
