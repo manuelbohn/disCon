@@ -288,7 +288,7 @@ p2
 
 ### Discussion
 
-The results of this experiment suggest that hearing fewer examples of objects from the implied category does not automatically result in worse performance overall. However, this interpretation should be taken with caution. As it turns out, mixing low and high input trials substantially affected 3-year-olds' performance in the task. That is, in contrast to study 1 and 2, they struggled with the basic inference. This suggests that including low input trials made the task harder overall. The difference between conditions might be more prominent in a between subjects design. However, more data is needed to reach a conclusion and, as of now, we see these results as inconclusive at best. 
+The results of this experiment suggest that hearing fewer examples of objects from the implied category does not automatically result in worse performance overall. However, this interpretation should be taken with caution. As it turns out, mixing low and high input trials substantially affected 3-year-olds' performance in the task. That is, in contrast to study 1 and 2, they struggled with the basic inference. This suggests that including low input trials made the task harder overall. The difference between conditions might be more prominent in a between subjects design. However, more data is needed to reach a conclusion and, as of now, we see these results as inconclusive. 
 
 # Exploratory analysis
 
@@ -311,7 +311,7 @@ Data from all children (N = `r length(unique(con_data$id))`) who participated in
 
 ### Results
 
-Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in a model comparison. We compared a model with condition to a model without condition as a predictor in the same way as in previous experiments. Table \ref{tab:tableS3} shows that the model including category was clearly favored. For comparisons between categories we set clothes as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals (reference category) resulted in intermediate levels of performance while clothes was the most difficult. 
+Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in a model comparison. We compared a model with condition to a model without condition as a predictor in the same way as in previous experiments. Table \ref{tab:tableS3} shows that the model including category was clearly favored. For comparisons between categories we set clothes as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals (reference category) resulted in intermediate levels of performance while clothes was the most difficult one. 
 
 ## Discussion
 
