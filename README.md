@@ -4,7 +4,7 @@ Here you find all experimental procedures, data files and analysis scripts assoc
 
 ## Structure
 
-Experiments can be found in `experiments/`. Click on the respective `.html` file (e.g. `study1.html`) to run the experiment.
+Experiments can be found in `experiments/`. To run the experiments, download the repository and click on the respective `.html` file (e.g. `study1.html`).
 
 All data sets can be found in `data/`.  
 
