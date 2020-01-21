@@ -1,5 +1,5 @@
 ---
-title             : "Category based discourse inferences in early childhood  \nSupplementary material"
+title             : "What’s she talking about? Social and topic based discourse inferences in young children  \nSupplementary material"
 shorttitle        : " "
 
 author: 
@@ -55,6 +55,7 @@ library(BayesFactor)
 library(broom)
 library(coda)
 library(reshape2)
+library(bayesplot)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -110,12 +111,12 @@ bf_t_age_prior <- ex1_data %>%
   summarise(correct = list(correct)) %>%
   group_by(age_group)%>%
   mutate(mean= mean(unlist(correct)),
-         default = round(extractBF(ttestBF(unlist(correct), mu = 1/3))$bf,2),
-         wide = round(extractBF(ttestBF(unlist(correct), mu = 1/3, rscale = "wide"))$bf,2),
-         ultrawide = round(extractBF(ttestBF(unlist(correct), mu = 1/3,rscale = "ultrawide"))$bf,2),
+         `default prior` = round(extractBF(ttestBF(unlist(correct), mu = 1/3))$bf,2),
+         `wide prior` = round(extractBF(ttestBF(unlist(correct), mu = 1/3, rscale = "wide"))$bf,2),
+         `ultrawide prior` = round(extractBF(ttestBF(unlist(correct), mu = 1/3,rscale = "ultrawide"))$bf,2),
          Age = as.character(age_group))%>%
   ungroup()%>%
-  select(Age, default, wide, ultrawide)
+  select(Age, `default prior`, `wide prior`, `ultrawide prior`)
 ``` 
 
 ```{r tableS1,results = "asis"}
@@ -309,13 +310,17 @@ con_data <- bind_rows(
 
 Data from all children (N = `r length(unique(con_data$id))`) who participated in one of the three experiments were included. For detailed information about age and population characteristics see individual experiments. 
 
+### Analysis 
+
+We compared a model including category as a fixed effect to a model lacking this predictor. Models are compared in the same way as in previous experiments. Furthermore, to investigate the relative difficulty of each target category, we compare the posterior distributions of the parameter estimate for each category.    
+
 ### Results
 
-Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in a model comparison. We compared a model with condition to a model without condition as a predictor in the same way as in previous experiments. Table \ref{tab:tableS3} shows that the model including category was clearly favored. For comparisons between categories we set clothes as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals (reference category) resulted in intermediate levels of performance while clothes was the most difficult one. 
+Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in a model comparison. Table \ref{tab:tableS3} shows that the model including category was clearly favored. For comparisons between categories we set animals as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals resulted in intermediate levels of performance while clothes was the most difficult one. 
 
 ## Discussion
 
-This exploratory analysis suggests that children's ability to infer the topic of a conversation depends, in part, on the implied topic itself. Categories may differ in difficulty either because some category members might be less familiar to children and/or because children are less familiar with the category itself.
+This exploratory analysis suggests that children's ability to infer the topic of a conversation depends, in part, on the implied topic itself. Categories may differ in difficulty either because some category members might be less familiar to children and/or because children are less familiar with the category itself. See general discussion section in the main manuscript for a discussion of how these results relate to the other studies. 
 
 ```{r suppanalysis, cache = T, include = F}
 con_model_data <- con_data %>%
@@ -431,18 +436,13 @@ cp2 <- ggplot() +
   theme(legend.position = "right")
 
 
-cp3 <- tidy(con_m1, prob = 0.95) %>%
-  filter(term == "b_age_num" |
-           term == "b_target_categoryfruits" |
-           term == "b_target_categoryclothes" |
-           term == "b_target_categoryvehicles")%>% 
-  mutate(term = str_remove(term,"b_"),
-         term = str_remove(term,"target_category"),
-         term = str_remove(term,"_num"))%>%
-  ggplot(aes(term, estimate, ymin = lower, ymax = upper)) + 
-  geom_hline(yintercept=0, lty = 2)+
-  geom_pointrange(position = position_dodge(width = .8))+
-  coord_flip()+
+
+cp3 <-bayesplot::mcmc_areas(as.array(con_m1), 
+                      pars = c("b_target_categoryfruits", "b_target_categoryclothes", "b_target_categoryvehicles"), 
+                      prob = 0.95)+
+  geom_vline(xintercept = 0, lty = 2, col = "black")+
+  scale_y_discrete(breaks=c("b_target_categoryfruits","b_target_categoryclothes","b_target_categoryvehicles"),
+        labels=c("Fruits", "Clothes", "Vehicles"))+
   theme_few()
 
 ```
@@ -460,7 +460,7 @@ apa_table(
 ggarrange(cp1, cp2, nrow = 1, labels = c("A","B"), common.legend = T, legend = "bottom")
 ```
 
-```{r plotS3, include = T, fig.align = "center", fig.cap = "Model estimates for each category with clothes as the reference category. Dots show mean and error bars 95\\% credible intervals of the posterior distribution.", out.width = '60%', fig.asp = .5}
+```{r plotS3, include = T, fig.align = "center", fig.cap = "Posterior distribution of model estimates for each category with animals as the reference category. Thick blue lines show mean and shaded regions show 95\\% credible intervals.", out.width = '60%', fig.asp = .5}
 cp3
 ```
 
