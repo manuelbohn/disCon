@@ -1,6 +1,6 @@
-# DisCon
+# Children’s interpretation of ambiguous pronouns based on prior discourse 
 
-Here you find all experimental procedures, data files and analysis scripts associated with the main manuscript (https://XXX). Please see the manuscript for additional details.
+Here you find all experimental procedures, data files and analysis scripts associated with the main manuscript (https://psyarxiv.com/gkhez/). Please see the manuscript for additional details.
 
 ## Structure
 
