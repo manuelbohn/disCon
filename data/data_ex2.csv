@@ -8,9 +8,9 @@ part_2_speaker_change,3,3.662785388127854,F,speaker_change,2,different_speaker,E
 part_2_speaker_change,3,3.662785388127854,F,speaker_change,3,same_speaker,Bear,mammals,mammals,1
 part_2_speaker_change,3,3.662785388127854,F,speaker_change,4,different_speaker,Sheep,vehicles,vehicles,1
 part_3_speaker_change,4,4.58607305936073,F,speaker_change,1,different_speaker,Frog,fruits,fruits,1
-part_3_speaker_change,4,4.58607305936073,F,speaker_change,2,same_speaker,Tiger,clothes,mammals,0
+part_3_speaker_change,4,4.58607305936073,F,speaker_change,2,same_speaker,Tiger,clothes,mammals,1
 part_3_speaker_change,4,4.58607305936073,F,speaker_change,3,different_speaker,Sheep,mammals,fruits,0
-part_3_speaker_change,4,4.58607305936073,F,speaker_change,4,same_speaker,Elephant,vehicles,clothes,0
+part_3_speaker_change,4,4.58607305936073,F,speaker_change,4,same_speaker,Elephant,vehicles,vehicles,1
 part_5_speaker_change,4,4.55593607305936,F,speaker_change,1,same_speaker,Sheep,clothes,clothes,1
 part_5_speaker_change,4,4.55593607305936,F,speaker_change,2,different_speaker,Mouse,vehicles,fruits,0
 part_5_speaker_change,4,4.55593607305936,F,speaker_change,3,different_speaker,Cat,mammals,mammals,1

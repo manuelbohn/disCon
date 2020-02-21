@@ -1,5 +1,5 @@
 ---
-title             : "What’s she talking about? Social and topic based discourse inferences in young children  \nSupplementary material"
+title             : "Supplementary material: Children’s interpretation of ambiguous pronouns based on prior discourse"
 shorttitle        : " "
 
 author: 
@@ -17,11 +17,11 @@ author:
     
 affiliation:
   - id            : "1"
-    institution   : "Stanford University"
+    institution   : "Department of Psychology, Stanford University"
   - id            : "2"
-    institution   : "Leipzig University"
+    institution   : "Leipzig Research Center for Early Child Development, Leipzig University"
   - id            : "3"
-    institution   : "University of Manchester"
+    institution   : "School of Health Sciences, University of Manchester"
 
 bibliography      : ["r-references.bib"]
 
@@ -92,7 +92,7 @@ ex2_data <- read_csv(file="../data/data_ex2.csv")
 
 ### Materials
 
-The list below shows all words that were used to request objects during training rounds for each of the four categories. The corresponding pictures are shown in figure 1 in the main manuscript. 
+The list below shows all words that were used to request objects during training trials for each of the four categories. The corresponding pictures are shown in figure 1 in the main manuscript. 
 
 * fruit: strawberry, apple, banana, cherry, orange, melon, pineapple
 * vehicles: car, truck, train, bus, airplane, boat, motorbike
@@ -100,8 +100,6 @@ The list below shows all words that were used to request objects during training
 * animals: dog, cat, horse, bear, cow, monkey, elephant
 
 The object shown at test for each category was randomly selected from all objects of that category. 
-
-
 
 ```{r experiment1, cache = T, include = F}
 ## check sensitivity to prior
@@ -137,7 +135,7 @@ We conducted a sensitivity analysis for the Bayes factors that informed the comp
 
 # Supplementary Experiment
 
-In this study, we varied the number of training rounds before the test event. Procedures and analysis were pre-registered at https://osf.io/x2k4p. Our main focus was on condition differences and we therefore sampled a smaller number of children from each age group. 
+In this study, we varied the number of training trials before the test event. Procedures and analysis were pre-registered at https://osf.io/x2k4p/?view_only=d3440e61d88e42c892e3294a6072cc05. Our main focus was on condition differences and we therefore sampled a smaller number of children from each age group. 
 
 ## Method
 
@@ -157,7 +155,7 @@ We tested 33 children, including `r desc_exs%>%filter(age_group == "3")%>%pull(n
 
 ### Materials and Procedure
 
-Study material and procedure were identical to study 1 with the following change: we administered two types of trials that varied in the number of training rounds that preceded the test. *Low input* trials had one training round while *high input* trials had six training rounds. Participants received four trials, two in each condition. The order of conditions was randomized. Categories were randomly assigned to each condition and object positions were randomized in the same way as in study 1. Experimental procedures can be found in the associated online repository. 
+Study material and procedure were identical to study 1 with the following change: we administered two types of trials that varied in the number of training trials that preceded the test. *Low input* trials had one training trial while *high input* trials had six training trials. Participants received four trials, two in each condition. The order of conditions was randomized. Categories were randomly assigned to each condition and object positions were randomized in the same way as in study 1. Experimental procedures can be found in the associated online repository. 
 
 ### Results
 
@@ -166,38 +164,38 @@ Study material and procedure were identical to study 1 with the following change
 exs_model_data <- exs_data%>%
   mutate(age_num = age_num - mean(age_num))
 
-# exs_m1 <- brm(correct ~ age_num * condition + (condition|id) + (condition|speaker),
+# exs_m1 <- brm(correct ~ age_num * condition + (condition|id) + (age_num + condition|target_category),
 #                     data = exs_model_data, family = bernoulli(),
-#           control = list(adapt_delta = 0.99),
+#           control = list(adapt_delta = 0.999, stepsize = 0.0001, max_treedepth = 50),
 #           sample_prior = F,
 #           chains = 4,
 #           cores = 4,
 #           save_all_pars = F,
-#           iter = 50000)%>%
+#           iter = 5000)%>%
 #     add_criterion("waic")%>%
 #   saveRDS(., "../saves/exs_model1.rds")
 # 
-# exs_m2 <- brm(correct ~ age_num + condition + (condition|id) + (condition|speaker),
+# exs_m2 <- brm(correct ~ age_num + condition + (condition|id) + (age_num + condition|target_category),
 #                     data = exs_model_data, family = bernoulli(),
-#           control = list(adapt_delta = 0.99),
+#           control = list(adapt_delta = 0.999, stepsize = 0.0001, max_treedepth = 50),
 #           sample_prior = F,
 #           chains = 4,
 #           cores = 4,
 #           save_all_pars = F,
-#           iter = 50000)%>%
+#           iter = 5000)%>%
 #     add_criterion("waic")%>%
 #   saveRDS(., "../saves/exs_model2.rds")
 # 
 # 
 # 
-# exs_m3 <- brm(correct ~ age_num + (condition|id) + (condition|speaker),
+# exs_m3 <- brm(correct ~ age_num + (condition|id) + (age_num + condition|target_category),
 #                     data = exs_model_data, family = bernoulli(),
-#           control = list(adapt_delta = 0.99),
+#           control = list(adapt_delta = 0.999, stepsize = 0.0001, max_treedepth = 50),
 #           sample_prior = F,
 #           chains = 4,
 #           cores = 4,
 #           save_all_pars = F,
-#           iter = 50000)%>%
+#           iter = 5000)%>%
 #     add_criterion("waic")%>%
 #   saveRDS(., "../saves/exs_model3.rds")
 
@@ -293,7 +291,7 @@ The results of this experiment suggest that hearing fewer examples of objects fr
 
 # Exploratory analysis
 
-This is an exploratory analysis that was not pre-registered. From all experiments we select the data with six training rounds and the same speaker. That is, we included all data from study 1, the high input condition from the supplementary experiment and the same speaker condition from study 2.
+This is an exploratory analysis that was not pre-registered. From all experiments we select the data with six training trials and the same speaker. That is, we included all data from study 1, the high input condition from the supplementary experiment and the same speaker condition from study 2.
 
 ## Methods
 
@@ -312,56 +310,71 @@ Data from all children (N = `r length(unique(con_data$id))`) who participated in
 
 ### Analysis 
 
-We compared a model including category as a fixed effect to a model lacking this predictor. Models are compared in the same way as in previous experiments. Furthermore, to investigate the relative difficulty of each target category, we compare the posterior distributions of the parameter estimate for each category.    
+We compared three models. The interaction model included an interaction between age and category, the main effects model included age and category as main effects and the baseline mode only included age as a predictor. Models were compared in the same way as in previous experiments. Furthermore, to investigate the relative difficulty of each target category, we compare the posterior distributions of the parameter estimate for each category.    
 
 ### Results
 
-Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in a model comparison. Table \ref{tab:tableS3} shows that the model including category was clearly favored. For comparisons between categories we set animals as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals resulted in intermediate levels of performance while clothes was the most difficult one. 
+Figure \ref{fig:plotS2}A shows that performance differed widely across categories. This visual impression was corroborated in the model comparison. Table \ref{tab:tableS3} shows that the main effects model with category as a predictor was clearly favored. For comparisons between categories we set animals as the reference category. Figure \ref{fig:plotS2}B and \ref{fig:plotS3} show that children chose the object from the same category most often when fruits was the target category. Vehicles and animals resulted in intermediate levels of performance while clothes was the most difficult category. 
 
 ## Discussion
 
-This exploratory analysis suggests that children's ability to infer the topic of a conversation depends, in part, on the implied topic itself. Categories may differ in difficulty either because some category members might be less familiar to children and/or because children are less familiar with the category itself. See general discussion section in the main manuscript for a discussion of how these results relate to the other studies. 
+This exploratory analysis suggests that children's ability to infer the topic of a conversation depends, in part, on the implied topic itself. Categories may differ in difficulty either because some category members might be less familiar to children and/or because children are less familiar with the category itself. The general discussion section in the main manuscript offers a discussion of how these results relate to the other studies. 
 
 ```{r suppanalysis, cache = T, include = F}
 con_model_data <- con_data %>%
   mutate(age_num = age_num - mean(age_num))
   
 
-# con_m1 <- brm(correct ~ age_num + target_category + (1|id) + (target_category|speaker),
+# con_m1 <- brm(correct ~ age_num * target_category + (1|id),
 #                     data = con_model_data, family = bernoulli(),
 #           control = list(adapt_delta = 0.99),
 #           sample_prior = F,
 #           chains = 4,
 #           cores = 4,
 #           save_all_pars = F,
-#           iter = 50000)%>%
+#           iter = 5000)%>%
 #     add_criterion("waic")%>%
 #   saveRDS(., "../saves/con_model1.rds")
-# #
-# con_m2 <- brm(correct ~ age_num + (1|id) + (target_category|speaker),
+# 
+# con_m2 <- brm(correct ~ age_num + target_category + (1|id),
 #                     data = con_model_data, family = bernoulli(),
 #           control = list(adapt_delta = 0.99),
 #           sample_prior = F,
 #           chains = 4,
 #           cores = 4,
 #           save_all_pars = F,
-#           iter = 50000)%>%
+#           iter = 5000)%>%
 #     add_criterion("waic")%>%
 #   saveRDS(., "../saves/con_model2.rds")
+# 
+# con_m3 <- brm(correct ~ age_num + (1|id),
+#                     data = con_model_data, family = bernoulli(),
+#           control = list(adapt_delta = 0.99),
+#           sample_prior = F,
+#           chains = 4,
+#           cores = 4,
+#           save_all_pars = F,
+#           iter = 5000)%>%
+#     add_criterion("waic")%>%
+#   saveRDS(., "../saves/con_model3.rds")
 
 
 con_m1 <-readRDS("../saves/con_model1.rds")
 
 con_m2 <-readRDS("../saves/con_model2.rds")
 
+con_m3 <-readRDS("../saves/con_model3.rds")
+
 #bf_exc <- bayes_factor(con_m1, con_m2, log = FALSE)
 
-tcon <- loo_compare(con_m1, con_m2, criterion = "waic")%>%
+tcon <- loo_compare(con_m1, con_m2, con_m3, criterion = "waic")%>%
   as.data.frame() %>%
   tibble::rownames_to_column("Model")%>%
   mutate(
-    Model = recode(Model, con_m1 = "correct ~ age + category + RE", 
-                  con_m2 = "correct ~ age + RE"),
+    Model = recode(Model, 
+                   con_m1 = "correct ~ age * category + RE",
+                   con_m2 = "correct ~ age + category + RE", 
+                  con_m3 = "correct ~ age + RE"),
     weight = exp(elpd_waic) / sum(exp(elpd_waic)),
     weight = round(weight, 3),
     WAIC = round(waic, 2),
@@ -382,14 +395,14 @@ pc2 <- pc1 %>%
 
 cp1 <- ggplot()+
   geom_hline(yintercept = 1/3, lty=2)+
-  geom_jitter(data = pc1, aes(x = age_group, y = correct, col = target_category), position = position_jitterdodge(jitter.width = .1,jitter.height = .025, dodge.width = .75 ), alpha = .5)+
+  geom_jitter(data = pc1, aes(x = age_group, y = correct, col = target_category), position = position_jitterdodge(jitter.width = .1,jitter.height = .025, dodge.width = .75 ), alpha = .3)+
   geom_pointrange(data = pc2, aes(x = age_group, y = mean, ymin = ci_lower, ymax = ci_upper, col = target_category), position = position_dodge(width = .75), pch = 4)+
   #facet_grid(~experiment)+
   labs(x="Age",y="Proportion correct")+
   theme_few()+
   scale_color_colorblind(name = "Category")
 
-samples_con <- posterior_samples(con_m1, "^b")%>%
+samples_con <- posterior_samples(con_m2, "^b")%>%
   mutate(sample = 1:length(b_age_num))
 
 con_sample <- expand_grid(samples_con,unique(con_model_data$age_num))%>%
@@ -408,11 +421,11 @@ con_sample <- expand_grid(samples_con,unique(con_model_data$age_num))%>%
 map_con <- tibble(
   age = rep(con_model_data$age_num, 4),
   Category = c(rep("clothes", length(con_model_data$age_num)),rep("fruits", length(con_model_data$age_num)),rep("animals", length(con_model_data$age_num)),rep("vehicles", length(con_model_data$age_num))),
-  int = fixef(con_m1)[1,1],
-  slope = fixef(con_m1)[2,1],
-  clothes = fixef(con_m1)[3,1],
-  fruits = fixef(con_m1)[4,1],
-  vehicles = fixef(con_m1)[5,1]
+  int = fixef(con_m2)[1,1],
+  slope = fixef(con_m2)[2,1],
+  clothes = fixef(con_m2)[3,1],
+  fruits = fixef(con_m2)[4,1],
+  vehicles = fixef(con_m2)[5,1]
 )%>%
   mutate(y = ifelse(
     Category == "animals", plogis(int + slope * age),
@@ -424,7 +437,7 @@ map_con <- tibble(
 
 cp2 <- ggplot() +
   geom_hline(yintercept = 1/3, lty=2)+
-  geom_line(data = con_sample, aes(x = age, y = y, col = Category, group = sample), size = .01)+
+  geom_line(data = con_sample, aes(x = age, y = y, col = Category, group = sample), size = .01, alpha = .5)+
   geom_line(data = map_con, aes(x = age, y = y, col = Category), size = 1)+
   #geom_pointrange(data = pex3_2, aes(x = age_group+.5, y = mean, ymin = ci_lower, ymax = ci_upper, col = condition),size = .8, position = position_dodge(width = .2), pch = 4)+
   labs(x="Age",y="Proportion correct")+
@@ -437,7 +450,7 @@ cp2 <- ggplot() +
 
 
 
-cp3 <-bayesplot::mcmc_areas(as.array(con_m1), 
+cp3 <-bayesplot::mcmc_areas(as.array(con_m2), 
                       pars = c("b_target_categoryfruits", "b_target_categoryclothes", "b_target_categoryvehicles"), 
                       prob = 0.95)+
   geom_vline(xintercept = 0, lty = 2, col = "black")+
@@ -456,7 +469,7 @@ apa_table(
 )
 ```
 
-```{r plotS2, include = T, fig.align = "center", fig.cap = "A: Data plotted by age bin and category. Transparent dots show data from individual participants. Colored crosses show mean within age bin and category with 95\\% confidence intervals based on non-parametric bootstrap. B: Correct responses for age continously. Colored lines show the mean of the posterior distribution of the model including category. Lighter lines show 1000 random draws from the model posterior to depict uncertainty in the model. Dotted line indicates level of performance expected by chance.", out.width = '100%', fig.asp = .5}
+```{r plotS2, include = T, fig.align = "center", fig.cap = "(A) Data plotted by age bin and category. Transparent dots show data from individual participants. Colored crosses show mean within age bin and category with 95\\% confidence intervals based on non-parametric bootstrap. (B) Correct responses for age continously. Colored lines show the mean of the posterior distribution of the model including category. Lighter lines show 1000 random draws from the model posterior to depict uncertainty in the model. Dotted line indicates level of performance expected by chance.", out.width = '100%', fig.asp = .5}
 ggarrange(cp1, cp2, nrow = 1, labels = c("A","B"), common.legend = T, legend = "bottom")
 ```
 
