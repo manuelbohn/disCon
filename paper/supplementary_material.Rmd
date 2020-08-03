@@ -56,6 +56,7 @@ library(broom)
 library(coda)
 library(reshape2)
 library(bayesplot)
+library(ggridges)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -84,6 +85,8 @@ knitr::opts_chunk$set(echo = F, warning = F, message = F)
 ex1_data <- read_csv(file="../data/data_ex1.csv")
 exs_data <- read_csv(file="../data/data_exs.csv")
 ex2_data <- read_csv(file="../data/data_ex2.csv")
+
+ex1_adult_data <- read_csv(file="../data/adult_data_ex1.csv")
 ```
 
 # Experiment 1
@@ -132,6 +135,89 @@ We used `r cite_r("r-references.bib")` for all our analyses reported in the main
 ### Results 
 
 We conducted a sensitivity analysis for the Bayes factors that informed the comparison to chance in each age group. We re-ran the analysis using wider priors than the default priors from the package. Table \ref{tab:tableS1} reports the results. Results show that the conclusions - 3- and 4-year-olds, but not 2-year-olds, select the object from the same category above chance - are robust to changes in the prior width. 
+
+# Experiment 1 - adults
+
+## Method
+
+We tested `r length(unique(ex1_adult_data$id))` adults recruited via Amazon Mechanical Turk (MTurk). Participants were restricted to have an US IP address and received payment equivalent to an hourly wage of ~ \$9. 
+
+## Materials
+
+The setup and the procedure was the same as for children, with the following changes: Adults saw written instructions on top of the page instead of hearing pre-recorded audio files. The three objects were positioned at the bottom of the page (see Figure \ref{fig:adultsetup}). Furthermore, adults were tested in two additional categories with the following objects:
+
+* instruments: drum, flute, guitar, piano, trumpet, violin, xylophone
+* furniture: bed, chair, table, closet, drawer, sofa, lamp, stool
+
+As a consequence, each adult participant received a total number of six trials, one per category, in a randomized order.
+
+```{r adultsetup, include = T, fig.align = "center", fig.cap = "Left: Screenshot from the experimental setup for adults.", out.width="450px"}
+knitr::include_graphics("../figures/FigureS1.png")
+```
+
+## Results
+```{r, include = F}
+bf_t_adult <- ex1_adult_data %>%
+  group_by(id) %>%
+  summarise(correct = mean(correct)) %>%
+  summarise(correct = list(correct)) %>%
+  mutate(mean= mean(unlist(correct)),
+         bf = extractBF(ttestBF(unlist(correct), mu = 1/3))$bf)
+```
+
+```{r, include = F}
+# density plot
+plot_post <- ex1_data %>%
+  group_by(age_group,id) %>%
+  summarise(correct = mean(correct))%>%
+  summarise(correct = list(correct)) %>%
+  group_by(age_group) %>%
+  mutate(posterior = list((ttestBF(unlist(correct), mu = 1/3, posterior = T, iterations = 2000)[,"mu"])))%>%
+  select(-correct)
+
+plot_post_adult <- ex1_adult_data %>%
+  group_by(id) %>%
+  summarise(correct = mean(correct))%>%
+  summarise(correct = list(correct)) %>%
+  mutate(posterior = list((ttestBF(unlist(correct), mu = 1/3, posterior = T, iterations = 2000)[,"mu"])))%>%
+  select(-correct)
+
+
+plot_dens <- bind_rows(
+  
+  tibble(
+  age = rep(c(2,3,4), each = 2000),
+  posterior = c(unlist(plot_post%>%filter(age_group == "2") %>% pull(posterior)),unlist(plot_post%>%filter(age_group == "3") %>% pull(posterior)),unlist(plot_post%>%filter(age_group == "4") %>% pull(posterior)))
+)%>%
+  mutate(age = as.character(age)),
+
+tibble(
+  age = "Adults",
+  posterior = c(unlist(plot_post_adult %>% pull(posterior)))
+)
+)%>%
+  mutate(age = factor(age, levels = c("Adults","4","3","2")))
+
+
+post_plot_adults <- ggplot(plot_dens, aes(y = age, x = posterior, fill = factor(stat(quantile))))+
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.025, 0.975)
+  ) +
+    labs(y="Age group", x="Proportion correct")+
+  geom_vline(xintercept = 1/3, col = "black", lty = 2)+
+  scale_fill_manual(values = c("#FF0000A0", "#A0A0A0A0", "#FF0000A0"))+
+  guides(fill = F)+
+  theme_few()+ 
+  scale_y_discrete()
+```
+
+To evaluate whether adults selected the object from the same category above chance (33% correct), we aggregated responses across test trials and ran one sample Bayesian t-tests. We found substantial evidence for this hypothesis (mean proportion correct = `r bf_t_adult%>%pull(mean)`, BF~10~ = `r bf_t_adult%>%pull(bf)`). Figure \ref{fig:figpost} shows the corresponding posterior distribution in comparison to the results with children reported in the main manuscript. Like children, adults tracked the topic guiding the interaction with the speaker and used it to make inferences about the referent of an ambiguous pronoun.
+
+```{r figpost, include = T, fig.align = "center", fig.cap = "Posterior probability distribution for the mean for each age group and for adults based on one sample Bayesian t-test. Grey regions indicate 95\\% credible intervals for each age group.", fig.width=6, fig.height=4, fig.fullwidth = TRUE}
+post_plot_adults
+```
 
 # Supplementary Experiment
 
@@ -270,7 +356,7 @@ p2 <- ggplot() +
   theme(legend.position = "right")
 ```
 
-We used WAIC scores and weights to compare models including condition as a predictor to models lacking it. Table \ref{tab:tableS2} shows the results of the model comparison. The model without condition as a predictor (either as main effect or as an interaction with age) provided the best fit. In this model, the predictor for age was largely positive and different from zero ($\beta$ = `r fixef(exs_m3)[2,1]`, 95% CI = `r fixef(exs_m3)[2,3]` - `r fixef(exs_m3)[2,4]`) suggesting an increase in performance with age. Figure \ref{fig:plotS1} shows that, in contrast to study 1, 3-year-olds had difficulties with this version of the task. 
+We used WAIC scores and weights to compare models including condition as a predictor to models lacking it. Table \ref{tab:tableS2} shows the results of the model comparison. The model without condition as a predictor (either as main effect or as an interaction with age) provided the best fit. In this model, the predictor for age was positive, but not reliably different from zero ($\beta$ = `r fixef(exs_m3)[2,1]`, 95% CI = `r fixef(exs_m3)[2,3]` - `r fixef(exs_m3)[2,4]`) suggesting a slight increase in performance with age. Figure \ref{fig:plotS1} shows that, in contrast to study 1, 3-year-olds had difficulties with this version of the task. 
 
 ```{r tableS2,results = "asis"}
 apa_table(
