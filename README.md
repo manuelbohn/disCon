@@ -10,6 +10,6 @@ All data sets can be found in `data/`.
 
 Model outputs are stored in `saves/`.
 
-The main manuscript file including all analysis reported in it can be found at `paper/manuscript.Rmd`.
+The main manuscript file including all analysis and visualization scripts reported in the paper can be found at `paper/manuscript.Rmd`.
 
 The same applies to the supplementary material which can be found at `paper/supplementary_material.Rmd`.
