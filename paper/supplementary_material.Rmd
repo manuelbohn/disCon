@@ -221,7 +221,7 @@ post_plot_adults
 
 # Supplementary Experiment
 
-In this study, we varied the number of training trials before the test event. Procedures and analysis were pre-registered at https://osf.io/x2k4p/?view_only=d3440e61d88e42c892e3294a6072cc05. Our main focus was on condition differences and we therefore sampled a smaller number of children from each age group. 
+In this study, we varied the number of training trials before the test event. Procedures and analysis were pre-registered at https://osf.io/x2k4p. Our main focus was on condition differences and we therefore sampled a smaller number of children from each age group. 
 
 ## Method
 
