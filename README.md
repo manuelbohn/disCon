@@ -1,6 +1,6 @@
 # Children’s interpretation of ambiguous pronouns based on prior discourse 
 
-Here you find all experimental procedures, data files and analysis scripts associated with the main manuscript (https://psyarxiv.com/gkhez/). Please see the manuscript for additional details.
+Here you find all experimental procedures, data files and analysis scripts associated with the main paper (https://onlinelibrary.wiley.com/doi/10.1111/desc.13049). Please see the paper for additional details.
 
 ## Structure
 
